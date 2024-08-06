@@ -1,9 +1,15 @@
+import 'reflect-metadata';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { AppDataSource } from './ormconfig';
 import userRouter from './controllers/userController';
+import vaccineRouter from './controllers/vaccineController';
+import historyRouter from './controllers/historyController';
+import noticeRouter from './controllers/noticeController';
 import runMigrations from './runMigration';
 import { checkDatabaseConnection } from './db';
+import { seedVaccines } from './seeds/VaccineSeed';
 
 dotenv.config();
 
@@ -13,21 +19,24 @@ const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 app.use(cors());
 app.use(express.json());
 
-app.use('/ser', userRouter);
+app.use('/user', userRouter);
+app.use('/vaccine', vaccineRouter);
+app.use('/history', historyRouter);
+app.use('/notice', noticeRouter);
 
-app.get('/api/', (req, res) => {
+app.get('/', (req, res) => {
     res.send('API is working');
-});
-
-app.get('/api/test', (req, res) => {
-    res.send('Test endpoint');
 });
 
 async function startServer() {
     try {
+        await AppDataSource.initialize();
+
         await checkDatabaseConnection();
 
         await runMigrations();
+
+        await seedVaccines();
 
         app.listen(port, '0.0.0.0', () => {
             console.log(`Server is running at http://0.0.0.0:${port}`);

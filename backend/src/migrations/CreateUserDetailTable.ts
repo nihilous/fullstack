@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
-export class CreateUserTable20240806172848 implements MigrationInterface {
+export class CreateUserDetailTable20240806000000 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: 'user',
+                name: 'user_detail',
                 columns: [
                     {
                         name: 'id',
@@ -14,17 +14,29 @@ export class CreateUserTable20240806172848 implements MigrationInterface {
                         generationStrategy: 'increment',
                     },
                     {
-                        name: 'email',
-                        type: 'varchar',
-                        isUnique: true,
+                        name: 'user_id',
+                        type: 'int',
                     },
                     {
-                        name: 'nickname',
+                        name: 'name',
                         type: 'varchar',
                     },
                     {
-                        name: 'password',
+                        name: 'description',
                         type: 'varchar',
+                    },
+                    {
+                        name: 'gender',
+                        type: 'tinyint',
+                    },
+                    {
+                        name: 'birthdate',
+                        type: 'date',
+                    },
+                    {
+                        name: 'nationality',
+                        type: 'varchar',
+                        isNullable: true,
                     },
                     {
                         name: 'created_at',
@@ -41,15 +53,14 @@ export class CreateUserTable20240806172848 implements MigrationInterface {
             })
         );
 
-        await queryRunner.createIndex('user', new TableIndex({
-            name: 'IDX_USER_EMAIL',
-            columnNames: ['email'],
-            isUnique: true,
+        await queryRunner.createIndex('user_detail', new TableIndex({
+            name: 'IDX_USER_ID',
+            columnNames: ['user_id']
         }));
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropIndex('user', 'IDX_USER_EMAIL');
-        await queryRunner.dropTable('user');
+        await queryRunner.dropIndex('user_detail', 'IDX_USER_ID');
+        await queryRunner.dropTable('user_detail');
     }
 }
