@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { pool } from '../db';
+import {CustomRequest, tokenExtractor} from '../middleware/middleware';
 
 const router = Router();
 const saltRounds = 10;
@@ -39,7 +40,7 @@ router.post('/', async (req: Request, res: Response) => {
 
         res.status(201).json({ message: 'User registered successfully' });
 
-        connection.release(); // Release the connection back to the pool
+        connection.release();
     } catch (error) {
         console.error('Error registering user:', error);
         res.status(500).json({ message: 'Internal server error' });
@@ -74,7 +75,12 @@ router.post('/:id', async (req: Request, res: Response) => {
 
 
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    if(req?.token?.admin === false){
+        return res.status(403).json({ message: 'No Authority' });
+    }
+
     try {
         const connection = await pool.getConnection();
 
@@ -91,8 +97,14 @@ router.get('/', async (req: Request, res: Response) => {
     }
 });
 
-router.get('/:id', async (req: Request, res: Response) => {
-    const user_id = req.params.id;
+router.get('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    const user_id:number = parseInt(req.params.id, 10);
+    const token_id:number = req?.token?.userId;
+
+    if(user_id !== token_id) {
+        return res.status(403).json({ message: 'No Authority' });
+    }
 
     try {
         const connection = await pool.getConnection();
@@ -118,7 +130,6 @@ router.get('/:id', async (req: Request, res: Response) => {
             const response = { user_detail: false, ...rows };
             res.status(200).json(response);
         }
-
 
         connection.release();
     } catch (error) {
