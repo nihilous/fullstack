@@ -64,7 +64,9 @@ router.get('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
                 LEFT JOIN
                     history ON history.user_detail_id = user_detail.id AND history.vaccine_id = vaccine.id
                 WHERE
-                    user_detail.id = ?`,
+                    user_detail.id = ?
+                AND
+                    vaccine.vaccine_national_code = user_detail.nationality`,
             [user_detail_id]
         );
 
