@@ -33,12 +33,12 @@ router.post('/', async (req: Request, res: Response) => {
 
         const connection = await pool.getConnection();
 
-        const [results] = await connection.query('SELECT COUNT(*) AS count FROM user WHERE email = ?', [email]);
+        const [results] = await connection.query('SELECT COUNT(*) AS count FROM user WHERE email = ? OR nickname = ?', [email, nickname]);
 
         const result = results as { count: number }[];
 
         if (result[0].count > 0) {
-            return res.status(400).json({ message: 'Email is already in use' });
+            return res.status(400).json({ message: 'Email or Nickname is already in use' });
         }
         await connection.query(
             'INSERT INTO user (email, nickname, password) VALUES (?, ?, ?)',
@@ -49,7 +49,7 @@ router.post('/', async (req: Request, res: Response) => {
 
         connection.release();
     } catch (error) {
-        console.error('Error registering user:', error);
+        console.error('Error registering user post /user/', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
@@ -99,7 +99,7 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
 
         connection.release();
     } catch (error) {
-        console.error('Error Adding User detail:', error);
+        console.error('Error Adding User post /user/:id', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
@@ -123,7 +123,7 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
 
         connection.release();
     } catch (error) {
-        console.error('Error response users /get:', error);
+        console.error('Error response get user/', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
@@ -164,9 +164,144 @@ router.get('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => 
 
         connection.release();
     } catch (error) {
-        console.error('Error response users /get:', error);
+        console.error('Error response users get /user/:id', error);
         res.status(500).json({ message: 'Internal server error' });
     }
+});
+
+router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    const user_id:number = parseInt(req.params.id, 10);
+    const token_id:number = req?.token?.userId;
+
+    const { email, nickname } = req.body;
+
+    if(user_id !== token_id) {
+        return res.status(403).json({ message: 'No Authority' });
+    }
+
+    try {
+        const connection = await pool.getConnection();
+
+        let whereClause: string[] = [];
+        let whereBindings: any[] = [];
+
+        let setStatement: string[] = [];
+        let setBinding: any[] = [];
+
+        if (email !== undefined) {
+            whereClause.push('email = ?');
+            whereBindings.push(email);
+        }
+
+        if (nickname !== undefined) {
+            whereClause.push('nickname = ?');
+            whereBindings.push(nickname);
+        }
+
+        if (whereClause.length > 0) {
+            const [existingUsers] = await connection.query(`
+                SELECT COUNT(*) AS count 
+                FROM user 
+                WHERE (${whereClause.join(' OR ')}) 
+                  AND id != ?`,
+                [...whereBindings, token_id]
+            );
+
+            if ((existingUsers as any)[0].count > 0) {
+                return res.status(400).json({ message: 'Email or Nickname is already in use' });
+            }
+        }
+
+        if (email !== undefined) {
+            setStatement.push('email = ?');
+            setBinding.push(email);
+        }
+
+        if (nickname !== undefined) {
+            setStatement.push('nickname = ?');
+            setBinding.push(nickname);
+        }
+
+        if (setStatement.length === 0) {
+            return res.status(400).json({ message: 'No valid fields to update' });
+        }
+
+        setBinding.push(token_id);
+
+        await connection.query(`
+            UPDATE 
+                user
+            SET
+                ${setStatement.join(', ')}
+            WHERE
+                id = ?
+        `, setBinding);
+
+        res.status(201).json({ message: 'User info changed'});
+
+        connection.release();
+    } catch (error) {
+        console.error('Error response put /user/change/info:id', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+
+});
+
+router.put('/new/password', async (req: Request, res: Response) => {
+
+
+    const { email, old_password, new_password } = req.body;
+
+    if (email === undefined || old_password === undefined || new_password === undefined) {
+        return res.status(400).json({ message: 'Email, old password and new password are required' });
+    }
+
+    try {
+        const connection = await pool.getConnection();
+
+        const [results] = await connection.query(`
+                SELECT
+                    password
+                FROM
+                    user
+                WHERE
+                    email = ?
+            `, [email]);
+
+        const users = results as { password: string }[];
+
+        if (users.length === 0) {
+            return res.status(400).json({ message: 'Invalid email' });
+        }
+
+        const user = users[0];
+
+        const passwordMatch = await bcrypt.compare(old_password, user.password);
+
+        if (!passwordMatch) {
+            return res.status(400).json({ message: 'Invalid password' });
+        }
+
+        const hashedNewPassword = await bcrypt.hash(new_password, saltRounds);
+
+        await connection.query(`
+                UPDATE 
+                    user
+                SET
+                    password = ?
+                WHERE
+                    email = ? 
+            `, [hashedNewPassword, email]);
+
+        res.status(201).json({ message: 'Password changed'});
+
+        connection.release();
+    } catch (error) {
+        console.error('Error response put /user/new/password', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+
 });
 
 export default router;
