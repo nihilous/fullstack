@@ -28,15 +28,25 @@ router.post('/', async (req: Request, res: Response) => {
 
         const connection = await pool.getConnection();
 
-        const [results] = await connection.query('SELECT COUNT(*) AS count FROM admin WHERE email = ?', [email]);
+        const [results] = await connection.query(`
+            SELECT
+                COUNT(*) AS count
+            FROM
+                admin
+            WHERE
+                email = ?`,
+            [email]);
 
         const result = results as { count: number }[];
 
         if (result[0].count > 0) {
             return res.status(400).json({ message: 'Email is already in use' });
         }
-        await connection.query(
-            'INSERT INTO admin (email, nickname, password) VALUES (?, ?, ?)',
+        await connection.query(`
+            INSERT INTO
+                admin (email, nickname, password)
+            VALUES
+                (?, ?, ?)`,
             [email, nickname, hashedPassword]
         );
 

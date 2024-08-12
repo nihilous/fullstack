@@ -13,6 +13,7 @@ if (!secretKey) {
 interface User {
     id: number;
     password: string;
+    user_detail_ids: string | null;
 }
 
 const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin', isAdmin: boolean = false) => {
@@ -23,29 +24,81 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
     }
 
     try {
-        const connection = await pool.getConnection();
 
-        const [results] = await connection.query(`SELECT id, password FROM ${table} WHERE email = ?`, [email]);
+        if(table === 'user'){
+            const connection = await pool.getConnection();
 
-        const users = results as User[];
-        if (users.length === 0) {
-            return res.status(400).json({ message: 'Invalid email or password' });
+            const [results] = await connection.query(`
+                SELECT 
+                    ${table}.id, 
+                    ${table}.password,
+                    GROUP_CONCAT(user_detail.id) AS user_detail_ids 
+                FROM
+                    ${table} 
+                LEFT JOIN
+                    user_detail ON user.id = user_detail.user_id 
+                WHERE
+                    email = ? 
+                GROUP BY
+                    user.id, user.password
+            `, [email]);
+
+            const users = results as User[];
+
+            if (users.length === 0) {
+                return res.status(400).json({ message: 'Invalid email or password' });
+            }
+
+            const user = users[0];
+
+            const passwordMatch = await bcrypt.compare(password, user.password);
+
+            if (!passwordMatch) {
+                return res.status(400).json({ message: 'Invalid email or password' });
+            }
+
+            const tokenPayload = {
+                userId: user.id,
+                admin: isAdmin,
+                userDetailIds: user.user_detail_ids ? user.user_detail_ids.split(',').map(Number) : []
+                };
+
+            const token = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
+            res.status(200).json({ message: 'Login successful', token });
+            connection.release();
+
+        }else{
+            const connection = await pool.getConnection();
+
+            const [results] = await connection.query(`
+                SELECT
+                    id, password
+                FROM
+                    ${table}
+                WHERE
+                    email = ?
+            `, [email]);
+
+            const users = results as User[];
+
+            if (users.length === 0) {
+                return res.status(400).json({ message: 'Invalid email or password' });
+            }
+
+            const user = users[0];
+
+            const passwordMatch = await bcrypt.compare(password, user.password);
+
+            if (!passwordMatch) {
+                return res.status(400).json({ message: 'Invalid email or password' });
+            }
+
+            const tokenPayload = { userId: user.id, admin: isAdmin };
+            const token = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
+            res.status(200).json({ message: 'Login successful', token });
+            connection.release();
         }
 
-        const user = users[0];
-
-        const passwordMatch = await bcrypt.compare(password, user.password);
-
-        if (!passwordMatch) {
-            return res.status(400).json({ message: 'Invalid email or password' });
-        }
-
-        const tokenPayload = { userId: user.id, admin: isAdmin };
-        const token = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
-
-        res.status(200).json({ message: 'Login successful', token });
-
-        connection.release();
     } catch (error) {
         console.error('Error logging in user:', error);
         res.status(500).json({ message: 'Internal server error' });

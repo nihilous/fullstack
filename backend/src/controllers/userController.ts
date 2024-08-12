@@ -1,12 +1,19 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { pool } from '../db';
 import {CustomRequest, tokenExtractor} from '../middleware/middleware';
+import { RowDataPacket } from 'mysql2';
 
 const router = Router();
 const saltRounds = 10;
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const secretKey = process.env.SECRET;
+if (!secretKey) {
+    throw new Error('SECRET environment variable is not set');
+}
 
 router.post('/', async (req: Request, res: Response) => {
     const { email, nickname, password } = req.body;
@@ -47,10 +54,16 @@ router.post('/', async (req: Request, res: Response) => {
     }
 });
 
-router.post('/:id', async (req: Request, res: Response) => {
+router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
     const { name, description, gender, birthdate, nationality } = req.body;
 
-    const user_id = req.params.id;
+
+    const user_id:number = parseInt(req.params.id, 10);
+    const token_id:number = req?.token?.userId;
+
+    if(user_id !== token_id) {
+        return res.status(403).json({ message: 'No Authority' });
+    }
 
     if (name === undefined || description === undefined || gender === undefined || birthdate === undefined || nationality === undefined) {
         return res.status(400).json({ message: 'name, description, gender, birthdate, nationality are required' });
@@ -64,7 +77,25 @@ router.post('/:id', async (req: Request, res: Response) => {
             [user_id, name, description, gender, birthdate, nationality]
         );
 
-        res.status(201).json({ message: 'User detail successfully' });
+        const [results] = await connection.query<(RowDataPacket & { user_detail_ids: string })[]>(`
+            SELECT
+                GROUP_CONCAT(id) AS user_detail_ids 
+            FROM
+                user_detail 
+            WHERE
+                user_id = ?
+        `, [user_id]);
+
+        const userDetailIds = results[0]?.user_detail_ids ? results[0].user_detail_ids.split(',').map(Number) : [];
+
+        const tokenPayload = {
+            userId: user_id,
+            admin: req.token?.admin || false,
+            userDetailIds
+        };
+        const newToken = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
+
+        res.status(201).json({ message: 'User detail successfully added', token: newToken });
 
         connection.release();
     } catch (error) {

@@ -9,7 +9,8 @@ if (!secretKey) {
 
 interface TokenType {
     userId: number,
-    admin: boolean
+    admin: boolean,
+    userDetailIds: number[];
 }
 
 interface CustomRequest extends Request {

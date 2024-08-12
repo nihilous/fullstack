@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { pool } from '../db';
 import { RowDataPacket } from 'mysql2';
+import {CustomRequest, tokenExtractor} from '../middleware/middleware';
 
 const router = Router();
 
@@ -20,8 +21,25 @@ interface Row extends RowDataPacket {
     expected_vaccine_maximum_recommend_date?: string | null;
 }
 
-router.get('/:id', async (req: Request, res: Response) => {
-    const user_detail_id = req.params.id;
+router.get('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    const user_id:number = parseInt(req.params.id, 10);
+    const token_id:number = req?.token?.userId;
+
+    const user_detail_id = parseInt(req.params.user_detail_id, 10);
+    const token_user_detail_ids:number[] = req?.token?.userDetailIds;
+
+    let legit_child = false;
+
+    for (let i = 0; i < token_user_detail_ids.length; i++){
+        if(token_user_detail_ids[i] === user_detail_id){
+            legit_child = true;
+        }
+    }
+
+    if(user_id !== token_id || legit_child === false){
+        return res.status(403).json({ message: 'No Authority' });
+    }
 
     try {
         const connection = await pool.getConnection();

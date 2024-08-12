@@ -8,13 +8,14 @@ router.get('/', async (req: Request, res: Response) => {
     try {
         const connection = await pool.getConnection();
 
-        const [rows] = await connection.query(
-            'SELECT * FROM vaccine'
-        );
+        const [rows] = await connection.query(`
+            SELECT
+                *
+            FROM
+                vaccine
+        `);
 
         res.status(200).json(rows);
-
-        res.status(201).json({ message: 'User interaction recorded successfully' });
 
         connection.release();
     } catch (error) {
