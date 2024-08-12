@@ -14,6 +14,7 @@ interface User {
     id: number;
     password: string;
     user_detail_ids: string | null;
+    is_active: boolean;
 }
 
 const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin', isAdmin: boolean = false) => {
@@ -32,6 +33,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
                 SELECT 
                     ${table}.id, 
                     ${table}.password,
+                    ${table}.is_active,
                     GROUP_CONCAT(user_detail.id) AS user_detail_ids 
                 FROM
                     ${table} 
@@ -56,6 +58,32 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
             if (!passwordMatch) {
                 return res.status(400).json({ message: 'Invalid email or password' });
             }
+
+            let setStatement: string[] = [];
+            let setBinding: any[] = [];
+
+            if(!user.is_active){
+                setStatement.push('is_active = ?');
+                setBinding.push(true);
+            }
+
+            setStatement.push('last_login = ?');
+
+            const now = new Date();
+            const formattedDate = now.toISOString().slice(0, 19).replace('T', ' ');
+            setBinding.push(formattedDate);
+
+            setBinding.push(user.id);
+
+            await connection.query(`
+                UPDATE
+                    user
+                SET
+                    ${setStatement.join(', ')}
+                WHERE
+                    id = ?
+            `, setBinding);
+
 
             const tokenPayload = {
                 userId: user.id,

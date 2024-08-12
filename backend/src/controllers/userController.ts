@@ -146,18 +146,38 @@ router.get('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => 
 
         if (result[0].count > 0) {
 
-            const [rows] = await connection.query(
-                'SELECT user.nickname,user_detail.id, user_detail.name,  user_detail.description, user_detail.gender, user_detail.birthdate, user_detail.nationality FROM user JOIN user_detail ON user.id = user_detail.user_id WHERE user.id = ?',
-                [user_id]
-            );
+            const [rows] = await connection.query(`
+                SELECT
+                    user.nickname,
+                    user_detail.id,
+                    user_detail.name,
+                    user_detail.description,
+                    user_detail.gender,
+                    user_detail.birthdate,
+                    user_detail.nationality
+                FROM
+                    user
+                JOIN
+                    user_detail
+                ON
+                    user.id = user_detail.user_id
+                WHERE
+                    user.id = ?
+                    `, [user_id]);
             const response = { user_detail: true, ...rows };
             res.status(200).json(response);
 
         }else{
-            const [rows] = await connection.query(
-                'SELECT id, email , nickname FROM user WHERE user.id = ?',
-                [user_id]
-            );
+            const [rows] = await connection.query(`
+                SELECT
+                    id,
+                    email,
+                    nickname
+                FROM
+                    user
+                WHERE
+                    user.id = ?
+                    `, [user_id]);
             const response = { user_detail: false, ...rows };
             res.status(200).json(response);
         }
@@ -165,6 +185,37 @@ router.get('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => 
         connection.release();
     } catch (error) {
         console.error('Error response users get /user/:id', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.delete('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    const user_id:number = parseInt(req.params.id, 10);
+    const token_id:number = req?.token?.userId;
+
+    if(user_id !== token_id) {
+        return res.status(403).json({ message: 'No Authority' });
+    }
+
+    try {
+        const connection = await pool.getConnection();
+
+        await connection.query(`
+            UPDATE
+                user
+            SET
+                is_active = false
+            WHERE
+                user.id = ?`,
+            [token_id]
+        );
+
+        res.status(200).json({ message: 'User Inactivated, can activate again if login within 6months, all related data will get deleted after 6 months' });
+
+        connection.release();
+    } catch (error) {
+        console.error('Error response users delete /user/:id', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
