@@ -115,9 +115,21 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
     try {
         const connection = await pool.getConnection();
 
-        const [rows] = await connection.query(
-            'SELECT user.nickname, user_detail.name,  user_detail.description, user_detail.gender, user_detail.birthdate, user_detail.nationality FROM user JOIN user_detail ON user.id = user_detail.user_id'
-        );
+        const [rows] = await connection.query(`
+            SELECT
+                user.nickname,
+                user_detail.name,
+                user_detail.description,
+                user_detail.gender,
+                user_detail.birthdate,
+                user_detail.nationality
+            FROM
+                user
+            JOIN
+                user_detail
+            ON
+                user.id = user_detail.user_id
+        `);
 
         res.status(200).json(rows);
 
@@ -164,7 +176,7 @@ router.get('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => 
                 WHERE
                     user.id = ?
                     `, [user_id]);
-            const response = { user_detail: true, ...rows };
+            const response = { user_detail: true, record: {...rows} };
             res.status(200).json(response);
 
         }else{

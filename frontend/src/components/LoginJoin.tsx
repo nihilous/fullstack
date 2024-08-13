@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useNavigate } from 'react-router-dom';
 import { loginJoinTranslations } from '../translation/LoginJoin';
+import { Form, Button, Container, Col, Row } from 'react-bootstrap';
 
 const LoginJoin: React.FC = () => {
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
@@ -62,65 +63,91 @@ const LoginJoin: React.FC = () => {
     };
 
     return (
-        <div className="LoginJoin">
-            {isLoginView ? (
-                <form onSubmit={handleLoginSubmit}>
-                    <div id="login">
-                        <input
-                            type="text"
-                            name="login_email"
-                            placeholder={translations.email}
-                            value={loginEmail}
-                            onChange={(e) => setLoginEmail(e.target.value)}
-                        />
-                        <input
-                            type="password"
-                            name="login_password"
-                            placeholder={translations.password}
-                            value={loginPassword}
-                            onChange={(e) => setLoginPassword(e.target.value)}
-                        />
-                        <button type="submit">{translations.login}</button>
-                        <button type="button" onClick={() => setIsLoginView(false)}>{translations.join}</button>
-                    </div>
-                </form>
-            ) : (
-                <form onSubmit={handleJoinSubmit}>
-                    <div id="join">
-                        <input
-                            type="text"
-                            name="join_email"
-                            placeholder={translations.email}
-                            value={joinEmail}
-                            onChange={(e) => setJoinEmail(e.target.value)}
-                        />
-                        <input
-                            type="text"
-                            name="join_nickname"
-                            placeholder={translations.nickname}
-                            value={joinNickname}
-                            onChange={(e) => setJoinNickname(e.target.value)}
-                        />
-                        <input
-                            type="password"
-                            name="join_password"
-                            placeholder={translations.password}
-                            value={joinPassword}
-                            onChange={(e) => setJoinPassword(e.target.value)}
-                        />
-                        <input
-                            type="password"
-                            name="join_password_repeat"
-                            placeholder={translations.password_repeat}
-                            value={joinPasswordRepeat}
-                            onChange={(e) => setJoinPasswordRepeat(e.target.value)}
-                        />
-                        <button type="submit">{translations.register}</button>
-                        <button type="button" onClick={() => setIsLoginView(true)}>{translations.cancel}</button>
-                    </div>
-                </form>
-            )}
-        </div>
+        <Container className="LoginJoin">
+            <Row className="justify-content-md-center">
+                <Col md={6}>
+                    {isLoginView ? (
+                        <Form onSubmit={handleLoginSubmit}>
+                            <Form.Group controlId="loginEmail">
+                                <Form.Label>{translations.email}</Form.Label>
+                                <Form.Control
+                                    type="email"
+                                    placeholder={translations.email}
+                                    value={loginEmail}
+                                    onChange={(e) => setLoginEmail(e.target.value)}
+                                />
+                            </Form.Group>
+
+                            <Form.Group controlId="loginPassword" className="mt-3">
+                                <Form.Label>{translations.password}</Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    placeholder={translations.password}
+                                    value={loginPassword}
+                                    onChange={(e) => setLoginPassword(e.target.value)}
+                                />
+                            </Form.Group>
+
+                            <Button variant="primary" type="submit" className="mt-3">
+                                {translations.login}
+                            </Button>
+                            <Button variant="secondary" className="mt-3 ms-2" onClick={() => setIsLoginView(false)}>
+                                {translations.join}
+                            </Button>
+                        </Form>
+                    ) : (
+                        <Form onSubmit={handleJoinSubmit}>
+                            <Form.Group controlId="joinEmail">
+                                <Form.Label>{translations.email}</Form.Label>
+                                <Form.Control
+                                    type="email"
+                                    placeholder={translations.email}
+                                    value={joinEmail}
+                                    onChange={(e) => setJoinEmail(e.target.value)}
+                                />
+                            </Form.Group>
+
+                            <Form.Group controlId="joinNickname" className="mt-3">
+                                <Form.Label>{translations.nickname}</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder={translations.nickname}
+                                    value={joinNickname}
+                                    onChange={(e) => setJoinNickname(e.target.value)}
+                                />
+                            </Form.Group>
+
+                            <Form.Group controlId="joinPassword" className="mt-3">
+                                <Form.Label>{translations.password}</Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    placeholder={translations.password}
+                                    value={joinPassword}
+                                    onChange={(e) => setJoinPassword(e.target.value)}
+                                />
+                            </Form.Group>
+
+                            <Form.Group controlId="joinPasswordRepeat" className="mt-3">
+                                <Form.Label>{translations.password_repeat}</Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    placeholder={translations.password_repeat}
+                                    value={joinPasswordRepeat}
+                                    onChange={(e) => setJoinPasswordRepeat(e.target.value)}
+                                />
+                            </Form.Group>
+
+                            <Button variant="primary" type="submit" className="mt-3">
+                                {translations.register}
+                            </Button>
+                            <Button variant="secondary" className="mt-3 ms-2" onClick={() => setIsLoginView(true)}>
+                                {translations.cancel}
+                            </Button>
+                        </Form>
+                    )}
+                </Col>
+            </Row>
+        </Container>
     );
 };
 
