@@ -1,33 +1,20 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from './store';
-import axios from 'axios';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
+import LoginJoin from './components/LoginJoin';
+import Main from './components/Main';
 
 const App: React.FC = () => {
-  const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
-  const dispatch = useDispatch<AppDispatch>();
+    return (
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/`);
-      console.log('Data:', response.data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [apiUrl]);
-
-  return (
-      <div className="App">
-        <header className="App-header">
-          <div>test</div>
-          <h1>API URL: {apiUrl}</h1>
-        </header>
-      </div>
-  );
+        <Router>
+            <Header />
+            <Routes>
+                <Route path="/" element={<LoginJoin />} />
+                <Route path="/main" element={<Main />} />
+            </Routes>
+        </Router>
+    );
 };
 
 export default App;
