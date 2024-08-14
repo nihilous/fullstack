@@ -4,7 +4,8 @@ import * as jwt_decode from 'jwt-decode';
 interface DecodedToken {
     userId: number;
     admin: boolean;
-    userDetailIds: number[];
+    userDetailIds: number[] | null;
+    record: [] | null;
 }
 
 const token: string | undefined = Cookies.get('token');
@@ -19,4 +20,15 @@ if (token) {
     }
 }
 
-export { decodedToken, token };
+const decoder = (jwtCookie: string): DecodedToken | null => {
+    try {
+        decodedToken = jwt_decode.jwtDecode(jwtCookie);
+        return decodedToken;
+    } catch (error) {
+        console.error('Failed to decode token:', error);
+        return null;
+    }
+}
+
+
+export { decodedToken, token, decoder };

@@ -109,7 +109,7 @@ const Main = () => {
                 <h1>{`${translations.welcome} ${ userDetail.record[0].nickname }  ${
                     
                     userDetail?.user_detail && userDetail?.record ?
-                        translations.have_child + userDetailIds?.length + " " + ((userDetailIds?.length ?? 0) > 1 ? translations.child_datas : translations.child_data)
+                        translations.have_child + Object.keys(userDetail?.record).length + " " + ((userDetailIds?.length ?? 0) > 1 ? translations.child_datas : translations.child_data)
                         :
                         translations.no_child
                 }`}</h1>
@@ -126,7 +126,9 @@ const Main = () => {
 
                     <Container>
                         <Container>
-                            Register Child Information
+                            <Link to={`/register_child`}>
+                                {translations.register}
+                            </Link>
                         </Container>
 
                     </Container>

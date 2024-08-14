@@ -79,19 +79,17 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
 
         const [results] = await connection.query<(RowDataPacket & { user_detail_ids: string })[]>(`
             SELECT
-                GROUP_CONCAT(id) AS user_detail_ids 
+                *
             FROM
                 user_detail 
             WHERE
                 user_id = ?
         `, [user_id]);
 
-        const userDetailIds = results[0]?.user_detail_ids ? results[0].user_detail_ids.split(',').map(Number) : [];
-
         const tokenPayload = {
             userId: user_id,
             admin: req.token?.admin || false,
-            userDetailIds
+            record: results
         };
         const newToken = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
 
