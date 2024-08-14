@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { loginJoinTranslations } from '../translation/LoginJoin';
 import { Form, Button, Container, Col, Row } from 'react-bootstrap';
 
-const LoginJoin: React.FC = () => {
+const LoginJoin = () => {
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
     const language = useSelector((state: RootState) => state.app.language);
     const navigate = useNavigate();
@@ -31,6 +31,7 @@ const LoginJoin: React.FC = () => {
             });
             Cookies.set('token', response.data.token);
             navigate('/main');
+            window.location.reload();
 
         } catch (error) {
             console.error('Error logging in:', error);

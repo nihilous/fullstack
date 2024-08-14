@@ -1,15 +1,20 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setLanguage } from '../redux/slice';
+import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { Navbar, Nav, Form, FormControl } from 'react-bootstrap';
+import {Navbar, Nav, Form, Button, FormControl} from 'react-bootstrap';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
+import { HeaderTranslations } from '../translation/Header';
 
-const Header: React.FC = () => {
-    const dispatch = useDispatch();
+const Header = () => {
+
     const language = useSelector((state: RootState) => state.app.language);
+    const navigate = useNavigate();
+    const translations = HeaderTranslations[language];
 
-    const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        dispatch(setLanguage(event.target.value as 'FIN' | 'ENG' | 'KOR'));
+    const handleLogout = () => {
+        Cookies.remove('token')
+        navigate('/');
     };
 
     return (
@@ -18,22 +23,16 @@ const Header: React.FC = () => {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
-                    {`Welcome `}
+                    {`${translations.welcome} `}
                 </Nav>
-                <Nav className="mr-auto">
+                <Nav className="me-auto">
                     <Nav.Link href="/main">Main</Nav.Link>
                 </Nav>
-                <Form className="form-inline ml-auto">
-                    <Form.Select
-                        value={language}
-                        onChange={handleLanguageChange}
-                        className="ml-sm-2"
-                    >
-                        <option value="FIN">Suomi</option>
-                        <option value="ENG">English</option>
-                        <option value="KOR">한국어</option>
-                    </Form.Select>
-                </Form>
+                <Nav className="ms-auto">
+                    <Button variant="outline-secondary" onClick={handleLogout}>
+                        Logout
+                    </Button>
+                </Nav>
             </Navbar.Collapse>
         </Navbar>
     );

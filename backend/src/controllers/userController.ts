@@ -190,7 +190,7 @@ router.get('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => 
                 WHERE
                     user.id = ?
                     `, [user_id]);
-            const response = { user_detail: false, ...rows };
+            const response = { user_detail: false, record: {...rows} };
             res.status(200).json(response);
         }
 
