@@ -10,7 +10,11 @@ export const MainTranslations = {
         child_nationality: `Kansallisuus`,
         child_data: `Lapsen tiedot.`,
         child_datas: `Lapsien tiedot.`,
-        register: `Täytä Lapsen tiedot`
+        boy: `Poika`,
+        girl: `Tyttö`,
+        finland: `Suomi`,
+        korea: `Korea`,
+        register: `Täytä Lapsen tiedot`,
     },
     ENG: {
         welcome: `Welcome,`,
@@ -23,7 +27,11 @@ export const MainTranslations = {
         child_nationality: `Nationality`,
         child_data: `Child Record.`,
         child_datas: `Child Records.`,
-        register: `Register Child Information`
+        boy: `Boy`,
+        girl: `Girl`,
+        finland: `Finland`,
+        korea: `Korea`,
+        register: `Register Child Information`,
     },
     KOR: {
         welcome: `안녕하세요,`,
@@ -36,6 +44,10 @@ export const MainTranslations = {
         child_nationality: `국적`,
         child_data: `자녀 정보가 있습니다.`,
         child_datas: `자녀 정보가 있습니다.`,
-        register: `자녀 정보 등록하기`
+        boy: `남자`,
+        girl: `여자`,
+        finland: `핀란드`,
+        korea: `대한민국`,
+        register: `자녀 정보 등록하기`,
     }
 };

@@ -21,11 +21,9 @@ const Header = () => {
 
     };
 
-    console.log(isCookieSet)
-
     return (
         <Navbar bg="light" expand="lg">
-            <Navbar.Brand href="/">{`${translations.brand} `}</Navbar.Brand>
+            <Navbar.Brand href={"/"}>{`${translations.brand} `}</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
@@ -40,7 +38,6 @@ const Header = () => {
                             <Nav.Link href="/register_child">{`${translations.register}`}</Nav.Link>
                         </Nav>
                     </>
-
                 :
                     <></>
                 }

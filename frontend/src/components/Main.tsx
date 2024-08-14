@@ -71,19 +71,38 @@ const Main = () => {
     const childInformation = (info: { [key: string]: UserDetailProperty }) => {
         return Object.keys(info).map(key => {
             const child = info[key];
+
+            const formatDate = (dateString: string) => {
+                const [year, month, day] = dateString.split('T')[0].split('-');
+                return { year, month, day };
+            };
+
+            const formatNationality = (nationalityString: string) => {
+                switch (nationalityString){
+                    case "FIN":
+                        return translations.finland;
+                    case "KOR":
+                        return translations.korea;
+                }
+            };
+
+            const yyyy_mm_dd = formatDate(child.birthdate as string);
             return (
 
                     <Container key={child.id} className="child-info">
                         <h3>{`${translations.child_name} : ${child.name}`}</h3>
                         <Container>
                             <Container>
-                                {`${translations.child_birthdate} : ${child.birthdate}`}
+                                {`${translations.child_birthdate} : ${language === "FIN" ?
+                                    yyyy_mm_dd.day + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.year
+                                    :
+                                    yyyy_mm_dd.year + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.day }`}
                             </Container>
                             <Container>
-                                {`${translations.child_gender} : ${child.gender}`}
+                                {`${translations.child_gender} : ${child.gender === 0 ? translations.boy : translations.girl }`}
                             </Container>
                             <Container>
-                                {`${translations.child_nationality} : ${child.nationality}`}
+                                {`${translations.child_nationality} : ${formatNationality(child.nationality as string)}`}
                             </Container>
                             <Container>
                                 {`${translations.child_description} : ${child.description}`}
