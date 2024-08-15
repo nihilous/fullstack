@@ -72,10 +72,12 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
     try {
         const connection = await pool.getConnection();
 
-        await connection.query(
-            'INSERT INTO user_detail (user_id, name, description, gender, birthdate, nationality) VALUES (?, ?, ?, ?, ?, ?)',
-            [user_id, name, description, gender, birthdate, nationality]
-        );
+        await connection.query(`
+            INSERT INTO
+                user_detail (user_id, name, description, gender, birthdate, nationality)
+            VALUES
+                (?, ?, ?, ?, ?, ?)
+        `, [user_id, name, description, gender, birthdate, nationality]);
 
         const [results] = await connection.query<(RowDataPacket & { user_detail_ids: string })[]>(`
             SELECT

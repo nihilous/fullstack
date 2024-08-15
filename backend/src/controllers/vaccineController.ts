@@ -5,6 +5,8 @@ const router = Router();
 
 router.get('/', async (req: Request, res: Response) => {
 
+    const vaccine_national_code:string = req.params.vaccine_national_code
+
     try {
         const connection = await pool.getConnection();
 
@@ -13,7 +15,9 @@ router.get('/', async (req: Request, res: Response) => {
                 *
             FROM
                 vaccine
-        `);
+            WHERE
+                vaccine_national_code = ?
+        `, [vaccine_national_code]);
 
         res.status(200).json(rows);
 

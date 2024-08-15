@@ -46,29 +46,28 @@ router.get('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
 
         const [rows] = await connection.query<Row[]>(
             `SELECT
-                    user_detail.id,
-                    user_detail.name,
-                    user_detail.birthdate,
-                    vaccine.vaccine_name,
-                    vaccine.vaccine_is_periodical,
-                    vaccine.vaccine_minimum_period_type,
-                    vaccine.vaccine_minimum_recommend_date,
-                    vaccine.vaccine_maximum_period_type,
-                    vaccine.vaccine_maximum_recommend_date,
-                    vaccine.vaccine_round,
-                    history.history_date
-                FROM
-                    user_detail
-                CROSS JOIN
-                    vaccine
-                LEFT JOIN
-                    history ON history.user_detail_id = user_detail.id AND history.vaccine_id = vaccine.id
-                WHERE
-                    user_detail.id = ?
-                AND
-                    vaccine.vaccine_national_code = user_detail.nationality`,
-            [user_detail_id]
-        );
+
+                user_detail.birthdate,
+                vaccine.id,
+                vaccine.vaccine_name,
+                vaccine.vaccine_is_periodical,
+                vaccine.vaccine_minimum_period_type,
+                vaccine.vaccine_minimum_recommend_date,
+                vaccine.vaccine_maximum_period_type,
+                vaccine.vaccine_maximum_recommend_date,
+                vaccine.vaccine_round,
+                history.history_date
+            FROM
+                user_detail
+            CROSS JOIN
+                vaccine
+            LEFT JOIN
+                history ON history.user_detail_id = user_detail.id AND history.vaccine_id = vaccine.id
+            WHERE
+                user_detail.id = ?
+            AND
+                vaccine.vaccine_national_code = user_detail.nationality
+        `, [user_detail_id]);
 
         const formatDate = (date: Date): string => {
             const year = date.getFullYear();

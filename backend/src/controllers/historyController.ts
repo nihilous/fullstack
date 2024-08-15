@@ -29,7 +29,14 @@ router.post('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, r
     try {
         const connection = await pool.getConnection();
 
-        const [results] = await connection.query('SELECT COUNT(*) AS count FROM history WHERE user_detail_id = ? AND vaccine_id = ?', [user_detail_id, vaccine_id]);
+        const [results] = await connection.query(`
+            SELECT
+                COUNT(*) AS count
+            FROM
+                history
+            WHERE
+                user_detail_id = ? AND vaccine_id = ?
+        `, [user_detail_id, vaccine_id]);
 
         const result = results as { count: number }[];
 
@@ -37,10 +44,12 @@ router.post('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, r
             return res.status(400).json({ message: 'That vaccine is already dosed' });
         }
 
-        await connection.query(
-            'INSERT INTO history (user_detail_id, vaccine_id, history_date) VALUES (?, ?, ?)',
-            [user_detail_id, vaccine_id, history_date]
-        );
+        await connection.query(`
+            INSERT INTO
+                history (user_detail_id, vaccine_id, history_date)
+            VALUES
+                (?, ?, ?)
+        `, [user_detail_id, vaccine_id, history_date]);
 
         res.status(201).json({ message: 'Vaccination History Saved Successfully' });
 
@@ -74,10 +83,21 @@ router.get('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
     try {
         const connection = await pool.getConnection();
 
-        const [rows] = await connection.query(
-            'SELECT vaccine.vaccine_name, vaccine.vaccine_round, history.history_date FROM history JOIN vaccine on history.vaccine_id = vaccine.id WHERE user_detail_id = ?',
-            [user_detail_id]
-        );
+        const [rows] = await connection.query(`
+            SELECT
+                vaccine.vaccine_name,
+                vaccine.vaccine_round,
+                history.id,
+                history.history_date
+            FROM
+                history
+            JOIN
+                vaccine
+            ON
+                history.vaccine_id = vaccine.id
+            WHERE
+                user_detail_id = ?
+        `, [user_detail_id]);
 
         res.status(200).json(rows);
 

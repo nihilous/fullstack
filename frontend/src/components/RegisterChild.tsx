@@ -6,6 +6,7 @@ import { RootState } from '../store';
 import { RegisterChildTranslations } from '../translation/RegisterChild';
 import { Form, Button, Container, Col, Row } from 'react-bootstrap';
 import { token, decodedToken, decoder } from "../util/jwtDecoder";
+import {Link} from "react-router-dom";
 
 const RegisterChild = () => {
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
@@ -94,6 +95,61 @@ const RegisterChild = () => {
         }
     };
 
+    const showingChildInfo = (children: UserDetailProperty[] ) => {
+        return children.map((child) => {
+
+            const formatDate = (dateString: string) => {
+                const [year, month, day] = dateString.split('T')[0].split('-');
+                return { year, month, day };
+            };
+
+            const yyyy_mm_dd = formatDate(child.birthdate as string);
+
+            const formatNationality = (nationalityString: string) => {
+                switch (nationalityString){
+                    case "FIN":
+                        return translations.finland;
+                    case "KOR":
+                        return translations.korea;
+                }
+            };
+
+            return (
+
+                <Container key={child.id} className="child-info">
+                    <h3>{`${translations.name} : ${child.name}`}</h3>
+                    <Container>
+                        <Container>
+                            {`${translations.birthdate} : ${language === "FIN" ?
+                                yyyy_mm_dd.day + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.year
+                                :
+                                yyyy_mm_dd.year + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.day }`}
+                        </Container>
+                        <Container>
+                            {`${translations.gender} ${child.gender }`}
+                        </Container>
+                        <Container>
+                            {`${translations.nationality} ${formatNationality(child.nationality as string) }`}
+                        </Container>
+                        <Container>
+                            {`${translations.description} ${child.description }`}
+                        </Container>
+                        <Container>
+                            <Link  to={`/history/${child.id}`} className="child-link">
+                                See Vaccination History
+                            </Link>
+                        </Container>
+                        <Container>
+                            <Link  to={`/notice/${child.id}`} className="child-link">
+                                See Vaccination Recommendations
+                            </Link>
+                        </Container>
+                    </Container>
+                </Container>
+
+            );
+        });
+    };
 
 
     return (
@@ -170,14 +226,7 @@ const RegisterChild = () => {
             </Container>
 
             { child.length > 0 ?  (
-                <Container>
-                    {child.map((info) => (
-                        <div key={info.id}>
-                            <p>Name: {info.name}</p>
-                            <p>Description: {info.description}</p>
-                        </div>
-                    ))}
-                </Container>
+                showingChildInfo(child)
             ) : (
                 <p>No child data available.</p>
             )}

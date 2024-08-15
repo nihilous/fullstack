@@ -109,9 +109,18 @@ const Main = () => {
                             </Container>
                         </Container>
 
-                        <Link  to={`/child/${child.id}`} className="child-link">
-                            detail history
-                        </Link>
+
+                        <Container>
+                            <Link  to={`/history/${child.id}`} className="child-link">
+                                See Vaccination History
+                            </Link>
+                        </Container>
+                        <Container>
+                            <Link  to={`/notice/${child.id}`} className="child-link">
+                                See Vaccination Recommendations
+                            </Link>
+                        </Container>
+
                     </Container>
 
             );

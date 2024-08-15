@@ -18,7 +18,7 @@ const Header = () => {
 
         Cookies.remove('token')
         navigate('/');
-
+        window.location.reload();
     };
 
     return (
@@ -37,16 +37,17 @@ const Header = () => {
                         <Nav className="me-auto">
                             <Nav.Link href="/register_child">{`${translations.register}`}</Nav.Link>
                         </Nav>
+                        <Nav className="ms-auto">
+                            <Button variant="outline-secondary" onClick={handleLogout}>
+                                Logout
+                            </Button>
+                        </Nav>
                     </>
                 :
                     <></>
                 }
 
-                <Nav className="ms-auto">
-                    <Button variant="outline-secondary" onClick={handleLogout}>
-                        Logout
-                    </Button>
-                </Nav>
+
             </Navbar.Collapse>
         </Navbar>
     );
