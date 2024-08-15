@@ -6,11 +6,13 @@ import { RootState } from '../store';
 import { RegisterChildTranslations } from '../translation/RegisterChild';
 import { Form, Button, Container, Col, Row } from 'react-bootstrap';
 import { token, decodedToken, decoder } from "../util/jwtDecoder";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 const RegisterChild = () => {
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
     const language = useSelector((state: RootState) => state.app.language);
+    const naviagte = useNavigate();
+    const userId = decodedToken?.userId;
 
     interface UserDetailProperty {
         id: number;
@@ -59,8 +61,12 @@ const RegisterChild = () => {
                 console.error('Error Fetching existing data:', error);
             }
         };
+        if(userId === undefined){
+            naviagte("/");
+        }else{
+            existingDataFetch();
+        }
 
-        existingDataFetch();
 
     }, []);
 
@@ -151,7 +157,6 @@ const RegisterChild = () => {
         });
     };
 
-
     return (
         <Container>
             <Container className="RegisterChild">
@@ -232,7 +237,6 @@ const RegisterChild = () => {
             )}
 
         </Container>
-
     );
 };
 

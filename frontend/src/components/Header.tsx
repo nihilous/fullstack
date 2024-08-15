@@ -3,22 +3,20 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import {Navbar, Nav, Form, Button, FormControl} from 'react-bootstrap';
 import Cookies from 'js-cookie';
-import { useNavigate } from 'react-router-dom';
 import { HeaderTranslations } from '../translation/Header';
+import { useNavigate } from 'react-router-dom';
+import logout from "../util/logout";
 
 const Header = () => {
 
     const language = useSelector((state: RootState) => state.app.language);
-    const navigate = useNavigate();
     const translations = HeaderTranslations[language];
+    const navigate = useNavigate();
 
     const [isCookieSet, setIsCookieSet] = useState<boolean>(Cookies.get(`token`) !== undefined);
 
     const handleLogout = () => {
-
-        Cookies.remove('token')
-        navigate('/');
-        window.location.reload();
+        logout(navigate);
     };
 
     return (
@@ -46,8 +44,6 @@ const Header = () => {
                 :
                     <></>
                 }
-
-
             </Navbar.Collapse>
         </Navbar>
     );

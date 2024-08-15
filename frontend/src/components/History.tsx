@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { HistoryTranslations } from '../translation/History';
 import { token, decodedToken } from "../util/jwtDecoder";
 import {Button, Container} from "react-bootstrap";
@@ -18,6 +18,7 @@ const History = () => {
 
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
     const language = useSelector((state: RootState) => state.app.language);
+    const navigate = useNavigate();
     const userId = decodedToken?.userId;
     const { id } = useParams();
     const user_detail_id = Number(id);
@@ -32,9 +33,6 @@ const History = () => {
         }
 
     })
-
-
-
 
     useEffect(() => {
         const historyDataFetch = async () => {
@@ -51,13 +49,17 @@ const History = () => {
             }
         };
 
+        if(userId === undefined){
+            navigate("/")
+        }
+
         if(!isAuthorized){
             return
         }
+
         historyDataFetch();
 
     }, []);
-
 
     const showingHistory = (histories: HistoryProperty[] ) => {
         return histories.map((history) => {
@@ -94,8 +96,6 @@ const History = () => {
     if(vaccinationHistory.length === 0){
         return <></>
     }
-
-
 
     return (
 
