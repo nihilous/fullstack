@@ -5,14 +5,14 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { RegisterChildTranslations } from '../translation/RegisterChild';
 import { Form, Button, Container, Col, Row } from 'react-bootstrap';
-import { token, decodedToken, decoder } from "../util/jwtDecoder";
+import { getToken, getDecodedToken, decodeToken } from "../util/jwtDecoder";
 import {Link, useNavigate} from "react-router-dom";
 
 const RegisterChild = () => {
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
     const language = useSelector((state: RootState) => state.app.language);
     const naviagte = useNavigate();
-    const userId = decodedToken?.userId;
+    const userId = getDecodedToken()?.userId;
 
     interface UserDetailProperty {
         id: number;
@@ -45,8 +45,8 @@ const RegisterChild = () => {
 
             try {
 
-                const response = await axios.get(`${apiUrl}/user/${decodedToken?.userId}`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                const response = await axios.get(`${apiUrl}/user/${getDecodedToken()?.userId}`, {
+                    headers: { Authorization: `Bearer ${getToken()}` }
                 });
 
                 if (response?.data?.user_detail) {
@@ -76,19 +76,17 @@ const RegisterChild = () => {
 
             console.log(birthdate);
 
-            const response = await axios.post(`${apiUrl}/user/${decodedToken?.userId}`, {
+            const response = await axios.post(`${apiUrl}/user/${getDecodedToken()?.userId}`, {
                 name: name,
                 description: description,
                 gender: gender,
                 birthdate: birthdate,
                 nationality: nationality,
-            }, {headers: { Authorization: `Bearer ${token}` }});
-
+            }, {headers: { Authorization: `Bearer ${getToken()}` }});
 
             Cookies.set('token', response.data.token);
-            const decoded_info = decoder(response.data.token);
+            const decoded_info = decodeToken(response.data.token);
 
-            console.log(decoded_info);
 
             if (decoded_info?.record) {
                 setChild(decoded_info.record);

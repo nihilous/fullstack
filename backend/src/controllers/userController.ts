@@ -65,7 +65,6 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
     const isAttacked:boolean = isInjection([name, description, birthdate, nationality])
     const isAttacked2:boolean = isNotNumber([gender])
 
-    console.log(isAttacked2);
     if(isAttacked || isAttacked2){
         return res.status(400).json({ message: 'Suspected to Attacking' });
     }
@@ -100,13 +99,15 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
                 user_id = ?
         `, [user_id]);
 
+        const childrenIds = results.map(row => row.id);
+
         const tokenPayload = {
             userId: user_id,
             admin: req.token?.admin || false,
+            userDetailIds: childrenIds,
             record: results
         };
         const newToken = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
-
         res.status(201).json({ message: 'User detail successfully added', token: newToken });
 
         connection.release();

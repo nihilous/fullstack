@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useParams, useNavigate } from 'react-router-dom';
 import { HistoryTranslations } from '../translation/History';
-import { token, decodedToken } from "../util/jwtDecoder";
+import {getToken, getDecodedToken} from "../util/jwtDecoder";
 import {Button, Container} from "react-bootstrap";
 
 const History = () => {
@@ -19,10 +19,10 @@ const History = () => {
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
     const language = useSelector((state: RootState) => state.app.language);
     const navigate = useNavigate();
-    const userId = decodedToken?.userId;
+    const userId = getDecodedToken()?.userId;
     const { id } = useParams();
     const user_detail_id = Number(id);
-    const userDetailIds = decodedToken?.userDetailIds;
+    const userDetailIds = getDecodedToken()?.userDetailIds;
     const translations = HistoryTranslations[language];
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [vaccinationHistory, setVaccinationHistory] = useState<HistoryProperty[]>([]);
@@ -40,7 +40,7 @@ const History = () => {
             try {
 
                 const response = await axios.get<HistoryProperty[]>(`${apiUrl}/history/${userId}/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: { Authorization: `Bearer ${getToken()}` }
                 });
 
                 setVaccinationHistory(response.data);

@@ -8,27 +8,22 @@ interface DecodedToken {
     record: [] | null;
 }
 
-const token: string | undefined = Cookies.get('token');
-let decodedToken: DecodedToken | null = null;
+const getToken = (): string | undefined => {
+    return Cookies.get('token');
+};
 
-if (token) {
+const decodeToken = (token: string): DecodedToken | null => {
     try {
-        decodedToken =  jwt_decode.jwtDecode(token)
-    } catch (error) {
-        console.error('Failed to decode token:', error);
-        decodedToken = null;
-    }
-}
-
-const decoder = (jwtCookie: string): DecodedToken | null => {
-    try {
-        decodedToken = jwt_decode.jwtDecode(jwtCookie);
-        return decodedToken;
+        return jwt_decode.jwtDecode(token);
     } catch (error) {
         console.error('Failed to decode token:', error);
         return null;
     }
-}
+};
 
+const getDecodedToken = (): DecodedToken | null => {
+    const token = getToken();
+    return token ? decodeToken(token) : null;
+};
 
-export { decodedToken, token, decoder };
+export { getDecodedToken, getToken, decodeToken };

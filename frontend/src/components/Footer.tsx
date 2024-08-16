@@ -15,7 +15,7 @@ const Footer = () => {
     };
 
     return (
-        <Container fluid className="fixed-bottom">
+        <Container fluid className="position-relative">
             <Row className="justify-content-end">
                 <Col xs="auto">
                     <Form className="d-flex align-items-center">

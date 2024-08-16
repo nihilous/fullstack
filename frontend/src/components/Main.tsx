@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useNavigate, Link } from 'react-router-dom';
 import { MainTranslations } from '../translation/Main';
-import { token, decodedToken } from "../util/jwtDecoder";
+import { getToken, getDecodedToken } from "../util/jwtDecoder";
 import {Container} from "react-bootstrap";
 
 const Main = () => {
@@ -12,8 +12,8 @@ const Main = () => {
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
     const language = useSelector((state: RootState) => state.app.language);
     const naviagte = useNavigate();
-    const userId = decodedToken?.userId;
-    const userDetailIds = decodedToken?.userDetailIds;
+    const userId = getDecodedToken()?.userId;
+    const userDetailIds = getDecodedToken()?.userDetailIds;
     const translations = MainTranslations[language];
 
     interface UserDetailProperty {
@@ -52,7 +52,7 @@ const Main = () => {
             try {
 
                 const response = await axios.get<UserDetailResponse>(`${apiUrl}/user/${userId}`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: { Authorization: `Bearer ${getToken()}` }
                 });
 
                 setUserDetail(response.data);

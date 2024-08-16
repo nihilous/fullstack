@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { HistoryTranslations } from '../translation/History';
-import { token, decodedToken } from "../util/jwtDecoder";
+import { getToken, getDecodedToken } from "../util/jwtDecoder";
 import {Button, Container, Form} from "react-bootstrap";
 import logout from "../util/logout";
 const Notice = () => {
@@ -27,16 +27,18 @@ const Notice = () => {
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
     const language = useSelector((state: RootState) => state.app.language);
     const navigate = useNavigate();
-    const userId = decodedToken?.userId;
+    const userId = getDecodedToken()?.userId;
     const { id } = useParams();
     const user_detail_id = Number(id);
-    const userDetailIds = decodedToken?.userDetailIds;
+    const userDetailIds = getDecodedToken()?.userDetailIds;
     const translations = HistoryTranslations[language];
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [vaccinationNotice, setVaccinationNotice] = useState<NoticeProperty[]>([]);
     const [vaccination, setVaccination] = useState<boolean>(false);
     const [vaccineId, setVaccineId] = useState<number | null>(null);
     const [vaccinationDate, setVaccinationDate] = useState<string>(``);
+
+    console.log(userDetailIds);
 
     userDetailIds?.map((child_id: number) => {
         if(child_id === user_detail_id && !isAuthorized){
@@ -50,9 +52,9 @@ const Notice = () => {
         try {
 
             const response = await axios.get<NoticeProperty[]>(`${apiUrl}/notice/${userId}/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${getToken()}` }
             });
-
+            console.log(response);
             setVaccinationNotice(response.data);
         } catch (error) {
             console.error('Error logging in:', error);
@@ -183,7 +185,7 @@ const Notice = () => {
                 "vaccine_id" : vaccineId,
                 "history_date" : vaccinationDate
             },{
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${getToken()}` }
             });
 
             if(response.status === 201) {

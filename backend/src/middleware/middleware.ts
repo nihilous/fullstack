@@ -50,7 +50,6 @@ function isInjection(inputs: string[]): boolean {
     ];
 
     for (const input of inputs) {
-        console.log(input);
         const lowerCaseInput = input.toLowerCase();
 
         for (const pattern of patterns) {
