@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { pool } from '../db';
+import {isInjection} from "../middleware/middleware";
 const router = Router();
 const saltRounds = 10;
 
@@ -9,6 +10,12 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 router.post('/', async (req: Request, res: Response) => {
     const { email, nickname, password, adminSecret } = req.body;
 
+
+    const isAttacked:boolean = isInjection([email, nickname, password, adminSecret])
+
+    if(isAttacked){
+        return res.status(400).json({ message: 'Suspected to Attacking' });
+    }
 
     if (email === undefined || nickname === undefined || password === undefined || adminSecret === undefined) {
         return res.status(400).json({ message: 'Email, nickname and password and admin secret are required' });

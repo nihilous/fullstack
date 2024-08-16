@@ -34,4 +34,44 @@ const tokenExtractor = (req: CustomRequest, res: Response, next: NextFunction) =
     next();
 };
 
-export {CustomRequest, tokenExtractor};
+function isInjection(inputs: string[]): boolean {
+
+    const patterns = [
+        '--',
+        ';--',
+        ';',
+        '/*', '*/',
+        '@@',
+        'char', 'nchar', 'varchar', 'nvarchar',
+        'alter', 'begin', 'cast', 'create', 'cursor', 'declare', 'delete', 'drop', 'end',
+        'exec', 'execute', 'fetch', 'insert', 'kill', 'open', 'select', 'sys', 'sysobjects',
+        'syscolumns', 'table', 'update',
+        'union', 'join'
+    ];
+
+    for (const input of inputs) {
+        console.log(input);
+        const lowerCaseInput = input.toLowerCase();
+
+        for (const pattern of patterns) {
+            if (lowerCaseInput.includes(pattern)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+function isNotNumber(inputs: any[]): boolean {
+
+    for (const input of inputs) {
+        if(typeof input !== 'number') {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+export {CustomRequest, tokenExtractor, isInjection, isNotNumber};

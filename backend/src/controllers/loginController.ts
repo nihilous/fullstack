@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { pool } from '../db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import {isInjection} from "../middleware/middleware";
 
 const router = Router();
 
@@ -19,6 +20,12 @@ interface User {
 
 const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin', isAdmin: boolean = false) => {
     const { email, password } = req.body;
+
+    const isAttacked:boolean = isInjection([email,password])
+
+    if(isAttacked){
+        return res.status(400).json({ message: 'Suspected to Attacking' });
+    }
 
     if (email === undefined || password === undefined) {
         return res.status(400).json({ message: 'Email and password are required' });

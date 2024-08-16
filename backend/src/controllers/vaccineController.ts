@@ -1,11 +1,18 @@
 import { Router, Request, Response } from 'express';
 import { pool } from '../db';
+import {isInjection} from "../middleware/middleware";
 
 const router = Router();
 
 router.get('/', async (req: Request, res: Response) => {
 
     const vaccine_national_code:string = req.params.vaccine_national_code
+
+    const isAttacked:boolean = isInjection([vaccine_national_code])
+
+    if(isAttacked){
+        return res.status(400).json({ message: 'Suspected to Attacking' });
+    }
 
     try {
         const connection = await pool.getConnection();

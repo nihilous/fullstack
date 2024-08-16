@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { pool } from '../db';
-import {CustomRequest, tokenExtractor} from '../middleware/middleware';
+import {CustomRequest, isInjection, tokenExtractor, isNotNumber} from '../middleware/middleware';
 import { RowDataPacket } from 'mysql2';
 
 const router = Router();
@@ -18,6 +18,11 @@ if (!secretKey) {
 router.post('/', async (req: Request, res: Response) => {
     const { email, nickname, password } = req.body;
 
+    const isAttacked:boolean = isInjection([email, nickname, password])
+
+    if(isAttacked){
+        return res.status(400).json({ message: 'Suspected to Attacking' });
+    }
 
     if (email === undefined || nickname === undefined || password === undefined) {
         return res.status(400).json({ message: 'Email, nickname and password are required' });
@@ -57,6 +62,13 @@ router.post('/', async (req: Request, res: Response) => {
 router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
     const { name, description, gender, birthdate, nationality } = req.body;
 
+    const isAttacked:boolean = isInjection([name, description, birthdate, nationality])
+    const isAttacked2:boolean = isNotNumber([gender])
+
+    console.log(isAttacked2);
+    if(isAttacked || isAttacked2){
+        return res.status(400).json({ message: 'Suspected to Attacking' });
+    }
 
     const user_id:number = parseInt(req.params.id, 10);
     const token_id:number = req?.token?.userId;
@@ -143,6 +155,7 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
 router.get('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
 
     const user_id:number = parseInt(req.params.id, 10);
+
     const token_id:number = req?.token?.userId;
 
     if(user_id !== token_id) {
@@ -206,6 +219,12 @@ router.delete('/:id', tokenExtractor, async (req: CustomRequest, res: Response) 
     const user_id:number = parseInt(req.params.id, 10);
     const token_id:number = req?.token?.userId;
 
+    const isAttacked:boolean = isNotNumber([user_id]);
+
+    if(isAttacked){
+        return res.status(400).json({ message: 'Suspected to Attacking' });
+    }
+
     if(user_id !== token_id) {
         return res.status(403).json({ message: 'No Authority' });
     }
@@ -236,8 +255,13 @@ router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: R
 
     const user_id:number = parseInt(req.params.id, 10);
     const token_id:number = req?.token?.userId;
-
     const { email, nickname } = req.body;
+
+    const isAttacked:boolean = isInjection([email, nickname])
+
+    if(isAttacked){
+        return res.status(400).json({ message: 'Suspected to Attacking' });
+    }
 
     if(user_id !== token_id) {
         return res.status(403).json({ message: 'No Authority' });
@@ -315,6 +339,12 @@ router.put('/new/password', async (req: Request, res: Response) => {
 
 
     const { email, old_password, new_password } = req.body;
+
+    const isAttacked:boolean = isInjection([email, old_password, new_password])
+
+    if(isAttacked){
+        return res.status(400).json({ message: 'Suspected to Attacking' });
+    }
 
     if (email === undefined || old_password === undefined || new_password === undefined) {
         return res.status(400).json({ message: 'Email, old password and new password are required' });

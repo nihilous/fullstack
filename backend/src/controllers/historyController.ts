@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { pool } from '../db';
-import {CustomRequest, tokenExtractor} from '../middleware/middleware';
+import {CustomRequest, isInjection, isNotNumber, tokenExtractor} from '../middleware/middleware';
 
 const router = Router();
 
@@ -25,6 +25,12 @@ router.post('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, r
     }
 
     const { vaccine_id, history_date } = req.body;
+
+    const isAttacked:boolean = isInjection([history_date])
+    const isAttacked2:boolean = isNotNumber([vaccine_id])
+    if(isAttacked || isAttacked2){
+        return res.status(400).json({ message: 'Suspected to Attacking' });
+    }
 
     try {
         const connection = await pool.getConnection();
