@@ -15,7 +15,7 @@ const Footer = () => {
     };
 
     return (
-        <Container fluid className="position-relative">
+        <Container fluid className="fixed-bottom">
             <Row className="justify-content-end">
                 <Col xs="auto">
                     <Form className="d-flex align-items-center">
@@ -24,7 +24,7 @@ const Footer = () => {
                             value={language}
                             onChange={handleLanguageChange}
                             size="sm"
-                            style={{ marginLeft: '0.5rem' }}
+                            className="footer_language"
                         >
                             <option value="FIN">Suomi</option>
                             <option value="ENG">English</option>

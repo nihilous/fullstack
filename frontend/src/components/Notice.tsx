@@ -38,8 +38,6 @@ const Notice = () => {
     const [vaccineId, setVaccineId] = useState<number | null>(null);
     const [vaccinationDate, setVaccinationDate] = useState<string>(``);
 
-    console.log(userDetailIds);
-
     userDetailIds?.map((child_id: number) => {
         if(child_id === user_detail_id && !isAuthorized){
             setIsAuthorized(true);
@@ -54,7 +52,6 @@ const Notice = () => {
             const response = await axios.get<NoticeProperty[]>(`${apiUrl}/notice/${userId}/${id}`, {
                 headers: { Authorization: `Bearer ${getToken()}` }
             });
-            console.log(response);
             setVaccinationNotice(response.data);
         } catch (error) {
             console.error('Error logging in:', error);
@@ -207,7 +204,7 @@ const Notice = () => {
 
     const saveVaccinationUI = () => {
         return(
-            <Container style={{ zIndex: 1000, position: "fixed", top:0, left:0, backgroundColor: "rgba(0.1,0.1,0.1,0.3)",height:"100%" ,width:"100%" ,  padding: "10px" }}>
+            <Container className={"popup_form"}>
                 <Container>
                     <Form onSubmit={saveVaccinationInfo}>
                         <Form.Group controlId="registerChildBirthdate">
@@ -239,7 +236,7 @@ const Notice = () => {
 
     return (
 
-            <Container className="Notice">
+            <Container className="Notice center_ui">
                 <h1>접종권고</h1>
                 {
                     givingNotice(vaccinationNotice)

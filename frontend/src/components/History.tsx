@@ -99,7 +99,7 @@ const History = () => {
 
     return (
 
-            <Container className="History">
+            <Container className="History center_ui">
                 <h1>접종기록</h1>
                 {
                     vaccinationHistory.length !== 0 ?

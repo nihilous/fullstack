@@ -21,30 +21,27 @@ const Header = () => {
 
     return (
         <Navbar bg="light" expand="lg">
-            <Navbar.Brand href={"/"}>{`${translations.brand} `}</Navbar.Brand>
+            <Navbar.Brand className="m-auto" href={"/"}>{`${translations.brand} `}</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse id="basic-navbar-nav">
-                <Nav className="mr-auto">
-                    {`${translations.welcome} `}
-                </Nav>
+
                 {isCookieSet ?
-                    <>
-                        <Nav className="me-auto">
+                    <Navbar.Collapse id="basic-navbar-nav">
+
+                        <Nav className="m-auto">
                             <Nav.Link href="/main">Main</Nav.Link>
                         </Nav>
-                        <Nav className="me-auto">
+                        <Nav className="m-auto">
                             <Nav.Link href="/register_child">{`${translations.register}`}</Nav.Link>
                         </Nav>
-                        <Nav className="ms-auto">
+                        <Nav className="m-auto">
                             <Button variant="outline-secondary" onClick={handleLogout}>
                                 Logout
                             </Button>
                         </Nav>
-                    </>
+                    </Navbar.Collapse>
                 :
                     <></>
                 }
-            </Navbar.Collapse>
         </Navbar>
     );
 };

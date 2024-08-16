@@ -70,7 +70,7 @@ const Main = () => {
     }, []);
 
     useEffect(() => {
-        console.log('Updated userDetail:', userDetail);
+
     }, [userDetail]);
 
     const childInformation = (info: { [key: string]: UserDetailProperty }) => {
@@ -137,7 +137,7 @@ const Main = () => {
     }
 
     return (
-        <div className="Main">
+        <Container className="Main center_ui">
             <div>
                 <h1>{`${translations.welcome} ${ userDetail.record[0].nickname }  ${
                     
@@ -167,7 +167,7 @@ const Main = () => {
                     </Container>
             }
 
-        </div>
+        </Container>
     );
 };
 

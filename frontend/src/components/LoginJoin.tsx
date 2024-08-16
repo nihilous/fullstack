@@ -50,7 +50,6 @@ const LoginJoin = () => {
                 nickname: joinNickname,
                 password: joinPassword,
             });
-            console.log('Join Data:', response.data);
 
             setJoinEmail('');
             setJoinNickname('');

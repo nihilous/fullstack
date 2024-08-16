@@ -11,3 +11,24 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.center_ui {
+  padding-bottom: 31px;
+}
+
+
+.footer_language {
+  margin-left: 0.5rem;
+}
+
+/* pop up ui */
+.popup_form {
+  z-index: 1000;
+  position: fixed;
+  top:0;
+  left:0;
+  background-color: rgba(0.1,0.1,0.1,0.3);
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+}

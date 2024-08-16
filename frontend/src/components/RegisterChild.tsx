@@ -74,8 +74,6 @@ const RegisterChild = () => {
         event.preventDefault();
         try {
 
-            console.log(birthdate);
-
             const response = await axios.post(`${apiUrl}/user/${getDecodedToken()?.userId}`, {
                 name: name,
                 description: description,
@@ -156,7 +154,7 @@ const RegisterChild = () => {
     };
 
     return (
-        <Container>
+        <Container className="center_ui">
             <Container className="RegisterChild">
                 <Row className="justify-content-md-center">
                     <Col md={6}>
