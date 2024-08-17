@@ -22,23 +22,27 @@ const Header = () => {
     return (
         <Navbar bg="light" expand="lg">
             <Navbar.Brand className="m-auto" href={"/"}>{`${translations.brand} `}</Navbar.Brand>
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
                 {isCookieSet ?
-                    <Navbar.Collapse id="basic-navbar-nav">
+                    <>
+                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
-                        <Nav className="m-auto">
-                            <Nav.Link href="/main">Main</Nav.Link>
-                        </Nav>
-                        <Nav className="m-auto">
-                            <Nav.Link href="/register_child">{`${translations.register}`}</Nav.Link>
-                        </Nav>
-                        <Nav className="m-auto">
-                            <Button variant="outline-secondary" onClick={handleLogout}>
-                                Logout
-                            </Button>
-                        </Nav>
-                    </Navbar.Collapse>
+                        <Navbar.Collapse id="basic-navbar-nav">
+
+                            <Nav className="m-auto">
+                                <Nav.Link href="/main">Main</Nav.Link>
+                            </Nav>
+                            <Nav className="m-auto">
+                                <Nav.Link href="/register_child">{`${translations.register}`}</Nav.Link>
+                            </Nav>
+                            <Nav className="m-auto">
+                                <Button variant="outline-secondary" onClick={handleLogout}>
+                                    Logout
+                                </Button>
+                            </Nav>
+                        </Navbar.Collapse>
+                    </>
+
                 :
                     <></>
                 }

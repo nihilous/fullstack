@@ -5,7 +5,6 @@
   position: relative;
   box-sizing: border-box;
   word-break: normal !important;
-
   -moz-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
@@ -57,9 +56,88 @@ code {
   padding: 10px;
 }
 
+/*common main page start*/
+.main_info_elem {
+  position: relative;
+  border: 1px solid #f2f4f5;
+  border-radius: 5px;
+  background-color: #f6f7f9;
+  padding: 20px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+}
 
-  /* main page */
+.mie_info_wrapper{
+  flex-grow: 6;
+  display: flex;
+  flex-direction: column;
+}
+
+.mie_button_wrapper {
+  flex-grow: 4;
+  display: flex;
+}
+
+.mie_button {
+  flex-grow: 1;
+  align-content: center;
+  max-height: 45px;
+}
+/*common main page end*/
+/*common history page start*/
+.history_title {
+  font-weight: bold;
+}
+
+.history_info_elem {
+  position: relative;
+  border: 1px solid #f2f4f5;
+  border-radius: 5px;
+  background-color: #f6f7f9;
+  padding: 20px;
+  margin: 0 auto;
+}
+
+.hie_vaccine_name{
+  font-weight: bold;
+}
+
+.hie_info {
+  flex-grow: 1;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  align-self: auto;
+  align-content: center;
+  display: flex;
+}
+
+.hie_info span{
+  width: 35%;
+}
+
+.hie_info span:nth-child(2){
+  width: 65%;
+}
+/*common history page end*/
+/*common Notice page start*/
+.notice_title {
+  font-weight: bold;
+}
+
+.notice_info_elem {
+  position: relative;
+  border: 1px solid #f2f4f5;
+  border-radius: 5px;
+  background-color: #f6f7f9;
+  padding: 20px;
+  margin: 0 auto;
+}
+/*common Notice page end*/
+
+
+
 @media screen and (min-width: 1200px) {
+  /*pc main page start*/
   .main_top {
     display: flex;
     margin-bottom: 40px;
@@ -89,20 +167,8 @@ code {
   }
 
   .main_info_elem {
-    position: relative;
-    border: 1px solid #f2f4f5;
-    border-radius: 5px;
-    background-color: #f6f7f9;
-    padding: 20px;
-    margin: 0 auto;
-    margin-bottom: 20px;
     width: 50%;
     display: flex;
-  }
-  .mie_info_wrapper{
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
   }
 
   .mie_info {
@@ -118,31 +184,69 @@ code {
     width: 35%;
   }
 
-  .mie_info span:nth-child(1){
-    width: 35%;
-  }
 
   .mie_info span:nth-child(2){
     width: 65%;
   }
 
   .mie_button_wrapper {
-    flex-grow: 1;
-    display: flex;
     flex-direction: column;
   }
 
   .mie_button {
-    flex-grow: 1;
     margin-top: 20px;
     margin-bottom: 20px;
-    align-content: center;
   }
+
+  /*pc main page end*/
+  /*pc history page start*/
+  .history_title {
+    font-size: 3rem;
+  }
+
+  .history_info_elem {
+    float: left;
+    width: 40%;
+    margin-bottom: 40px;
+    margin-left: 5%;
+    margin-right: 5%;
+    font-size: 30px;
+  }
+
+  .hie_vaccine_name{
+    font-size: 1.6rem;
+    min-height: 80px;
+  }
+  /*pc history page end*/
+  /*pc notice page start*/
+  .notice_title {
+    font-size: 3rem;
+  }
+  .notice_info_elem {
+    float: left;
+    width: 40%;
+    margin-bottom: 40px;
+    margin-left: 5%;
+    margin-right: 5%;
+    font-size: 30px;
+    min-height: 550px;
+  }
+
+  .notice_reg_btn{
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    min-height: 50px;
+  }
+  /*pc notice page end*/
+
 }
 
 
 @media screen and (min-width: 575px) and (max-width: 1199px){
-
+  /*tablet main page start*/
   .main_top {
     display: flex;
     margin-bottom: 40px;
@@ -172,20 +276,12 @@ code {
   }
 
   .main_info_elem {
-    position: relative;
-    border: 1px solid #f2f4f5;
-    border-radius: 5px;
-    background-color: #f6f7f9;
-    padding: 20px;
-    margin: 0 auto;
-    margin-bottom: 20px;
     width: 80%;
     display: flex;
   }
+
   .mie_info_wrapper{
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
+    max-width: 60%;
   }
 
   .mie_info {
@@ -198,35 +294,49 @@ code {
   }
 
   .mie_info span{
-    width: 35%;
-  }
-
-  .mie_info span:nth-child(1){
-    width: 35%;
-  }
-
-  .mie_info span:nth-child(2){
-    width: 65%;
+    width: 50%;
   }
 
   .mie_button_wrapper {
-    flex-grow: 1;
-    display: flex;
     flex-direction: column;
   }
 
   .mie_button {
-    flex-grow: 1;
     margin-top: 20px;
     margin-bottom: 20px;
-    align-content: center;
+  }
+  /*tablet main page end*/
+  /*tablet history page start*/
+  .history_title {
+    font-size: 2.6rem;
   }
 
+  .history_info_elem {
+    margin-bottom: 20px;
+    width: 80%;
+    font-size: 26px;
+  }
+
+  .hie_vaccine_name{
+    font-size: 1.4rem;
+    min-height: 70px;
+  }
+  /*tablet history page end*/
+  /*tablet notice page start*/
+  .notice_title {
+    font-size: 2.6rem;
+  }
+  .notice_info_elem {
+    margin-bottom: 20px;
+    width: 80%;
+    font-size: 26px;
+  }
+  /*tablet notice page end*/
 
 }
 
 @media screen and (max-width: 574px){
-
+  /*mobile main page start*/
   .main_top {
     margin-bottom: 40px;
   }
@@ -253,19 +363,10 @@ code {
   }
 
   .main_info_elem {
-    position: relative;
-    border: 1px solid #f2f4f5;
-    border-radius: 5px;
-    background-color: #f6f7f9;
-    padding: 20px;
-    margin: 0 auto;
-    margin-bottom: 20px;
     width: 100%;
   }
+
   .mie_info_wrapper{
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
     margin-bottom: 20px;
   }
 
@@ -290,17 +391,36 @@ code {
     width: 65%;
   }
 
-  .mie_button_wrapper {
-    flex-grow: 1;
-    display: flex;
-  }
-
   .mie_button {
-    flex-grow: 1;
     margin-left: 20px;
     margin-right: 20px;
-    align-content: center;
+  }
+  /*mobile main page end*/
+  /*mobile history page start*/
+  .history_title {
+    font-size: 2rem;
   }
 
+  .history_info_elem {
+    margin-bottom: 20px;
+    width: 100%;
+    font-size: 20px;
+  }
+
+  .hie_vaccine_name{
+    font-size: 1rem;
+    min-height: 50px;
+  }
+  /*mobile history page end*/
+  /*mobile notice page start*/
+  .notice_title {
+    font-size: 2rem;
+  }
+  .notice_info_elem {
+    margin-bottom: 20px;
+    width: 100%;
+    font-size: 20px;
+  }
+  /*mobile notice page end*/
 
 }

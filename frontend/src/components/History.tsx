@@ -72,35 +72,48 @@ const History = () => {
             const yyyy_mm_dd = formatDate(history.history_date as string);
             return (
 
-                <Container key={history.id} className="child-info">
-                    <h3>{`접종 백신 명 : ${history.vaccine_name}`}</h3>
-                    <Container>
-                        <Container>
-                            {`접종일 : ${language === "FIN" ?
+                <Container key={history.id} className="child-info history_info_elem">
+                    <div>{`접종 백신 명`}</div>
+                    <div className={"hie_vaccine_name"}>{`${history.vaccine_name}`}</div>
+
+                    <div>
+                        <div className={"hie_info"}>
+                            <span>
+                                {`접종일`}
+                            </span>
+                            <span>
+                                {`${language === "FIN" ?
                                 yyyy_mm_dd.day + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.year
                                 :
-                                yyyy_mm_dd.year + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.day }`}
-                        </Container>
-                        <Container>
-                            {`접종회차 ${history.vaccine_round }`}
-                        </Container>
+                                yyyy_mm_dd.year + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.day}`}
+                            </span>
+                        </div>
+                        <div className={"hie_info"}>
+                            <span>
+                                {`접종회차`}
+                            </span>
+                            <span>
+                                {`${history.vaccine_round}`}
+                            </span>
 
-
-                    </Container>
+                        </div>
+                    </div>
                 </Container>
 
             );
         });
     };
 
-    if(vaccinationHistory.length === 0){
+    if (vaccinationHistory.length === 0){
         return <></>
     }
 
     return (
 
             <Container className="History center_ui">
-                <h1>접종기록</h1>
+                <div className={"main_top container"}>
+                    <p className={"history_title"}>접종기록</p>
+                </div>
                 {
                     vaccinationHistory.length !== 0 ?
                         showingHistory(vaccinationHistory)
@@ -108,6 +121,7 @@ const History = () => {
                         <></>
 
                 }
+                <div className={"clear"}></div>
             </Container>
 
     );
