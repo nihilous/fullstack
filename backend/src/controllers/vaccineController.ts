@@ -4,7 +4,7 @@ import {isInjection} from "../middleware/middleware";
 
 const router = Router();
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/:vaccine_national_code', async (req: Request, res: Response) => {
 
     const vaccine_national_code:string = req.params.vaccine_national_code
 

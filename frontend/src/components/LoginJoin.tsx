@@ -64,7 +64,7 @@ const LoginJoin = () => {
 
     return (
 
-            <Container className="LoginJoin">
+            <Container className="LoginJoin center_ui">
                 {isCookieSet ?
                     <></>
                     :

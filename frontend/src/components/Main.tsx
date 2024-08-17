@@ -5,7 +5,7 @@ import { RootState } from '../store';
 import { useNavigate, Link } from 'react-router-dom';
 import { MainTranslations } from '../translation/Main';
 import { getToken, getDecodedToken } from "../util/jwtDecoder";
-import {Container} from "react-bootstrap";
+import {Button, Container} from "react-bootstrap";
 
 const Main = () => {
 
@@ -94,64 +94,75 @@ const Main = () => {
             const yyyy_mm_dd = formatDate(child.birthdate as string);
             return (
 
-                    <Container key={child.id} className="child-info">
-                        <h3>{`${translations.child_name} : ${child.name}`}</h3>
-                        <Container>
-                            <Container>
-                                {`${translations.child_birthdate} : ${language === "FIN" ?
+                    <div key={child.id} className="child-info main_info_elem">
+                        <div className={"mie_info_wrapper"}>
+                            <div className={"mie_info"}>
+                                <span>{`${translations.child_name}`}</span>
+                                <span>{`${child.name}`}</span>
+                            </div>
+                            <div className={"mie_info"}>
+                                <span>{`${translations.child_birthdate}`}</span>
+                                <span>{`${language === "FIN" ?
                                     yyyy_mm_dd.day + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.year
                                     :
-                                    yyyy_mm_dd.year + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.day }`}
-                            </Container>
-                            <Container>
-                                {`${translations.child_gender} : ${child.gender === 0 ? translations.boy : translations.girl }`}
-                            </Container>
-                            <Container>
-                                {`${translations.child_nationality} : ${formatNationality(child.nationality as string)}`}
-                            </Container>
-                            <Container>
-                                {`${translations.child_description} : ${child.description}`}
-                            </Container>
-                        </Container>
+                                    yyyy_mm_dd.year + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.day}`}</span>
+                            </div>
+                            <div className={"mie_info"}>
+                                <span>{`${translations.child_gender}`}</span>
+                                <span>{`${child.gender === 0 ? translations.boy : translations.girl}`}</span>
 
+                            </div>
+                            <div className={"mie_info"}>
+                                <span>{`${translations.child_nationality}`}</span>
+                                <span>{`${formatNationality(child.nationality as string)}`}</span>
 
-                        <Container>
-                            <Link  to={`/history/${child.id}`} className="child-link">
-                                See Vaccination History
-                            </Link>
-                        </Container>
-                        <Container>
-                            <Link  to={`/notice/${child.id}`} className="child-link">
-                                See Vaccination Recommendations
-                            </Link>
-                        </Container>
-
-                    </Container>
+                            </div>
+                            <div className={"mie_info"}>
+                                <span>{`${translations.child_description}`}</span>
+                                <span>{`${child.description}`}</span>
+                            </div>
+                        </div>
+                        <div className={"mie_button_wrapper"}>
+                            <Button href={`/history/${child.id}`} className="btn btn-primary mie_button">
+                                History
+                            </Button>
+                            <Button href={`/notice/${child.id}`} className="btn btn-primary mie_button">
+                                Schedule
+                            </Button>
+                            <div className={"clear"}></div>
+                        </div>
+                    </div>
 
             );
         });
     };
 
-    if(userDetail === null){
+    if (userDetail === null) {
         return <></>
     }
 
     return (
         <Container className="Main center_ui">
-            <div>
-                <h1>{`${translations.welcome} ${ userDetail.record[0].nickname }  ${
-                    
-                    userDetail?.user_detail && userDetail?.record ?
+            <Container className={"main_top"}>
+                <div className={"mt_elem"}>
+                    <p className={"main_greeting"}>{`${translations.welcome} ${userDetail.record[0].nickname}  ${
+
+                        userDetail?.user_detail && userDetail?.record ?
                         translations.have_child + Object.keys(userDetail?.record).length + " " + ((userDetailIds?.length ?? 0) > 1 ? translations.child_datas : translations.child_data)
-                        :
-                        translations.no_child
-                }`}</h1>
-            </div>
+                            :
+                            translations.no_child
+                    }`}</p>
+                </div>
+
+                <div className={"mt_elem"}>
+                    <input type={"text"} placeholder={"필터"}></input>
+                </div>
+            </Container>
 
             {
                 userDetail?.user_detail ?
 
-                    <Container>
+                    <Container className={"main_info_elem_wrapper"}>
                         {childInformation(userDetail.record)}
                     </Container>
 
