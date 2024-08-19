@@ -124,10 +124,10 @@ const Main = () => {
                         </div>
                         <div className={"mie_button_wrapper"}>
                             <Button href={`/history/${child.id}`} className="btn btn-primary mie_button">
-                                History
+                                {`${translations.history}`}
                             </Button>
                             <Button href={`/notice/${child.id}`} className="btn btn-primary mie_button">
-                                Schedule
+                                {`${translations.schedule}`}
                             </Button>
                             <div className={"clear"}></div>
                         </div>

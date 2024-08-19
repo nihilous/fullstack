@@ -3,7 +3,7 @@ import axios, { AxiosError } from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { HistoryTranslations } from '../translation/History';
+import { HistoryTranslations } from '../translation/Notice';
 import { getToken, getDecodedToken } from "../util/jwtDecoder";
 import {Button, Container, Form} from "react-bootstrap";
 import logout from "../util/logout";
@@ -97,95 +97,108 @@ const Notice = () => {
             return (
 
                 <Container key={notice.id} className="child-info notice_info_elem">
-                    <div>
-                        <span>{`${translations.child_name}`}</span>
-                        <span>{`${notice.vaccine_name}`}</span>
-                    </div>
-                    <div>
-                        <span>{`접종회차`}</span>
-                        <span>{`${notice.vaccine_round}`}</span>
+                    <div className={"nie_infos"}>
+                        <div className={"nie_info nie_title"}>
+                            {`${translations.name}`}
+                        </div>
+                        <div className={"nie_info nie_vaccine_name"}>
+                            {`${notice.vaccine_name}`}
+                        </div>
 
-                    </div>
-                    <div>
-                        <span>{`${notice.vaccine_is_periodical as boolean ? "접종기간x" : "접종기간"}`}</span>
-                        <span>{`${notice.vaccine_is_periodical as boolean ? "접종기간x" : "접종기간"}`}</span>
+                        <div className={"nie_info"}>
+                            <div className={"nie_title"}>{`${translations.after_birth}`}</div>
+                            <div className={"nie_info after_birth"}>
+                                <span>{`${notice.vaccine_minimum_recommend_date} ${notice.vaccine_minimum_period_type === "M" ? translations.month : translations.year}`}</span>
+                                {notice.vaccine_is_periodical as boolean ?
+                                    <>
+                                        <span>-</span>
+                                        <span>{`${notice.vaccine_maximum_recommend_date} ${notice.vaccine_maximum_period_type === "M" ? translations.month : translations.year}`}</span>
+                                    </>
+                                    :
+                                    <></>
+                                }
+                            </div>
+                        </div>
 
-                    </div>
-                    <div>
-                        <span>생후 </span>
-                        <span>{`${notice.vaccine_minimum_recommend_date}`}</span>
-                        <span>{`${notice.vaccine_minimum_period_type === "M" ? "개월" : "년"}`}</span>
+                        <div className={"nie_info round"}>
+                            <div className={"nie_title"}>
+                                {`${translations.round}`}
+                            </div>
+                            <div>
+                                {`${notice.vaccine_round}`}
+                            </div>
+                        </div>
 
-                        {notice.vaccine_is_periodical as boolean ?
-                            <>
-                                <span> - </span>
-                                <span>{`${notice.vaccine_maximum_recommend_date}`}</span>
-                                <span>{`${notice.vaccine_maximum_period_type === "M" ? "개월" : "년"}`}</span>
-                            </>
+                        {notice.history_date === null && min_exp ?
+                            <div className={"nie_info"}>
+                                <div className={"nie_title"}>{`${translations.scheduled_to}`}</div>
+                                <div className={"schedule"}>
+                                <span>{`${language === "FIN" ?
+                                    min_exp.day + " " + min_exp.month + " " + min_exp.year
+                                    :
+                                    min_exp.year + " " + min_exp.month + " " + min_exp.day}`}
+                                </span>
+
+                                    {notice.vaccine_is_periodical as boolean ?
+                                        <>
+                                            <span>-</span>
+
+                                            {notice.history_date === null && max_exp ?
+
+                                                <span>{`${language === "FIN" ?
+                                                    max_exp.day + " " + max_exp.month + " " + max_exp.year
+                                                    :
+                                                    max_exp.year + " " + max_exp.month + " " + max_exp.day}`}
+                                            </span>
+                                                :
+                                                <></>
+                                            }
+                                        </>
+                                        :
+                                        <></>
+                                    }
+                                </div>
+
+                            </div>
+                            :
+                            <></>
+                        }
+
+                        {notice.history_date !== null ?
+                            <div className={"nie_info vaccinated_date"}>
+                                <div className={"nie_title"}>{`${translations.vaccination_date}`}</div>
+                                <div>{`${language === "FIN" ?
+                                    history.day + " " + history.month + " " + history.year
+                                    :
+                                    history.year + " " + history.month + " " + history.day}`}</div>
+
+                            </div>
                             :
                             <></>
                         }
                     </div>
 
-                    {notice.history_date === null && min_exp ?
-                        <div>
-                            <div>{`예상접종시기`}</div>
-                            <span>{`${language === "FIN" ?
-                                min_exp.day + " " + min_exp.month + " " + min_exp.year
-                                :
-                                min_exp.year + " " + min_exp.month + " " + min_exp.day}`}
-                            </span>
 
-                            {notice.vaccine_is_periodical as boolean ?
-                                <>
-                                    <span> - </span>
+                        {notice.history_date !== null ?
+                            <>
+                            </>
+                            :
+                            <div className={`notice_reg_btn`}>
+                                <Button onClick={() => handleVaccination(notice.id)}>
+                                    {`${translations.register}`}
+                                </Button>
 
-                                    {notice.history_date === null && max_exp ?
-
-                                        <span>{`${language === "FIN" ?
-                                            max_exp.day + " " + max_exp.month + " " + max_exp.year
-                                            :
-                                            max_exp.year + " " + max_exp.month + " " + max_exp.day}`}
-                                            </span>
-                                        :
-                                        <></>
-                                    }
-                                </>
-                                :
-                                <></>
-                            }
-
-                        </div>
-                        :
-                        <></>
-                    }
-
-                    {notice.history_date !== null ?
-                        <div>
-                            <span>{`접종일`}</span>
-                            <span>{`${language === "FIN" ?
-                                history.day + " " + history.month + " " + history.year
-                                :
-                                history.year + " " + history.month + " " + history.day}`}</span>
-
-                        </div>
-                        :
-
-                            <Button className={`notice_reg_btn`} onClick={() => handleVaccination(notice.id)}>
-                                접종일 등록
-                            </Button>
-
-
-                    }
-                </Container>
+                            </div>
+                        }
+                            </Container>
 
             );
         });
     };
 
 
-    const handleVaccination = (vaccine_id:number | null) => {
-        if(vaccination){
+    const handleVaccination = (vaccine_id: number | null) => {
+        if (vaccination) {
             setVaccineId(null);
             setVaccinationDate(``);
         }else{
@@ -225,28 +238,28 @@ const Notice = () => {
 
     const saveVaccinationUI = () => {
         return(
-            <Container className={"popup_form"}>
+            <div className={"popup_form"}>
                 <Container>
                     <Form onSubmit={saveVaccinationInfo}>
                         <Form.Group controlId="registerChildBirthdate">
-                            <Form.Label>{`백신접종일`}</Form.Label>
+                            <Form.Label>{`${translations.vaccination_date}`}</Form.Label>
                             <Form.Control
                                 type="date"
-                                placeholder={`백신 접종일자`}
+                                placeholder={`${translations.vaccination_date}`}
                                 value={vaccinationDate}
                                 onChange={(e) => setVaccinationDate(e.target.value)}
                             />
                         </Form.Group>
 
                         <Button variant="primary" type="submit" className="mt-3">
-                            {`저장`}
+                            {`${translations.save}`}
                         </Button>
                         <Button variant="secondary" className="mt-3 ms-2" onClick={() => handleVaccination(null)}>
-                            {`취소`}
+                            {`${translations.cancel}`}
                         </Button>
                     </Form>
                 </Container>
-            </Container>
+            </div>
         )
     };
 

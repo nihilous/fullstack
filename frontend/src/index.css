@@ -50,10 +50,20 @@ code {
   position: fixed;
   top:0;
   left:0;
-  background-color: rgba(0.1,0.1,0.1,0.3);
+  background-color: rgba(0.1,0.1,0.1,0.7);
   height: 100%;
   width: 100%;
   padding: 10px;
+}
+
+.popup_form div{
+  top: 40%;
+}
+
+.popup_form label{
+  font-weight: bold;
+  font-size: 30px;
+  color: white;
 }
 
 /*common main page start*/
@@ -112,11 +122,11 @@ code {
 }
 
 .hie_info span{
-  width: 35%;
+  width: 40%;
 }
 
 .hie_info span:nth-child(2){
-  width: 65%;
+  width: 60%;
 }
 /*common history page end*/
 /*common Notice page start*/
@@ -132,6 +142,26 @@ code {
   padding: 20px;
   margin: 0 auto;
 }
+
+.nie_info {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  align-self: auto;
+  align-content: center;
+}
+
+.nie_title{
+  font-size: 1.2rem;
+}
+
+.after_birth{
+  display: flex;
+}
+
+.schedule{
+  display: flex;
+}
+
 /*common Notice page end*/
 
 
@@ -232,6 +262,11 @@ code {
     min-height: 550px;
   }
 
+  .nie_vaccine_name{
+    min-height: 90px;
+    align-content: flex-start;
+  }
+
   .notice_reg_btn{
     position: absolute;
     bottom: 20px;
@@ -239,6 +274,7 @@ code {
     transform: translate(-50%, -50%);
     width: 50%;
     min-height: 50px;
+    text-align: center;
   }
   /*pc notice page end*/
 
@@ -330,7 +366,25 @@ code {
     margin-bottom: 20px;
     width: 80%;
     font-size: 26px;
+    display: flex;
   }
+
+  .nie_infos {
+    width: 60%;
+  }
+
+  .notice_reg_btn {
+    width: 40%;
+    align-content: center;
+  }
+
+  .notice_reg_btn Button {
+    width: 80%;
+    height: 20%;
+    max-height: 48px;
+  }
+
+
   /*tablet notice page end*/
 
 }
@@ -416,10 +470,31 @@ code {
   .notice_title {
     font-size: 2rem;
   }
+
   .notice_info_elem {
     margin-bottom: 20px;
     width: 100%;
     font-size: 20px;
+    min-height: 450px;
+  }
+
+  .nie_infos {
+
+  }
+
+  .nie_vaccine_name{
+    align-content: flex-start;
+    font-weight: bold;
+  }
+
+  .notice_reg_btn{
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    min-height: 50px;
+    text-align: center;
   }
   /*mobile notice page end*/
 

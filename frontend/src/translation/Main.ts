@@ -15,6 +15,8 @@ export const MainTranslations = {
         finland: `Suomi`,
         korea: `Korea`,
         register: `Täytä Lapsen tiedot`,
+        history: `Historia`,
+        schedule: `Ohjelma`,
     },
     ENG: {
         welcome: `Welcome,`,
@@ -32,6 +34,9 @@ export const MainTranslations = {
         finland: `Finland`,
         korea: `Korea`,
         register: `Register Child Information`,
+        history: `History`,
+        schedule: `Schedule`,
+
     },
     KOR: {
         welcome: `안녕하세요,`,
@@ -49,5 +54,7 @@ export const MainTranslations = {
         finland: `핀란드`,
         korea: `대한민국`,
         register: `자녀 정보 등록하기`,
+        history: `접종기록`,
+        schedule: `접종권고`,
     }
 };

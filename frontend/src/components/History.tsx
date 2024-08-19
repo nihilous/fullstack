@@ -73,13 +73,13 @@ const History = () => {
             return (
 
                 <Container key={history.id} className="child-info history_info_elem">
-                    <div>{`접종 백신 명`}</div>
+                    <div>{`${translations.name}`}</div>
                     <div className={"hie_vaccine_name"}>{`${history.vaccine_name}`}</div>
 
                     <div>
                         <div className={"hie_info"}>
                             <span>
-                                {`접종일`}
+                                {`${translations.date}`}
                             </span>
                             <span>
                                 {`${language === "FIN" ?
@@ -90,7 +90,7 @@ const History = () => {
                         </div>
                         <div className={"hie_info"}>
                             <span>
-                                {`접종회차`}
+                                {`${translations.round}`}
                             </span>
                             <span>
                                 {`${history.vaccine_round}`}
@@ -112,7 +112,7 @@ const History = () => {
 
             <Container className="History center_ui">
                 <div className={"main_top container"}>
-                    <p className={"history_title"}>접종기록</p>
+                    <p className={"history_title"}>{`${translations.title}`}</p>
                 </div>
                 {
                     vaccinationHistory.length !== 0 ?
