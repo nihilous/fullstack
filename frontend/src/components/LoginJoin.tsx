@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import Cookies from 'js-cookie';
-import { useSelector } from 'react-redux';
+import { setNoticePopUp } from '../redux/slice';
+import { useDispatch,useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useNavigate } from 'react-router-dom';
 import { loginJoinTranslations } from '../translation/LoginJoin';
@@ -10,6 +11,7 @@ import { Form, Button, Container, Col, Row } from 'react-bootstrap';
 const LoginJoin = () => {
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
     const language = useSelector((state: RootState) => state.app.language);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const [isLoginView, setIsLoginView] = useState(true);
@@ -35,6 +37,17 @@ const LoginJoin = () => {
 
         } catch (error) {
             console.error('Error logging in:', error);
+            const axiosError = error as AxiosError;
+            console.log(axiosError.response);
+
+            if (axiosError.response) {
+                const message = (axiosError.response.data as { message: string }).message;
+                dispatch(setNoticePopUp({
+                    on: true,
+                    message: message
+                }));
+            }
+
         }
     };
 

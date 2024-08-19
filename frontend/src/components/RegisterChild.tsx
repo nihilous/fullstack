@@ -105,8 +105,6 @@ const RegisterChild = () => {
                 return { year, month, day };
             };
 
-            const yyyy_mm_dd = formatDate(child.birthdate as string);
-
             const formatNationality = (nationalityString: string) => {
                 switch (nationalityString){
                     case "FIN":
@@ -116,38 +114,47 @@ const RegisterChild = () => {
                 }
             };
 
+            const yyyy_mm_dd = formatDate(child.birthdate as string);
             return (
 
-                <Container key={child.id} className="child-info">
-                    <h3>{`${translations.name} : ${child.name}`}</h3>
-                    <Container>
-                        <Container>
-                            {`${translations.birthdate} : ${language === "FIN" ?
+                <div key={child.id} className="child-info cr_info_elem">
+                    <div className={"mie_info_wrapper"}>
+                        <div className={"mie_info"}>
+                            <span>{`${translations.name}`}</span>
+                            <span>{`${child.name}`}</span>
+                        </div>
+                        <div className={"mie_info"}>
+                            <span>{`${translations.birthdate}`}</span>
+                            <span>{`${language === "FIN" ?
                                 yyyy_mm_dd.day + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.year
                                 :
-                                yyyy_mm_dd.year + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.day }`}
-                        </Container>
-                        <Container>
-                            {`${translations.gender} ${child.gender }`}
-                        </Container>
-                        <Container>
-                            {`${translations.nationality} ${formatNationality(child.nationality as string) }`}
-                        </Container>
-                        <Container>
-                            {`${translations.description} ${child.description }`}
-                        </Container>
-                        <Container>
-                            <Link  to={`/history/${child.id}`} className="child-link">
-                                See Vaccination History
-                            </Link>
-                        </Container>
-                        <Container>
-                            <Link  to={`/notice/${child.id}`} className="child-link">
-                                See Vaccination Recommendations
-                            </Link>
-                        </Container>
-                    </Container>
-                </Container>
+                                yyyy_mm_dd.year + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.day}`}</span>
+                        </div>
+                        <div className={"mie_info"}>
+                            <span>{`${translations.gender}`}</span>
+                            <span>{`${child.gender === 0 ? translations.boy : translations.girl}`}</span>
+
+                        </div>
+                        <div className={"mie_info"}>
+                            <span>{`${translations.nationality}`}</span>
+                            <span>{`${formatNationality(child.nationality as string)}`}</span>
+
+                        </div>
+                        <div className={"mie_info"}>
+                            <span>{`${translations.description}`}</span>
+                            <span>{`${child.description}`}</span>
+                        </div>
+                    </div>
+                    <div className={"mie_button_wrapper"}>
+                        <Button href={`/history/${child.id}`} className="btn btn-primary mie_button">
+                            {`${translations.history}`}
+                        </Button>
+                        <Button href={`/notice/${child.id}`} className="btn btn-primary mie_button">
+                            {`${translations.schedule}`}
+                        </Button>
+                        <div className={"clear"}></div>
+                    </div>
+                </div>
 
             );
         });
@@ -227,9 +234,12 @@ const RegisterChild = () => {
             </Container>
 
             { child.length > 0 ?  (
-                showingChildInfo(child)
+                <div className={"register_child_elem_wrapper"}>
+                    {showingChildInfo(child)}
+                </div>
+
             ) : (
-                <p>No child data available.</p>
+                <div className={"register_child_elem_wrapper rc_text"}>{translations.no_info}</div>
             )}
 
         </Container>

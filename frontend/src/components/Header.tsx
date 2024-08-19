@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import { useSelector } from 'react-redux';
+import { setNoticePopUp } from '../redux/slice';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import {Navbar, Nav, Form, Button, FormControl} from 'react-bootstrap';
 import Cookies from 'js-cookie';
@@ -10,8 +11,10 @@ import logout from "../util/logout";
 const Header = () => {
 
     const language = useSelector((state: RootState) => state.app.language);
+    const notice_popup = useSelector((state: RootState) => state.app.notice_popup);
     const translations = HeaderTranslations[language];
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [isCookieSet, setIsCookieSet] = useState<boolean>(Cookies.get(`token`) !== undefined);
 
@@ -19,9 +22,25 @@ const Header = () => {
         logout(navigate);
     };
 
+    const noticePopUpOn = () => {
+
+        const clearing = () => {
+            dispatch(setNoticePopUp({on:false, message: ""}));
+        }
+
+        setTimeout(() => {
+            clearing()
+        }, 3000)
+
+        return(
+            <div>{`${notice_popup.message}`}</div>
+        )
+    };
+
     return (
-        <Navbar bg="light" expand="lg">
-            <Navbar.Brand className="m-auto" href={"/"}>{`${translations.brand} `}</Navbar.Brand>
+        <>
+            <Navbar bg="light" expand="lg">
+                <Navbar.Brand className="m-auto" href={"/"}>{`${translations.brand} `}</Navbar.Brand>
 
                 {isCookieSet ?
                     <>
@@ -43,10 +62,17 @@ const Header = () => {
                         </Navbar.Collapse>
                     </>
 
-                :
+                    :
                     <></>
                 }
-        </Navbar>
+            </Navbar>
+            {notice_popup.on ?
+                noticePopUpOn()
+                :
+                <></>
+            }
+        </>
+
     );
 };
 

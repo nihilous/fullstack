@@ -13,6 +13,9 @@ export const RegisterChildTranslations = {
         select_nationality: `Valitse Kansallisuus`,
         finland: `Suomi`,
         korea: `Korea`,
+        history: `Historia`,
+        schedule: `Ohjelma`,
+        no_info: `Ei tietoja.`
     },
     ENG: {
         name: `Name`,
@@ -28,6 +31,9 @@ export const RegisterChildTranslations = {
         select_nationality: `Select nationality`,
         finland: `Finland`,
         korea: `Korea`,
+        history: `History`,
+        schedule: `Schedule`,
+        no_info: `No child Information.`
     },
     KOR: {
         name: `이름`,
@@ -43,5 +49,8 @@ export const RegisterChildTranslations = {
         select_nationality: `국적 선택`,
         finland: `핀란드`,
         korea: `대한민국`,
+        history: `접종기록`,
+        schedule: `접종권고`,
+        no_info: `등록된 정보가 없습니다.`
     }
 };

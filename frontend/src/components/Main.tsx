@@ -168,13 +168,10 @@ const Main = () => {
 
                     :
 
-                    <Container>
-                        <Container>
-                            <Link to={`/register_child`}>
-                                {translations.register}
-                            </Link>
-                        </Container>
-
+                    <Container className={"main_rc_btn"}>
+                        <Button href={`/register_child`}>
+                            {translations.register}
+                        </Button>
                     </Container>
             }
 

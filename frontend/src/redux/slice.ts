@@ -1,9 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
 
+interface NoticePopUp {
+    on:boolean,
+    message: string
+}
+
 interface AppState {
     apiUrl: string;
     language: 'FIN' | 'ENG' | 'KOR';
+    notice_popup: {on:boolean, message: string};
 }
 
 const apiUrl = process.env.REACT_APP_MODE === 'DEV' ? process.env.REACT_APP_DEV_API_URL || '' : process.env.REACT_APP_API_URL || '';
@@ -16,9 +22,12 @@ const getInitialLanguage = (): 'FIN' | 'ENG' | 'KOR' => {
     return 'ENG';
 };
 
+const notice_popup = {"on":false, message:""};
+
 const initialState: AppState = {
     apiUrl,
     language: getInitialLanguage(),
+    notice_popup
 };
 
 const appSlice = createSlice({
@@ -32,8 +41,11 @@ const appSlice = createSlice({
             state.language = action.payload;
             Cookies.set('language', action.payload, { expires: 365 });
         },
+        setNoticePopUp(state, action: PayloadAction<NoticePopUp>) {
+            state.notice_popup = action.payload;
+        },
     },
 });
 
-export const { setApiUrl, setLanguage } = appSlice.actions;
+export const { setApiUrl, setLanguage, setNoticePopUp } = appSlice.actions;
 export default appSlice.reducer;

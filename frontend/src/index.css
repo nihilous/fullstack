@@ -93,7 +93,47 @@ code {
   align-content: center;
   max-height: 45px;
 }
+
+.main_greeting{
+  text-align: left;
+  font-weight: bold;
+  font-size: 40px;
+}
+
+.main_rc_btn{
+  text-align: center;
+}
+
+.main_rc_btn a{
+  min-height: 54px;
+  align-content: center;
+}
+
 /*common main page end*/
+/*common register child page start*/
+.register_child_elem_wrapper{
+  margin-top: 40px;
+}
+.cr_info_elem {
+  position: relative;
+  border: 1px solid #f2f4f5;
+  border-radius: 5px;
+  background-color: #f6f7f9;
+  padding: 20px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+}
+
+.cr_info_elem:nth-child(1) {
+  margin-top: 40px;
+}
+
+.rc_text{
+  font-weight: bold;
+  font-size: 40px;
+}
+
+/*common register child page end*/
 /*common history page start*/
 .history_title {
   font-weight: bold;
@@ -163,10 +203,20 @@ code {
 }
 
 /*common Notice page end*/
+/*common footer start*/
+.footer{
+  bottom: 20px;
+}
 
+.footer label{
+  font-weight: bold;
+  font-size: 22px;
+}
+/*common footer end*/
 
 
 @media screen and (min-width: 1200px) {
+
   /*pc main page start*/
   .main_top {
     display: flex;
@@ -188,13 +238,6 @@ code {
     padding-left: 20px;
   }
 
-  .main_greeting{
-    text-align: left;
-  }
-
-  .main_info_elem_wrapper {
-
-  }
 
   .main_info_elem {
     width: 50%;
@@ -229,6 +272,12 @@ code {
   }
 
   /*pc main page end*/
+  /*pc register child page start*/
+  .cr_info_elem {
+    width: 50%;
+    display: flex;
+  }
+  /*pc register child page end*/
   /*pc history page start*/
   .history_title {
     font-size: 3rem;
@@ -303,13 +352,6 @@ code {
     padding-left: 20px;
   }
 
-  .main_greeting{
-    text-align: left;
-  }
-
-  .main_info_elem_wrapper {
-
-  }
 
   .main_info_elem {
     width: 80%;
@@ -342,6 +384,12 @@ code {
     margin-bottom: 20px;
   }
   /*tablet main page end*/
+  /*tablet register child page start*/
+  .cr_info_elem {
+    width: 80%;
+    display: flex;
+  }
+  /*tablet register child page end*/
   /*tablet history page start*/
   .history_title {
     font-size: 2.6rem;
@@ -408,13 +456,6 @@ code {
     padding-left: 20px;
   }
 
-  .main_greeting{
-    text-align: left;
-  }
-
-  .main_info_elem_wrapper {
-
-  }
 
   .main_info_elem {
     width: 100%;
@@ -450,6 +491,11 @@ code {
     margin-right: 20px;
   }
   /*mobile main page end*/
+  /*tablet register child page start*/
+  .cr_info_elem {
+    width: 100%;
+  }
+  /*tablet register child page end*/
   /*mobile history page start*/
   .history_title {
     font-size: 2rem;
