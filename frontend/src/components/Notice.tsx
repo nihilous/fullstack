@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios, { AxiosError } from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import { RootState } from '../store';
@@ -7,6 +7,8 @@ import { HistoryTranslations } from '../translation/Notice';
 import { getToken, getDecodedToken } from "../util/jwtDecoder";
 import {Button, Container, Form} from "react-bootstrap";
 import logout from "../util/logout";
+import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
+import {setNoticePopUp} from "../redux/slice";
 const Notice = () => {
 
     interface NoticeProperty {
@@ -33,18 +35,37 @@ const Notice = () => {
     const user_detail_id = Number(id);
     const userDetailIds = getDecodedToken()?.userDetailIds;
     const translations = HistoryTranslations[language];
+    const popupTranslations = PopupMessageTranslations[language];
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [vaccinationNotice, setVaccinationNotice] = useState<NoticeProperty[]>([]);
     const [vaccination, setVaccination] = useState<boolean>(false);
     const [vaccineId, setVaccineId] = useState<number | null>(null);
     const [vaccinationDate, setVaccinationDate] = useState<string>(``);
+    const isAuthorizedRef = useRef(false);
 
     userDetailIds?.map((child_id: number) => {
         if(child_id === user_detail_id && !isAuthorized){
+            isAuthorizedRef.current = true;
             setIsAuthorized(true);
         }
-
     })
+
+    const authSuccess = isAuthorizedRef.current
+
+    if(!authSuccess){
+
+        const message = popupTranslations.noAuthority;
+        dispatch(setNoticePopUp({
+            on: true,
+            is_error: true,
+            message: message
+        }));
+
+        setTimeout(() => {
+            logout(navigate, dispatch);
+        }, 3000);
+
+    }
 
     const noticeDataFetch = async () => {
 
@@ -55,7 +76,26 @@ const Notice = () => {
             });
             setVaccinationNotice(response.data);
         } catch (error) {
-            console.error('Error logging in:', error);
+
+            const axiosError = error as AxiosError<{ noticeRes: number }>;
+            if (axiosError.response) {
+                const NoticeRes = axiosError.response.data.noticeRes;
+                let message = ``;
+                switch (NoticeRes) {
+                    case 1:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    default:
+                        message = popupTranslations.defaultError;
+                        break;
+                }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
         }
     };
 
@@ -228,8 +268,33 @@ const Notice = () => {
             return response.data;
 
         } catch (error) {
-            console.error('Error saving vaccination history:', error);
-            const axiosError = error as AxiosError;
+
+            const axiosError = error as AxiosError<{ historyRegiRes: number }>;
+            if (axiosError.response) {
+
+                const HistoryRegiRes = axiosError.response.data.historyRegiRes;
+                let message = ``;
+                switch (HistoryRegiRes) {
+                    case 1:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    case 2:
+                        message = popupTranslations.injection;
+                        break;
+                    case 3:
+                        message = popupTranslations.HistoryAlready;
+                        break;
+                    default:
+                        message = popupTranslations.defaultError;
+                        break;
+                }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
 
             if (axiosError.response?.status === 403) {
                 logout(navigate, dispatch);

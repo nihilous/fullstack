@@ -1,17 +1,20 @@
 import React, {useEffect, useState} from 'react';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import Cookies from 'js-cookie';
-import { useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import { RootState } from '../store';
 import { RegisterChildTranslations } from '../translation/RegisterChild';
 import { Form, Button, Container, Col, Row } from 'react-bootstrap';
 import { getToken, getDecodedToken, decodeToken } from "../util/jwtDecoder";
 import {Link, useNavigate} from "react-router-dom";
+import {setNoticePopUp} from "../redux/slice";
+import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
 
 const RegisterChild = () => {
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
     const language = useSelector((state: RootState) => state.app.language);
     const naviagte = useNavigate();
+    const dispatch = useDispatch();
     const userId = getDecodedToken()?.userId;
 
     interface UserDetailProperty {
@@ -31,6 +34,7 @@ const RegisterChild = () => {
     const [description, setDescription] = useState<string>(``);
     const [child, setChild] = useState<UserDetailProperty[]>([]);
     const translations = RegisterChildTranslations[language];
+    const popupTranslations = PopupMessageTranslations[language];
 
     const clearState = () => {
         setName('');
@@ -58,7 +62,27 @@ const RegisterChild = () => {
                 }
 
             } catch (error) {
-                console.error('Error Fetching existing data:', error);
+
+                const axiosError = error as AxiosError<{ UserRes: number }>;
+                if (axiosError.response) {
+                    const UserRes = axiosError.response.data.UserRes;
+                    let message = ``;
+                    switch (UserRes) {
+                        case 1:
+                            message = popupTranslations.noAuthority;
+                            break;
+                        default:
+                            message = popupTranslations.defaultError;
+                            break;
+                    }
+
+                    dispatch(setNoticePopUp({
+                        on: true,
+                        is_error: true,
+                        message: message
+                    }));
+                }
+
             }
         };
         if(userId === undefined){
@@ -89,11 +113,42 @@ const RegisterChild = () => {
             if (decoded_info?.record) {
                 setChild(decoded_info.record);
             }
+            dispatch(setNoticePopUp({
+                on: true,
+                is_error: false,
+                message: popupTranslations.ChildRegiSuccess
+            }));
 
             clearState();
 
         } catch (error) {
-            console.error('Error joining:', error);
+
+            const axiosError = error as AxiosError<{ childRes: number }>;
+            if (axiosError.response) {
+
+                const childRegiRes = axiosError.response.data.childRes;
+                let message = ``;
+                switch (childRegiRes) {
+                    case 1:
+                        message = popupTranslations.ChildRegiRequired;
+                        break;
+                    case 2:
+                        message = popupTranslations.injection;
+                        break;
+                    case 3:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    default:
+                        message = popupTranslations.defaultError;
+                        break;
+                }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
         }
     };
 

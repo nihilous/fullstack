@@ -21,7 +21,7 @@ router.post('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, r
     }
 
     if(user_id !== token_id || legit_child === false){
-        return res.status(403).json({ message: 'No Authority' });
+        return res.status(403).json({ message: 'No Authority', historyRegiRes: 1 });
     }
 
     const { vaccine_id, history_date } = req.body;
@@ -29,7 +29,7 @@ router.post('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, r
     const isAttacked:boolean = isInjection([history_date])
     const isAttacked2:boolean = isNotNumber([vaccine_id])
     if(isAttacked || isAttacked2){
-        return res.status(400).json({ message: 'Suspected to Attacking' });
+        return res.status(400).json({ message: 'Suspected to Attacking', historyRegiRes: 2 });
     }
 
     try {
@@ -47,7 +47,7 @@ router.post('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, r
         const result = results as { count: number }[];
 
         if (result[0].count > 0) {
-            return res.status(400).json({ message: 'That vaccine is already dosed' });
+            return res.status(400).json({ message: 'That vaccine is already dosed', historyRegiRes: 3 });
         }
 
         await connection.query(`
@@ -83,7 +83,7 @@ router.get('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
     }
 
     if(user_id !== token_id || legit_child === false){
-        return res.status(403).json({ message: 'No Authority' });
+        return res.status(403).json({ message: 'No Authority', historyRes: 1 });
     }
 
     try {

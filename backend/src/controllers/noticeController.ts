@@ -38,7 +38,7 @@ router.get('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
     }
 
     if(user_id !== token_id || legit_child === false){
-        return res.status(403).json({ message: 'No Authority' });
+        return res.status(403).json({ message: 'No Authority', noticeRes: 1 });
     }
 
     try {

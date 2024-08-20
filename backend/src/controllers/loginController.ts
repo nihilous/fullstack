@@ -24,11 +24,11 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
     const isAttacked:boolean = isInjection([email,password])
 
     if(isAttacked){
-        return res.status(400).json({ message: 'Suspected to Attacking' });
+        return res.status(400).json({ message: 'Suspected to Attacking', loginRes: 1 });
     }
 
     if (email === undefined || password === undefined) {
-        return res.status(400).json({ message: 'Email and password are required' });
+        return res.status(400).json({ message: 'Email and password are required', loginRes: 2 });
     }
 
     try {
@@ -55,7 +55,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
             const users = results as User[];
 
             if (users.length === 0) {
-                return res.status(400).json({ message: 'Invalid email or password' });
+                return res.status(400).json({ message: 'Invalid email or password', loginRes: 3 });
             }
 
             const user = users[0];
@@ -63,7 +63,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
             const passwordMatch = await bcrypt.compare(password, user.password);
 
             if (!passwordMatch) {
-                return res.status(400).json({ message: 'Invalid email or password' });
+                return res.status(400).json({ message: 'Invalid email or password', loginRes: 3 });
             }
 
             let setStatement: string[] = [];
@@ -117,7 +117,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
             const users = results as User[];
 
             if (users.length === 0) {
-                return res.status(400).json({ message: 'Invalid email or password' });
+                return res.status(400).json({ message: 'Invalid email or password', loginRes: 3 });
             }
 
             const user = users[0];
@@ -125,7 +125,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
             const passwordMatch = await bcrypt.compare(password, user.password);
 
             if (!passwordMatch) {
-                return res.status(400).json({ message: 'Invalid email or password' });
+                return res.status(400).json({ message: 'Invalid email or password', loginRes: 3 });
             }
 
             const tokenPayload = { userId: user.id, admin: isAdmin };

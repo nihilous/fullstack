@@ -10,7 +10,6 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 router.post('/', async (req: Request, res: Response) => {
     const { email, nickname, password, adminSecret } = req.body;
 
-
     const isAttacked:boolean = isInjection([email, nickname, password, adminSecret])
 
     if(isAttacked){

@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
+import axios, {AxiosError} from 'axios';
+import {useDispatch, useSelector} from 'react-redux';
 import { RootState } from '../store';
 import { useNavigate, Link } from 'react-router-dom';
 import { MainTranslations } from '../translation/Main';
 import { getToken, getDecodedToken } from "../util/jwtDecoder";
 import {Button, Container} from "react-bootstrap";
+import {setNoticePopUp} from "../redux/slice";
+import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
 
 const Main = () => {
 
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
     const language = useSelector((state: RootState) => state.app.language);
     const naviagte = useNavigate();
+    const dispatch = useDispatch();
     const userId = getDecodedToken()?.userId;
     const userDetailIds = getDecodedToken()?.userDetailIds;
     const translations = MainTranslations[language];
+    const popupTranslations = PopupMessageTranslations[language];
 
     interface UserDetailProperty {
         id: number;
@@ -57,7 +61,25 @@ const Main = () => {
 
                 setUserDetail(response.data);
             } catch (error) {
-                console.error('Error logging in:', error);
+                const axiosError = error as AxiosError<{ UserRes: number }>;
+                if (axiosError.response) {
+                    const UserRes = axiosError.response.data.UserRes;
+                    let message = ``;
+                    switch (UserRes) {
+                        case 1:
+                            message = popupTranslations.noAuthority;
+                            break;
+                        default:
+                            message = popupTranslations.defaultError;
+                            break;
+                    }
+
+                    dispatch(setNoticePopUp({
+                        on: true,
+                        is_error: true,
+                        message: message
+                    }));
+                }
             }
         };
 

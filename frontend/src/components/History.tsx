@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
+import axios, {AxiosError} from 'axios';
+import {useDispatch, useSelector} from 'react-redux';
 import { RootState } from '../store';
 import { useParams, useNavigate } from 'react-router-dom';
 import { HistoryTranslations } from '../translation/History';
 import {getToken, getDecodedToken} from "../util/jwtDecoder";
 import {Button, Container} from "react-bootstrap";
+import {setNoticePopUp} from "../redux/slice";
+import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
 
 const History = () => {
 
@@ -19,11 +21,13 @@ const History = () => {
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
     const language = useSelector((state: RootState) => state.app.language);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const userId = getDecodedToken()?.userId;
     const { id } = useParams();
     const user_detail_id = Number(id);
     const userDetailIds = getDecodedToken()?.userDetailIds;
     const translations = HistoryTranslations[language];
+    const popupTranslations = PopupMessageTranslations[language];
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [vaccinationHistory, setVaccinationHistory] = useState<HistoryProperty[]>([]);
 
@@ -42,10 +46,34 @@ const History = () => {
                 const response = await axios.get<HistoryProperty[]>(`${apiUrl}/history/${userId}/${id}`, {
                     headers: { Authorization: `Bearer ${getToken()}` }
                 });
-
                 setVaccinationHistory(response.data);
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: false,
+                    message: popupTranslations.HistoryRegiSuccess
+                }));
+
             } catch (error) {
-                console.error('Error logging in:', error);
+                const axiosError = error as AxiosError<{ historyRes: number }>;
+                if (axiosError.response) {
+                    const HistoryRes = axiosError.response.data.historyRes;
+                    let message = ``;
+                    switch (HistoryRes) {
+                        case 1:
+                            message = popupTranslations.noAuthority;
+                            break;
+                        default:
+                            message = popupTranslations.defaultError;
+                            break;
+                    }
+
+                    dispatch(setNoticePopUp({
+                        on: true,
+                        is_error: true,
+                        message: message
+                    }));
+                }
             }
         };
 

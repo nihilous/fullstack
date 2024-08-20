@@ -21,15 +21,15 @@ router.post('/', async (req: Request, res: Response) => {
     const isAttacked:boolean = isInjection([email, nickname, password])
 
     if(isAttacked){
-        return res.status(400).json({ message: 'Suspected to Attacking' });
+        return res.status(400).json({ message: 'Suspected to Attacking', joinRes: 1 });
     }
 
     if (email === undefined || nickname === undefined || password === undefined) {
-        return res.status(400).json({ message: 'Email, nickname and password are required' });
+        return res.status(400).json({ message: 'Email, nickname and password are required', joinRes: 2 });
     }
 
     if (!emailRegex.test(email)) {
-        return res.status(400).json({ message: 'Invalid email format' });
+        return res.status(400).json({ message: 'Invalid email format', joinRes: 3 });
     }
 
 
@@ -43,7 +43,7 @@ router.post('/', async (req: Request, res: Response) => {
         const result = results as { count: number }[];
 
         if (result[0].count > 0) {
-            return res.status(400).json({ message: 'Email or Nickname is already in use' });
+            return res.status(400).json({ message: 'Email or Nickname is already in use', joinRes: 4 });
         }
         await connection.query(
             'INSERT INTO user (email, nickname, password) VALUES (?, ?, ?)',
@@ -62,23 +62,25 @@ router.post('/', async (req: Request, res: Response) => {
 router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
     const { name, description, gender, birthdate, nationality } = req.body;
 
+    if ((name === undefined || name === "") || (description === undefined || description === "") || (gender === undefined || gender === null) || (birthdate === undefined || birthdate === "") || (nationality === undefined || nationality === "")) {
+        return res.status(400).json({ message: 'name, description, gender, birthdate, nationality are required', childRes: 1});
+    }
+
     const isAttacked:boolean = isInjection([name, description, birthdate, nationality])
     const isAttacked2:boolean = isNotNumber([gender])
 
     if(isAttacked || isAttacked2){
-        return res.status(400).json({ message: 'Suspected to Attacking' });
+        return res.status(400).json({ message: 'Suspected to Attacking', childRes: 2});
     }
 
     const user_id:number = parseInt(req.params.id, 10);
     const token_id:number = req?.token?.userId;
 
     if(user_id !== token_id) {
-        return res.status(403).json({ message: 'No Authority' });
+        return res.status(403).json({ message: 'No Authority', childRes: 3});
     }
 
-    if (name === undefined || description === undefined || gender === undefined || birthdate === undefined || nationality === undefined) {
-        return res.status(400).json({ message: 'name, description, gender, birthdate, nationality are required' });
-    }
+
 
     try {
         const connection = await pool.getConnection();
@@ -122,7 +124,7 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
 router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
 
     if(req?.token?.admin === false){
-        return res.status(403).json({ message: 'No Authority' });
+        return res.status(403).json({ message: 'No Authority', adminUserRes: 1});
     }
 
     try {
@@ -160,7 +162,7 @@ router.get('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => 
     const token_id:number = req?.token?.userId;
 
     if(user_id !== token_id) {
-        return res.status(403).json({ message: 'No Authority' });
+        return res.status(403).json({ message: 'No Authority', UserRes: 1 });
     }
 
     try {
@@ -223,11 +225,11 @@ router.delete('/:id', tokenExtractor, async (req: CustomRequest, res: Response) 
     const isAttacked:boolean = isNotNumber([user_id]);
 
     if(isAttacked){
-        return res.status(400).json({ message: 'Suspected to Attacking' });
+        return res.status(400).json({ message: 'Suspected to Attacking', userDeleteRes: 1 });
     }
 
     if(user_id !== token_id) {
-        return res.status(403).json({ message: 'No Authority' });
+        return res.status(403).json({ message: 'No Authority', userDeleteRes: 2 });
     }
 
     try {

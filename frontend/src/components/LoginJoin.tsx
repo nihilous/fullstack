@@ -7,6 +7,7 @@ import { RootState } from '../store';
 import { startJwtTimers } from "../util/timer";
 import { useNavigate } from 'react-router-dom';
 import { loginJoinTranslations } from '../translation/LoginJoin';
+import { PopupMessageTranslations } from '../translation/PopupMessageTranslations';
 import { Form, Button, Container, Col, Row } from 'react-bootstrap';
 
 const LoginJoin = () => {
@@ -24,6 +25,7 @@ const LoginJoin = () => {
     const [joinPasswordRepeat, setJoinPasswordRepeat] = useState('');
     const [isCookieSet, setIsCookieSet] = useState<boolean>(Cookies.get(`token`) !== undefined);
     const translations = loginJoinTranslations[language];
+    const popupTranslations = PopupMessageTranslations[language];
 
     const handleLoginSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -38,17 +40,30 @@ const LoginJoin = () => {
             const preWarningTime = expirationTime - 10 * 60 * 1000;
             localStorage.setItem('jwtExpiration', expirationTime.toString());
             startJwtTimers(dispatch, expirationTime, preWarningTime);
-
             navigate('/main');
             window.location.reload();
 
         } catch (error) {
-            console.error('Error logging in:', error);
-            const axiosError = error as AxiosError;
-            console.log(axiosError.response);
-
+            const axiosError = error as AxiosError<{ loginRes: number }>;
             if (axiosError.response) {
-                const message = (axiosError.response.data as { message: string }).message;
+
+                const joinRes = axiosError.response.data.loginRes;
+                let message = ``;
+                switch (joinRes) {
+                    case 1:
+                        message = popupTranslations.injection;
+                        break;
+                    case 2:
+                        message = popupTranslations.LoginRequired;
+                        break;
+                    case 3:
+                        message = popupTranslations.LoginInvalid;
+                        break;
+                    default:
+                        message = popupTranslations.defaultError;
+                        break;
+                }
+
                 dispatch(setNoticePopUp({
                     on: true,
                     is_error: true,
@@ -77,9 +92,46 @@ const LoginJoin = () => {
             setJoinPassword('');
             setJoinPasswordRepeat('');
 
+            const message = popupTranslations.JoinSuccess
+
+            dispatch(setNoticePopUp({
+                on: true,
+                is_error: false,
+                message: message
+            }));
+
             setIsLoginView(true);
+
         } catch (error) {
-            console.error('Error joining:', error);
+            const axiosError = error as AxiosError<{ joinRes: number }>;
+            if (axiosError.response) {
+
+                const joinRes = axiosError.response.data.joinRes;
+                let message = ``;
+                switch (joinRes) {
+                    case 1:
+                        message = popupTranslations.injection;
+                        break;
+                    case 2:
+                        message = popupTranslations.JoinRequired;
+                        break;
+                    case 3:
+                        message = popupTranslations.JoinInvalid;
+                        break;
+                    case 4:
+                        message = popupTranslations.JoinExist;
+                        break;
+                    default:
+                        message = popupTranslations.defaultError;
+                        break;
+                }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
         }
     };
 
