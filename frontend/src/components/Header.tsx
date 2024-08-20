@@ -19,13 +19,13 @@ const Header = () => {
     const [isCookieSet, setIsCookieSet] = useState<boolean>(Cookies.get(`token`) !== undefined);
 
     const handleLogout = () => {
-        logout(navigate);
+        logout(navigate, dispatch);
     };
 
     const noticePopUpOn = () => {
 
         const clearing = () => {
-            dispatch(setNoticePopUp({on:false, message: ""}));
+            dispatch(setNoticePopUp({on:false,is_error:null, message: ""}));
         }
 
         setTimeout(() => {
@@ -33,8 +33,11 @@ const Header = () => {
         }, 3000)
 
         return(
-            <div>{`${notice_popup.message}`}</div>
+            <div className={"header_pop_up_wrap"}>
+                <div className={`${notice_popup.is_error ? "header_pop_up hpu_error" : "header_pop_up hpu_inst"}`}>{`${notice_popup.message}`}</div>
+            </div>
         )
+
     };
 
     return (

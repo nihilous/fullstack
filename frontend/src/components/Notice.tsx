@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios, { AxiosError } from 'axios';
-import { useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import { RootState } from '../store';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { HistoryTranslations } from '../translation/Notice';
@@ -27,6 +27,7 @@ const Notice = () => {
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
     const language = useSelector((state: RootState) => state.app.language);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const userId = getDecodedToken()?.userId;
     const { id } = useParams();
     const user_detail_id = Number(id);
@@ -231,7 +232,7 @@ const Notice = () => {
             const axiosError = error as AxiosError;
 
             if (axiosError.response?.status === 403) {
-                logout(navigate);
+                logout(navigate, dispatch);
             }
         }
     }

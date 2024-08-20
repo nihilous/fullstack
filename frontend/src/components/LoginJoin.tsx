@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import { setNoticePopUp } from '../redux/slice';
 import { useDispatch,useSelector } from 'react-redux';
 import { RootState } from '../store';
+import { startJwtTimers } from "../util/timer";
 import { useNavigate } from 'react-router-dom';
 import { loginJoinTranslations } from '../translation/LoginJoin';
 import { Form, Button, Container, Col, Row } from 'react-bootstrap';
@@ -32,6 +33,12 @@ const LoginJoin = () => {
                 password: loginPassword,
             });
             Cookies.set('token', response.data.token);
+
+            const expirationTime = Date.now() + 60 * 60 * 1000;
+            const preWarningTime = expirationTime - 10 * 60 * 1000;
+            localStorage.setItem('jwtExpiration', expirationTime.toString());
+            startJwtTimers(dispatch, expirationTime, preWarningTime);
+
             navigate('/main');
             window.location.reload();
 
@@ -44,6 +51,7 @@ const LoginJoin = () => {
                 const message = (axiosError.response.data as { message: string }).message;
                 dispatch(setNoticePopUp({
                     on: true,
+                    is_error: true,
                     message: message
                 }));
             }

@@ -3,13 +3,15 @@ import Cookies from 'js-cookie';
 
 interface NoticePopUp {
     on:boolean,
-    message: string
+    is_error:boolean | null,
+    message: string,
 }
 
 interface AppState {
     apiUrl: string;
     language: 'FIN' | 'ENG' | 'KOR';
-    notice_popup: {on:boolean, message: string};
+    notice_popup: {on:boolean, is_error:boolean | null, message: string};
+    jwtExpirationTimer: number | NodeJS.Timeout | null;
 }
 
 const apiUrl = process.env.REACT_APP_MODE === 'DEV' ? process.env.REACT_APP_DEV_API_URL || '' : process.env.REACT_APP_API_URL || '';
@@ -22,12 +24,13 @@ const getInitialLanguage = (): 'FIN' | 'ENG' | 'KOR' => {
     return 'ENG';
 };
 
-const notice_popup = {"on":false, message:""};
+const notice_popup = {"on":false, "is_error":null, message:""};
 
 const initialState: AppState = {
     apiUrl,
     language: getInitialLanguage(),
-    notice_popup
+    notice_popup,
+    jwtExpirationTimer: null,
 };
 
 const appSlice = createSlice({
@@ -44,8 +47,11 @@ const appSlice = createSlice({
         setNoticePopUp(state, action: PayloadAction<NoticePopUp>) {
             state.notice_popup = action.payload;
         },
+        setJwtExpirationTimer(state, action: PayloadAction<number | NodeJS.Timeout | null>) {
+            state.jwtExpirationTimer = action.payload;
+        },
     },
 });
 
-export const { setApiUrl, setLanguage, setNoticePopUp } = appSlice.actions;
+export const { setApiUrl, setLanguage, setNoticePopUp, setJwtExpirationTimer } = appSlice.actions;
 export default appSlice.reducer;
