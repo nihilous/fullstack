@@ -15,6 +15,12 @@ export const PopupMessageTranslations = {
         UserDelete: `Käyttäjä poistettu käytöstä, voit aktivoida tilin uudelleen kirjautumalla sisään 6 kuukauden sisällä. Kaikki tiedot poistetaan 6 kuukauden jälkeen.`,
         HistoryRegiSuccess: `Rokotushistoria tallennettu onnistuneesti.`,
         HistoryAlready: `Kyseinen rokote on jo annettu.`,
+        AccountChangeInfoSuccess: `Käyttäjätiedot muutettu onnistuneesti.`,
+        AccountChangePassSuccess: `Salasana vaihdettu onnistuneesti.`,
+        AccountNoField: `Ei annettu päivitettäviä tietoja.`,
+        AccountRequired: `Sähköposti, vanha salasana ja uusi salasana ovat pakollisia.`,
+        AccountWrongEmail: `Virheellinen sähköpostiosoite.`,
+        AccountWrongPass: `Virheellinen salasana.`,
     },
     ENG: {
         injection: `Suspected to Attacking.`,
@@ -32,6 +38,12 @@ export const PopupMessageTranslations = {
         UserDelete: `User Inactivated, can activate again if login within 6months, all related data will get deleted after 6 months.`,
         HistoryRegiSuccess: `Vaccination History Saved Successfully`,
         HistoryAlready: `That vaccine is already dosed.`,
+        AccountChangeInfoSuccess: `User info changed.`,
+        AccountChangePassSuccess: `Password changed.`,
+        AccountNoField:`No valid fields to change.`,
+        AccountRequired: `Email, old password and new password are required.`,
+        AccountWrongEmail: `Invalid Email`,
+        AccountWrongPass: `Invalid Password`,
     },
     KOR: {
         injection: `네트워크 공격이 의심됩니다.`,
@@ -49,6 +61,12 @@ export const PopupMessageTranslations = {
         UserDelete: `계정이 비활성화 되었습니다, 6개월 이내에 접속시 재활성되며, 6개월간 비접속시, 모든 연관 정보는 삭제됩니다.`,
         HistoryRegiSuccess: `접종정보 저장 완료`,
         HistoryAlready: `해당 백신은 이미 접종하였습니다.`,
+        AccountChangeInfoSuccess: `계정 정보 변경 완료.`,
+        AccountChangePassSuccess: `비밀번호 변경 완료.`,
+        AccountNoField:`변경 할 정보가 제공되지 않았습니다.`,
+        AccountRequired: `이메일, 이전 비밀번호, 신규 비밀번호가 필요합니다.`,
+        AccountWrongEmail: `이메일 주소가 잘못되었습니다.`,
+        AccountWrongPass: `잘못된 비밀번호입니다.`,
     }
 };
 
@@ -76,17 +94,32 @@ return res.status(403).json({ message: 'No Authority', adminUserRes: 1});
 유저 1인 정보
 return res.status(403).json({ message: 'No Authority', UserRes: 1 }); V
 
-res.status(200).json({ message: 'User Inactivated, can activate again if login within 6months, all related data will get deleted after 6 months' });
-return res.status(400).json({ message: 'Suspected to Attacking', userDeleteRes: 1 });
-return res.status(403).json({ message: 'No Authority', userDeleteRes: 2 });
 
-res.status(201).json({ message: 'Vaccination History Saved Successfully' });
-return res.status(403).json({ message: 'No Authority', historyRegiRes: 1 });
-return res.status(400).json({ message: 'Suspected to Attacking', historyRegiRes: 2 });
-return res.status(400).json({ message: 'That vaccine is already dosed', historyRegiRes: 3 });
 
-return res.status(403).json({ message: 'No Authority', historyRes: 1 });
+res.status(201).json({ message: 'Vaccination History Saved Successfully' }); V
+return res.status(403).json({ message: 'No Authority', historyRegiRes: 1 }); V
+return res.status(400).json({ message: 'Suspected to Attacking', historyRegiRes: 2 }); V
+return res.status(400).json({ message: 'That vaccine is already dosed', historyRegiRes: 3 }); V
 
-return res.status(403).json({ message: 'No Authority', noticeRes: 1 });
+return res.status(403).json({ message: 'No Authority', historyRes: 1 }); V
+
+return res.status(403).json({ message: 'No Authority', noticeRes: 1 }); V
+
+
+res.status(201).json({ message: 'User info changed'}); v
+return res.status(400).json({ message: 'Suspected to Attacking', userChangeInfo: 1 }); v
+return res.status(403).json({ message: 'No Authority', userChangeInfo: 2 }); v
+return res.status(400).json({ message: 'No valid fields to update', userChangeInfo: 3 }); v
+return res.status(400).json({ message: 'Email or Nickname is already in use', userChangeInfo: 4 }); v
+
+res.status(201).json({ message: 'Password changed'}); v
+return res.status(400).json({ message: 'Suspected to Attacking', userNewPass: 1 }); v
+return res.status(400).json({ message: 'Email, old password and new password are required', userNewPass: 2 }); v
+return res.status(400).json({ message: 'Invalid email', userNewPass: 3 }); v
+return res.status(400).json({ message: 'Invalid password', userNewPass: 4 }); v
+
+res.status(200).json({ message: 'User Inactivated, can activate again if login within 6months, all related data will get deleted after 6 months' }); v
+return res.status(400).json({ message: 'Suspected to Attacking', userDeleteRes: 1 }); v
+return res.status(403).json({ message: 'No Authority', userDeleteRes: 2 }); v
 
 */

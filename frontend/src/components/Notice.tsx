@@ -3,7 +3,7 @@ import axios, { AxiosError } from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import { RootState } from '../store';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { HistoryTranslations } from '../translation/Notice';
+import { NoticeTranslations } from '../translation/Notice';
 import { getToken, getDecodedToken } from "../util/jwtDecoder";
 import {Button, Container, Form} from "react-bootstrap";
 import logout from "../util/logout";
@@ -34,7 +34,7 @@ const Notice = () => {
     const { id } = useParams();
     const user_detail_id = Number(id);
     const userDetailIds = getDecodedToken()?.userDetailIds;
-    const translations = HistoryTranslations[language];
+    const translations = NoticeTranslations[language];
     const popupTranslations = PopupMessageTranslations[language];
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [vaccinationNotice, setVaccinationNotice] = useState<NoticeProperty[]>([]);
@@ -125,9 +125,6 @@ const Notice = () => {
 
     const givingNotice = (notices: NoticeProperty[] ) => {
         return notices.map((notice) => {
-
-
-
 
             const history = formatDate(notice.history_date !== null ? notice.history_date as string : "", true);
 
@@ -262,6 +259,13 @@ const Notice = () => {
 
             if(response.status === 201) {
                 await noticeDataFetch();
+
+                let message = popupTranslations.HistoryRegiSuccess
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: false,
+                    message: message
+                }));
             }
 
             handleVaccination(null)
@@ -339,7 +343,7 @@ const Notice = () => {
 
         <Container className="Notice center_ui">
             <div className={"main_top"}>
-                <p className={`notice_title`}>접종권고</p>
+                <p className={`notice_title`}>{translations.notice_title}</p>
             </div>
             <div className={"main_top"}>
                 <p className={`notice_title`}>{`${translations.child_birthdate} : ${language === "FIN" ?

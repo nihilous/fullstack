@@ -13,7 +13,7 @@ const Main = () => {
 
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
     const language = useSelector((state: RootState) => state.app.language);
-    const naviagte = useNavigate();
+    const navigagte = useNavigate();
     const dispatch = useDispatch();
     const userId = getDecodedToken()?.userId;
     const userDetailIds = getDecodedToken()?.userDetailIds;
@@ -84,7 +84,7 @@ const Main = () => {
         };
 
         if(userId === undefined) {
-            naviagte("/");
+            navigagte("/");
         }else{
             mainDataFetch();
         }

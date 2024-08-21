@@ -11,6 +11,7 @@ import Main from './components/Main';
 import RegisterChild from './components/RegisterChild';
 import History from './components/History';
 import Notice from './components/Notice';
+import Account from './components/Account';
 const App = () => {
 
     const dispatch = useDispatch();
@@ -37,6 +38,7 @@ const App = () => {
                 <Route path="/register_child" element={<RegisterChild />} />
                 <Route path="/history/:id" element={<History />} />
                 <Route path="/notice/:id" element={<Notice />} />
+                <Route path="/account" element={<Account />} />
             </Routes>
             <Footer />
         </Router>

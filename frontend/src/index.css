@@ -34,7 +34,7 @@ code {
 }
 
 .center_ui {
-  padding-top: 40px;
+  padding-top: 56px;
   padding-bottom: 31px;
 }
 
@@ -204,6 +204,12 @@ code {
 
 /*common Notice page end*/
 /*common header start*/
+.header_nav{
+  position: fixed;
+  width: 100%;
+  z-index: 1;
+}
+
 .header_pop_up_wrap{
   z-index: 2000;
   position: fixed;
@@ -220,7 +226,7 @@ code {
   padding: 40px;
   background-color: white;
   border-radius: 10px;
-  text-align: center;
+  text-align: left;
   font-weight: bold;
 }
 .hpu_error{
@@ -354,6 +360,11 @@ code {
     min-height: 50px;
     text-align: center;
   }
+
+  .notice_reg_btn button{
+    width: 80%;
+    height: 48px;
+  }
   /*pc notice page end*/
 
   /*pc header start*/
@@ -447,7 +458,7 @@ code {
   }
   .notice_info_elem {
     margin-bottom: 20px;
-    width: 80%;
+    width: 100%;
     font-size: 26px;
     display: flex;
   }
@@ -461,7 +472,7 @@ code {
     align-content: center;
   }
 
-  .notice_reg_btn Button {
+  .notice_reg_btn button {
     width: 80%;
     height: 20%;
     max-height: 48px;
@@ -580,6 +591,12 @@ code {
     width: 50%;
     min-height: 50px;
     text-align: center;
+  }
+
+  .notice_reg_btn button {
+    width: 80%;
+    height: 20%;
+    max-height: 48px;
   }
   /*mobile notice page end*/
   /*mobile header start*/

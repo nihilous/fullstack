@@ -1,5 +1,6 @@
-export const HistoryTranslations = {
+export const NoticeTranslations = {
     FIN: {
+        notice_title: `Rokotus Suositus`,
         child_birthdate: `Syntymäaika`,
         name: `Rokotteen nimi`,
         round: `Kierros`,
@@ -14,6 +15,7 @@ export const HistoryTranslations = {
 
     },
     ENG: {
+        notice_title: `Vaccination Recommendation`,
         child_birthdate: `Birthdate`,
         name: `Name of vaccine`,
         round: `Round`,
@@ -27,6 +29,7 @@ export const HistoryTranslations = {
         cancel: `Cancel`,
     },
     KOR: {
+        notice_title: `접종권고`,
         child_birthdate: `생년월일`,
         name: `접종백신명`,
         round: `접종회차`,

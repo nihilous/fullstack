@@ -263,11 +263,11 @@ router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: R
     const isAttacked:boolean = isInjection([email, nickname])
 
     if(isAttacked){
-        return res.status(400).json({ message: 'Suspected to Attacking' });
+        return res.status(400).json({ message: 'Suspected to Attacking', userChangeInfo: 1 });
     }
 
     if(user_id !== token_id) {
-        return res.status(403).json({ message: 'No Authority' });
+        return res.status(403).json({ message: 'No Authority', userChangeInfo: 2 });
     }
 
     try {
@@ -282,11 +282,19 @@ router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: R
         if (email !== undefined) {
             whereClause.push('email = ?');
             whereBindings.push(email);
+            setStatement.push('email = ?');
+            setBinding.push(email);
         }
 
         if (nickname !== undefined) {
             whereClause.push('nickname = ?');
             whereBindings.push(nickname);
+            setStatement.push('nickname = ?');
+            setBinding.push(nickname);
+        }
+
+        if (setStatement.length === 0) {
+            return res.status(400).json({ message: 'No valid fields to update', userChangeInfo: 3 });
         }
 
         if (whereClause.length > 0) {
@@ -299,22 +307,8 @@ router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: R
             );
 
             if ((existingUsers as any)[0].count > 0) {
-                return res.status(400).json({ message: 'Email or Nickname is already in use' });
+                return res.status(400).json({ message: 'Email or Nickname is already in use', userChangeInfo: 4 });
             }
-        }
-
-        if (email !== undefined) {
-            setStatement.push('email = ?');
-            setBinding.push(email);
-        }
-
-        if (nickname !== undefined) {
-            setStatement.push('nickname = ?');
-            setBinding.push(nickname);
-        }
-
-        if (setStatement.length === 0) {
-            return res.status(400).json({ message: 'No valid fields to update' });
         }
 
         setBinding.push(token_id);
@@ -346,11 +340,11 @@ router.put('/new/password', async (req: Request, res: Response) => {
     const isAttacked:boolean = isInjection([email, old_password, new_password])
 
     if(isAttacked){
-        return res.status(400).json({ message: 'Suspected to Attacking' });
+        return res.status(400).json({ message: 'Suspected to Attacking', userNewPass: 1 });
     }
 
     if (email === undefined || old_password === undefined || new_password === undefined) {
-        return res.status(400).json({ message: 'Email, old password and new password are required' });
+        return res.status(400).json({ message: 'Email, old password and new password are required', userNewPass: 2 });
     }
 
     try {
@@ -368,7 +362,7 @@ router.put('/new/password', async (req: Request, res: Response) => {
         const users = results as { password: string }[];
 
         if (users.length === 0) {
-            return res.status(400).json({ message: 'Invalid email' });
+            return res.status(400).json({ message: 'Invalid email', userNewPass: 3 });
         }
 
         const user = users[0];
@@ -376,7 +370,7 @@ router.put('/new/password', async (req: Request, res: Response) => {
         const passwordMatch = await bcrypt.compare(old_password, user.password);
 
         if (!passwordMatch) {
-            return res.status(400).json({ message: 'Invalid password' });
+            return res.status(400).json({ message: 'Invalid password', userNewPass: 4 });
         }
 
         const hashedNewPassword = await bcrypt.hash(new_password, saltRounds);
