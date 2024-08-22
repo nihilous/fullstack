@@ -46,7 +46,10 @@ const Account = () => {
         event.preventDefault();
         try {
 
-            const reqData = {};
+            const reqData = {
+                email: changeInfoEmail,
+                nickname : changeInfoNickname
+            };
 
             const response = await axios.put(`${apiUrl}/user/change/info/${userId}`, reqData, {headers: { Authorization: `Bearer ${getToken()}` }});
 

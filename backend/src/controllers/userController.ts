@@ -24,7 +24,7 @@ router.post('/', async (req: Request, res: Response) => {
         return res.status(400).json({ message: 'Suspected to Attacking', joinRes: 1 });
     }
 
-    if (email === undefined || nickname === undefined || password === undefined) {
+    if ((email === undefined || email === "") || (nickname === undefined || nickname === "") || (password === undefined || password === "")) {
         return res.status(400).json({ message: 'Email, nickname and password are required', joinRes: 2 });
     }
 
@@ -130,23 +130,48 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
     try {
         const connection = await pool.getConnection();
 
-        const [rows] = await connection.query(`
+        const [join_only_user] = await connection.query(`
             SELECT
+                user.id,
+                user.email,
+                user.nickname
+            FROM
+                user
+            LEFT OUTER JOIN
+                user_detail ON user.id = user_detail.user_id
+            WHERE
+                user_detail.user_id IS NULL;
+        `);
+
+        const [regular_user] = await connection.query(`
+            SELECT
+                user.id,
+                user.email,
                 user.nickname,
-                user_detail.name,
-                user_detail.description,
-                user_detail.gender,
-                user_detail.birthdate,
-                user_detail.nationality
+                IFNULL(
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                        'detail_id', user_detail.id,
+                        'name', user_detail.name,
+                        'description', user_detail.description,
+                        'gender', user_detail.gender,
+                        'birthdate', user_detail.birthdate,
+                        'nationality', user_detail.nationality
+                        )
+                    ),
+                    JSON_ARRAY()
+                ) AS children
             FROM
                 user
             JOIN
-                user_detail
-            ON
-                user.id = user_detail.user_id
+                user_detail ON user.id = user_detail.user_id
+            GROUP BY
+                user.email, user.nickname
         `);
 
-        res.status(200).json(rows);
+        const user_info_total = {"joinonly" : join_only_user, "regular" : regular_user}
+
+        res.status(200).json(user_info_total);
 
         connection.release();
     } catch (error) {
@@ -279,14 +304,14 @@ router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: R
         let setStatement: string[] = [];
         let setBinding: any[] = [];
 
-        if (email !== undefined) {
+        if (email !== undefined && email !== "") {
             whereClause.push('email = ?');
             whereBindings.push(email);
             setStatement.push('email = ?');
             setBinding.push(email);
         }
 
-        if (nickname !== undefined) {
+        if (nickname !== undefined && nickname !== "") {
             whereClause.push('nickname = ?');
             whereBindings.push(nickname);
             setStatement.push('nickname = ?');
@@ -343,7 +368,7 @@ router.put('/new/password', async (req: Request, res: Response) => {
         return res.status(400).json({ message: 'Suspected to Attacking', userNewPass: 1 });
     }
 
-    if (email === undefined || old_password === undefined || new_password === undefined) {
+    if ((email === undefined || email === "") || (old_password === undefined || old_password === "") || (new_password === undefined || new_password === "")) {
         return res.status(400).json({ message: 'Email, old password and new password are required', userNewPass: 2 });
     }
 

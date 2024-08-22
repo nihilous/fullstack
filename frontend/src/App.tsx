@@ -12,6 +12,8 @@ import RegisterChild from './components/RegisterChild';
 import History from './components/History';
 import Notice from './components/Notice';
 import Account from './components/Account';
+import AdminLoginJoin from "./components/AdminLoginJoin";
+import AdminMain from "./components/AdminMain";
 const App = () => {
 
     const dispatch = useDispatch();
@@ -39,6 +41,8 @@ const App = () => {
                 <Route path="/history/:id" element={<History />} />
                 <Route path="/notice/:id" element={<Notice />} />
                 <Route path="/account" element={<Account />} />
+                <Route path="/admin/login" element={<AdminLoginJoin />} />
+                <Route path="/admin/main" element={<AdminMain />} />
             </Routes>
             <Footer />
         </Router>

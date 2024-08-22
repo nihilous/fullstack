@@ -6,6 +6,7 @@ export const loginJoinTranslations = {
         join: `Liity`,
         password_repeat: `Salasanan toisto`,
         nickname: `Nimimerkki`,
+        admin_pass_key: `Adminin salainen avain`,
         register: `Rekisteröidy`,
         cancel: `Peruuta`,
     },
@@ -16,6 +17,7 @@ export const loginJoinTranslations = {
         join: `Join`,
         password_repeat: `Password Repeat`,
         nickname: `Nickname`,
+        admin_pass_key: `Admin Secret Key`,
         register: `Register`,
         cancel: `Cancel`,
     },
@@ -26,6 +28,7 @@ export const loginJoinTranslations = {
         join: `가입하기`,
         password_repeat: `비밀번호 확인`,
         nickname: `닉네임`,
+        admin_pass_key: `관리자 비밀 키`,
         register: `가입`,
         cancel: `취소`,
     }

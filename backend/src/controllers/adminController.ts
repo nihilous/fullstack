@@ -13,19 +13,19 @@ router.post('/', async (req: Request, res: Response) => {
     const isAttacked:boolean = isInjection([email, nickname, password, adminSecret])
 
     if(isAttacked){
-        return res.status(400).json({ message: 'Suspected to Attacking' });
+        return res.status(400).json({ message: 'Suspected to Attacking', adminJoinRes: 1 });
     }
 
-    if (email === undefined || nickname === undefined || password === undefined || adminSecret === undefined) {
-        return res.status(400).json({ message: 'Email, nickname and password and admin secret are required' });
+    if ((email === undefined || email === "" ) || (nickname === undefined || nickname === "") || (password === undefined || password === "") || (adminSecret === undefined || adminSecret === "")) {
+        return res.status(400).json({ message: 'Email, nickname and password and admin secret are required', adminJoinRes: 2 });
     }
 
     if( adminSecret !== process.env.SECRET ) {
-        return res.status(400).json({ message: 'not authorized to make admin account' });
+        return res.status(400).json({ message: 'not authorized to make admin account', adminJoinRes: 3 });
     }
 
     if (!emailRegex.test(email)) {
-        return res.status(400).json({ message: 'Invalid email format' });
+        return res.status(400).json({ message: 'Invalid email format', adminJoinRes: 4 });
     }
 
 
@@ -46,7 +46,7 @@ router.post('/', async (req: Request, res: Response) => {
         const result = results as { count: number }[];
 
         if (result[0].count > 0) {
-            return res.status(400).json({ message: 'Email is already in use' });
+            return res.status(400).json({ message: 'Email is already in use', adminJoinRes: 5 });
         }
         await connection.query(`
             INSERT INTO

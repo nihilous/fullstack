@@ -21,6 +21,10 @@ export const PopupMessageTranslations = {
         AccountRequired: `Sähköposti, vanha salasana ja uusi salasana ovat pakollisia.`,
         AccountWrongEmail: `Virheellinen sähköpostiosoite.`,
         AccountWrongPass: `Virheellinen salasana.`,
+        AdminJoinSuccess: `Admin-rekisteröinti onnistui.`,
+        AdminJoinRequired: `Sähköposti, lempinimi, salasana ja admin-salasana ovat pakollisia.`,
+        AdminJoinWrong: `Ei oikeutta luoda admin-tiliä.`,
+        AdminJoinAlready: `Sähköpostiosoite on jo käytössä.`
     },
     ENG: {
         injection: `Suspected to Attacking.`,
@@ -42,8 +46,12 @@ export const PopupMessageTranslations = {
         AccountChangePassSuccess: `Password changed.`,
         AccountNoField:`No valid fields to change.`,
         AccountRequired: `Email, old password and new password are required.`,
-        AccountWrongEmail: `Invalid Email`,
-        AccountWrongPass: `Invalid Password`,
+        AccountWrongEmail: `Invalid Email.`,
+        AccountWrongPass: `Invalid Password.`,
+        AdminJoinSuccess: `Admin registered successfully.`,
+        AdminJoinRequired: `Email, nickname and password and admin secret are required.`,
+        AdminJoinWrong: `Not authorized to make admin account.`,
+        AdminJoinAlready: `Email is already in use.`,
     },
     KOR: {
         injection: `네트워크 공격이 의심됩니다.`,
@@ -56,10 +64,10 @@ export const PopupMessageTranslations = {
         LoginSuccess: `로그인 성공.`,
         LoginRequired: `이메일과 비밀번호가 필요합니다.`,
         LoginInvalid: `이메일 혹은 비밀번호가 잘못되었습니다.`,
-        ChildRegiSuccess: `Child registration successfully`,
-        ChildRegiRequired: `Name, Description, Gender, Birthdate, Nationality are required`,
+        ChildRegiSuccess: `아동 정보 등록 완료.`,
+        ChildRegiRequired: `이름, 특이사항, 성별, 생년월일, 국적 정보가 필요합니다.`,
         UserDelete: `계정이 비활성화 되었습니다, 6개월 이내에 접속시 재활성되며, 6개월간 비접속시, 모든 연관 정보는 삭제됩니다.`,
-        HistoryRegiSuccess: `접종정보 저장 완료`,
+        HistoryRegiSuccess: `접종정보 저장 완료.`,
         HistoryAlready: `해당 백신은 이미 접종하였습니다.`,
         AccountChangeInfoSuccess: `계정 정보 변경 완료.`,
         AccountChangePassSuccess: `비밀번호 변경 완료.`,
@@ -67,6 +75,10 @@ export const PopupMessageTranslations = {
         AccountRequired: `이메일, 이전 비밀번호, 신규 비밀번호가 필요합니다.`,
         AccountWrongEmail: `이메일 주소가 잘못되었습니다.`,
         AccountWrongPass: `잘못된 비밀번호입니다.`,
+        AdminJoinSuccess: `관리자 계정 생성 성공.`,
+        AdminJoinRequired: `이메일, 닉네임, 비밀번호, 관리자키가 필요합니다.`,
+        AdminJoinWrong: `승인되지 않은 관리자 계정 생성입니다.`,
+        AdminJoinAlready: `이미 사용중인 이메일입니다.`
     }
 };
 
@@ -121,5 +133,13 @@ return res.status(400).json({ message: 'Invalid password', userNewPass: 4 }); v
 res.status(200).json({ message: 'User Inactivated, can activate again if login within 6months, all related data will get deleted after 6 months' }); v
 return res.status(400).json({ message: 'Suspected to Attacking', userDeleteRes: 1 }); v
 return res.status(403).json({ message: 'No Authority', userDeleteRes: 2 }); v
+
+
+res.status(201).json({ message: 'Admin registered successfully' });
+return res.status(400).json({ message: 'Suspected to Attacking', adminJoinRes: 1 });
+return res.status(400).json({ message: 'Email, nickname and password and admin secret are required', adminJoinRes: 2 });
+return res.status(400).json({ message: 'Not authorized to make admin account', adminJoinRes: 3 });
+return res.status(400).json({ message: 'Invalid email format', adminJoinRes: 4 });
+return res.status(400).json({ message: 'Email is already in use', adminJoinRes: 5 });
 
 */

@@ -27,7 +27,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
         return res.status(400).json({ message: 'Suspected to Attacking', loginRes: 1 });
     }
 
-    if (email === undefined || password === undefined) {
+    if ((email === undefined || email === "")|| (password === undefined || password === "")) {
         return res.status(400).json({ message: 'Email and password are required', loginRes: 2 });
     }
 

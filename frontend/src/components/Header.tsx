@@ -7,7 +7,7 @@ import Cookies from 'js-cookie';
 import { HeaderTranslations } from '../translation/Header';
 import { useNavigate } from 'react-router-dom';
 import logout from "../util/logout";
-
+import {getDecodedToken} from "../util/jwtDecoder";
 const Header = () => {
 
     const language = useSelector((state: RootState) => state.app.language);
@@ -17,7 +17,7 @@ const Header = () => {
     const dispatch = useDispatch();
 
     const [isCookieSet, setIsCookieSet] = useState<boolean>(Cookies.get(`token`) !== undefined);
-
+    const isAdmin = getDecodedToken()?.admin;
     const handleLogout = () => {
         logout(navigate, dispatch);
     };
@@ -51,31 +51,42 @@ const Header = () => {
 
                         <Navbar.Collapse id="basic-navbar-nav">
 
-                            <Nav className="m-auto">
-                                <Nav.Link href="/main">{`${translations.main}`}</Nav.Link>
-                            </Nav>
-                            <Nav className="m-auto">
-                                <Nav.Link href="/register_child">{`${translations.register}`}</Nav.Link>
-                            </Nav>
-                            <Nav className="m-auto">
-                                <Nav.Link href="/account">{`${translations.account}`}</Nav.Link>
-                            </Nav>
-                            <Nav className="m-auto">
-                                <Button variant="outline-secondary" onClick={handleLogout}>
-                                    {translations.logout}
-                                </Button>
-                            </Nav>
+                            {
+                                isAdmin?
+                                    <div>
+                                        관리자
+                                    </div>
+                                    :
+                                    <>
+                                        <Nav className="m-auto">
+                                            <Nav.Link href="/main">{`${translations.main}`}</Nav.Link>
+                                        </Nav>
+                                        <Nav className="m-auto">
+                                            <Nav.Link href="/register_child">{`${translations.register}`}</Nav.Link>
+                                        </Nav>
+                                        <Nav className="m-auto">
+                                            <Nav.Link href="/account">{`${translations.account}`}</Nav.Link>
+                                        </Nav>
+                                        <Nav className="m-auto">
+                                            <Button variant="outline-secondary" onClick={handleLogout}>
+                                                {translations.logout}
+                                            </Button>
+                                        </Nav>
+                                    </>
+
+                            }
+
                         </Navbar.Collapse>
                     </>
 
                     :
-                    <></>
+                    null
                 }
             </Navbar>
             {notice_popup.on ?
                 noticePopUpOn()
                 :
-                <></>
+                null
             }
         </>
 
