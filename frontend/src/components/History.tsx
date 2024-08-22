@@ -48,12 +48,6 @@ const History = () => {
                 });
                 setVaccinationHistory(response.data);
 
-                dispatch(setNoticePopUp({
-                    on: true,
-                    is_error: false,
-                    message: popupTranslations.HistoryRegiSuccess
-                }));
-
             } catch (error) {
                 const axiosError = error as AxiosError<{ historyRes: number }>;
                 if (axiosError.response) {

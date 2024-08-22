@@ -29,6 +29,8 @@ const Account = () => {
     const [changePassEmail, setChangePassEmail] = useState<string>(``);
     const [changePassOldPass, setChangePassOldPass] = useState<string>(``);
     const [changePassNewPass, setChangePassNewPass] = useState<string>(``);
+    const [watchOldPass, setWatchOldPass] = useState<boolean>(false);
+    const [watchNewPass, setWatchNewPass] = useState<boolean>(false);
     const [approveDeactivation, setApproveDeactivation] = useState<boolean>(false);
 
     const clearState = () => {
@@ -98,11 +100,12 @@ const Account = () => {
 
         return(
             <div>
-                <div>{translations.changeEmailNickname}</div>
+                <div className={"ac_title"}>{translations.changeEmailNickname}</div>
                 <Form onSubmit={handleChangeEmailNickname}>
                     <Form.Group controlId="changeEmail">
-                        <Form.Label>{translations.email}</Form.Label>
+                        <Form.Label className={"ac_label"}>{translations.email}</Form.Label>
                         <Form.Control
+                            className={"ac_control"}
                             type="email"
                             placeholder={translations.email}
                             value={changeInfoEmail}
@@ -111,8 +114,9 @@ const Account = () => {
                     </Form.Group>
 
                     <Form.Group controlId="changeNickname" className="mt-3">
-                        <Form.Label>{translations.nickname}</Form.Label>
+                        <Form.Label className={"ac_label"}>{translations.nickname}</Form.Label>
                         <Form.Control
+                            className={"ac_control"}
                             type="text"
                             placeholder={translations.nickname}
                             value={changeInfoNickname}
@@ -194,12 +198,13 @@ const Account = () => {
 
         return(
             <div>
-                <div>{translations.changePassword}</div>
+                <div className={"ac_title"}>{translations.changePassword}</div>
 
                 <Form onSubmit={handleChangePassword}>
                     <Form.Group controlId="changePassEmail">
-                        <Form.Label>{translations.email}</Form.Label>
+                        <Form.Label className={"ac_label"}>{translations.email}</Form.Label>
                         <Form.Control
+                            className={"ac_control"}
                             type="email"
                             placeholder={translations.email}
                             value={changePassEmail}
@@ -208,30 +213,54 @@ const Account = () => {
                     </Form.Group>
 
                     <Form.Group controlId="changePassOld" className="mt-3">
-                        <Form.Label>{translations.old_password}</Form.Label>
-                        <Form.Control
-                            type="password"
-                            placeholder={translations.old_password}
-                            value={changePassOldPass}
-                            onChange={(e) => setChangePassOldPass(e.target.value)}
-                        />
+                        <Form.Label className={"ac_label"}>{translations.old_password}</Form.Label>
+                        <div className={"account_cp_wrap"}>
+                            <Form.Control
+                                className={"ac_control"}
+                                type={watchOldPass ? "text" : "password"}
+                                placeholder={translations.old_password}
+                                value={changePassOldPass}
+                                onChange={(e) => setChangePassOldPass(e.target.value)}
+                            />
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={watchOldPass}
+                                    onChange={(e) => setWatchOldPass(e.target.checked)}
+                                />
+                                {translations.watch_old_pass}
+                            </label>
+                        </div>
+
                     </Form.Group>
 
                     <Form.Group controlId="changePassNew" className="mt-3">
-                        <Form.Label>{translations.new_password}</Form.Label>
-                        <Form.Control
-                            type="password"
-                            placeholder={translations.new_password}
-                            value={changePassNewPass}
-                            onChange={(e) => setChangePassNewPass(e.target.value)}
-                        />
+                        <Form.Label className={"ac_label"}>{translations.new_password}</Form.Label>
+                        <div className={"account_cp_wrap"}>
+                            <Form.Control
+                                className={"ac_control"}
+                                type={watchNewPass ? "text" : "password"}
+                                placeholder={translations.new_password}
+                                value={changePassNewPass}
+                                onChange={(e) => setChangePassNewPass(e.target.value)}
+                            />
+
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={watchNewPass}
+                                    onChange={(e) => setWatchNewPass(e.target.checked)}
+                                />
+                                {translations.watch_new_pass}
+                            </label>
+                        </div>
                     </Form.Group>
 
                     <Button variant="primary" type="submit" className="mt-3">
                         {translations.change}
                     </Button>
                     <Button variant="secondary" className="mt-3 ms-2" onClick={() => clearState()}>
-                        {translations.cancel}
+                    {translations.cancel}
                     </Button>
                 </Form>
             </div>
@@ -295,9 +324,9 @@ const Account = () => {
 
         return(
             <div>
-                <div>{translations.deactivate_account}</div>
-                <div>{translations.deactivateInstruction}</div>
-                <Form onSubmit={handleInactivateAccount}>
+                <div className={"ac_title"}>{translations.deactivate_account}</div>
+                <div className={"ac_inst"}>{translations.deactivateInstruction}</div>
+                <Form className={"ac_agree"} onSubmit={handleInactivateAccount}>
                     <Form.Group controlId="approveDeactivation" className="mt-3">
                         <Form.Check
                             type="checkbox"
@@ -337,6 +366,7 @@ const Account = () => {
     };
 
     const handleAccountServiceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        clearState();
         setAccountService(event.target.value);
     };
 
@@ -346,9 +376,9 @@ const Account = () => {
             <div className={"main_top"}>
                 <p className={`account_title`}>{translations.account_title}</p>
             </div>
-            <div>
+            <div className={"account_category"}>
                 <Form className="d-flex align-items-center">
-                    <Form.Label className="mb-0 text-nowrap">{translations.account_info_setup}</Form.Label>
+                    <Form.Label className="mb-0 text-nowrap ac_label">{translations.account_info_setup}</Form.Label>
                     <Form.Select
                         value={accountService}
                         onChange={handleAccountServiceChange}

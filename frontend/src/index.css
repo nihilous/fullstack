@@ -34,7 +34,7 @@ code {
 }
 
 .center_ui {
-  padding-top: 56px;
+  padding-top: 76px;
   padding-bottom: 31px;
 }
 
@@ -203,6 +203,42 @@ code {
 }
 
 /*common Notice page end*/
+/*common Account page start*/
+.account_title{
+  font-weight: bold;
+}
+.account_category{
+  margin: 0 auto;
+  margin-bottom: 40px;
+  display: table;
+}
+.account_category select{
+  width: 250px;
+}
+
+.account_cp_wrap label{
+  font-weight: bold;
+  align-content: center;
+}
+
+.account_cp_wrap label input{
+  margin-right: 20px;
+}
+
+.ac_label{
+  font-weight: bold;
+}
+.ac_title{
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+.ac_inst{
+  font-size: 2rem;
+}
+.ac_agree label{
+  font-weight: bold;
+}
+/*common Account page end*/
 /*common header start*/
 .header_nav{
   position: fixed;
@@ -366,7 +402,20 @@ code {
     height: 48px;
   }
   /*pc notice page end*/
-
+  /*pc Account page start*/
+  .account_title{
+    font-size: 3rem;
+  }
+  .account_cp_wrap{
+    display: flex;
+  }
+  .ac_control{
+    max-width: 400px;
+  }
+  .account_cp_wrap label{
+    margin-left: 40px;
+  }
+  /*pc Account page end*/
   /*pc header start*/
   .header_pop_up{
     width: 50%;
@@ -478,6 +527,20 @@ code {
     max-height: 48px;
   }
   /*tablet notice page end*/
+  /*tablet Account page start*/
+  .account_title{
+    font-size: 2.6rem;
+  }
+  .account_cp_wrap{
+    display: flex;
+  }
+  .ac_control{
+    max-width: 260px;
+  }
+  .account_cp_wrap label{
+    margin-left: 40px;
+  }
+  /*tablet Account page end*/
   /*tablet header start*/
   .header_pop_up{
     width: 80%;
@@ -599,6 +662,18 @@ code {
     max-height: 48px;
   }
   /*mobile notice page end*/
+  /*mobile Account page start*/
+  .account_title{
+    font-size: 2rem;
+  }
+  .ac_control{
+    max-width: 400px;
+  }
+  .account_cp_wrap label{
+    margin-top: 20px;
+    margin-left: 20px;
+  }
+  /*mobile Account page end*/
   /*mobile header start*/
   .header_pop_up{
     width: 90%;

@@ -43,7 +43,7 @@ const Header = () => {
     return (
         <>
             <Navbar bg="light" expand="lg" className={"header_nav"}>
-                <Navbar.Brand className="m-auto" href={"/"}>{`${translations.brand} `}</Navbar.Brand>
+                <Navbar.Brand className="m-auto" >{`${translations.brand} `}</Navbar.Brand>
 
                 {isCookieSet ?
                     <>
@@ -52,7 +52,7 @@ const Header = () => {
                         <Navbar.Collapse id="basic-navbar-nav">
 
                             <Nav className="m-auto">
-                                <Nav.Link href="/main">{`${translations.register}`}</Nav.Link>
+                                <Nav.Link href="/main">{`${translations.main}`}</Nav.Link>
                             </Nav>
                             <Nav className="m-auto">
                                 <Nav.Link href="/register_child">{`${translations.register}`}</Nav.Link>
