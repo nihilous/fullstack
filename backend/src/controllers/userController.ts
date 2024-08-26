@@ -134,7 +134,10 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
             SELECT
                 user.id,
                 user.email,
-                user.nickname
+                user.nickname,
+                user.is_active,
+                user.last_login,
+                user.created_at
             FROM
                 user
             LEFT OUTER JOIN
@@ -148,6 +151,9 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
                 user.id,
                 user.email,
                 user.nickname,
+                user.is_active,
+                user.last_login,
+                user.created_at,
                 IFNULL(
                     JSON_ARRAYAGG(
                         JSON_OBJECT(
@@ -166,7 +172,7 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
             JOIN
                 user_detail ON user.id = user_detail.user_id
             GROUP BY
-                user.email, user.nickname
+                user.id
         `);
 
         const user_info_total = {"joinonly" : join_only_user, "regular" : regular_user}

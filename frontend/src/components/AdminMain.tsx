@@ -3,7 +3,7 @@ import axios, {AxiosError} from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import { RootState } from '../store';
 import { useNavigate, Link } from 'react-router-dom';
-import { MainTranslations } from '../translation/Main';
+import { AdminMainTranslations } from '../translation/AdminMain';
 import { getToken, getDecodedToken } from "../util/jwtDecoder";
 import {Button, Container} from "react-bootstrap";
 import {setNoticePopUp} from "../redux/slice";
@@ -17,46 +17,42 @@ const AdminMain = () => {
     const dispatch = useDispatch();
     const userId = getDecodedToken()?.userId;
 
-    const translations = MainTranslations[language];
+    const translations = AdminMainTranslations[language];
     const popupTranslations = PopupMessageTranslations[language];
 
     interface JoinOnlyProperty {
         id: number;
-        email: string | null;
+        email: string;
         nickname: string;
-    }
-
-    interface Joinonly {
-        user_detail: false;
-        joinonly: { [key: string]: JoinOnlyProperty };
-    }
-
-    interface ChildrenProperty {
-        detail_id: number;
-        name: string | null;
-        description: string | null;
-        gender: number | null;
-        birthdate: string | null;
-        nationality: string | null;
+        is_active: number;
+        last_login: string;
+        created_at: string;
     }
 
     interface RegularProperty {
-        id: number,
-        email: string,
-        nickname: string,
-        children: [ChildrenProperty]
+        id: number;
+        email: string;
+        nickname: string;
+        is_active: number;
+        last_login: string;
+        created_at: string;
+        children: {
+            detail_id: number;
+            name: string;
+            description: string;
+            gender: number;
+            birthdate: string;
+            nationality: string;
+        }[];
     }
 
-    interface Regular {
-        user_detail: true;
-        regular: { [key: string]: RegularProperty };
+    interface UserDataResponse {
+        joinonly: JoinOnlyProperty[];
+        regular: RegularProperty[];
     }
-
-
-
-    type UserDataResponse = Joinonly | Regular;
 
     const [users, setUsers] = useState<UserDataResponse | null>(null);
+    const [visibleChildren, setVisibleChildren] = useState<{ [key: number]: boolean }>({});
 
     useEffect(() => {
         const mainDataFetch = async () => {
@@ -104,6 +100,169 @@ const AdminMain = () => {
 
     }, [users]);
 
+    const toggleChildrenVisibility = (userId: number) => {
+        setVisibleChildren(prevState => ({
+            ...prevState,
+            [userId]: !prevState[userId]
+        }));
+    };
+
+    const userInformation = (info: UserDataResponse) => {
+
+        const formatDate = (dateString: string, language: string) => {
+            if(dateString === null){
+                return translations.login_date_null;
+            }
+            const [year, month, day] = dateString.split('T')[0].split('-');
+            if (language === "FIN") {
+                return `${day} ${month} ${year}`;
+            }
+            return `${year} ${month} ${day}`;
+        };
+
+        const formatNationality = (nationalityString: string) => {
+            switch (nationalityString) {
+                case "FIN":
+                    return translations.finland;
+                case "KOR":
+                    return translations.korea;
+                default:
+                    return nationalityString;
+            }
+        };
+
+
+        return (
+            <>
+                <div className={"admin_main_category"}>
+                    {`${translations.regular} ${info.regular.length} ${translations.count_people}`}
+                </div>
+                <div>
+                    {info.regular.map(user => (
+
+
+                        <div key={user.id} className={"am_parent"}>
+                            <div className={"amp_info_wrap"}>
+                                <div className={"amp_info"}>
+                                    <div>
+                                        <span>{translations.user_id}</span>
+                                        <span>{user.id}</span>
+                                    </div>
+                                    <div>
+                                        <span>{translations.email}</span>
+                                        <span>{user.email}</span>
+                                    </div>
+                                    <div>
+                                        <span>{translations.nickname}</span>
+                                        <span>{user.nickname}</span>
+                                    </div>
+                                    <div>
+                                        <span>{translations.join_date}</span>
+                                        <span>{formatDate(user.created_at, language)}</span>
+                                    </div>
+                                    <div>
+                                        <span>{translations.last_login}</span>
+                                        <span>{formatDate(user.last_login, language)}</span>
+                                    </div>
+                                    <div>
+                                        <span>{translations.is_hibernate}</span>
+                                        <span>{user.is_active === 1 ? translations.active : translations.deactivated}</span>
+                                    </div>
+                                    <div>
+                                        <span>{translations.registered_children}</span>
+                                        <span>{`${user.children.length} ${translations.count_people}`}</span>
+                                    </div>
+                                </div>
+                                <div className={"amp_button"}>
+                                    <Button onClick={() => toggleChildrenVisibility(user.id)}>
+                                        {visibleChildren[user.id] ?  translations.fold : translations.watch}
+                                    </Button>
+                                </div>
+
+                            </div>
+
+
+                            <div className={`${visibleChildren[user.id] ? "am_children_wrap" : null}`}>
+                                {visibleChildren[user.id] && user.children.map(child => {
+
+
+                                    return (
+                                        <div key={"child" + child.detail_id} className={"am_child"}>
+                                            <div>
+                                                <span>{translations.child_id}</span>
+                                                <span>{child.detail_id}</span>
+                                            </div>
+                                            <div>
+                                                <span>{translations.child_name}</span>
+                                                <span>{child.name}</span>
+                                            </div>
+                                            <div>
+                                                <span>{translations.child_birthdate}</span>
+                                                <span>{formatDate(child.birthdate, language)}</span>
+                                            </div>
+                                            <div>
+                                                <span>{translations.child_gender}</span>
+                                                <span>{`${child.gender === 0 ? translations.boy : translations.girl}`}</span>
+                                            </div>
+                                            <div>
+                                                <span>{translations.child_nationality}</span>
+                                                <span>{formatNationality(child.nationality as string)}</span>
+                                            </div>
+                                            <div>
+                                                <span>{translations.child_description}</span>
+                                                <span>{child.description}</span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                        </div>
+                    ))}
+                </div>
+
+                <div className={"admin_main_category"}>
+                    {`${translations.join_only} ${info.joinonly.length} ${translations.count_people}`}
+                </div>
+                <div>
+                    {info.joinonly.map(user => (
+                        <div key={user.id} className={"am_parent"}>
+                            <div className={"amp_info_wrap"}>
+                                <div className={"amp_info join_only"}>
+                                    <div>
+                                        <span>{translations.user_id}</span>
+                                        <span>{user.id}</span>
+                                    </div>
+                                    <div>
+                                        <span>{translations.email}</span>
+                                        <span>{user.email}</span>
+                                    </div>
+                                    <div>
+                                        <span>{translations.nickname}</span>
+                                        <span>{user.nickname}</span>
+                                    </div>
+                                    <div>
+                                        <span>{translations.join_date}</span>
+                                        <span>{formatDate(user.created_at, language)}</span>
+                                    </div>
+                                    <div>
+                                        <span>{translations.last_login}</span>
+                                        <span>{formatDate(user.last_login, language)}</span>
+                                    </div>
+                                    <div>
+                                        <span>{translations.is_hibernate}</span>
+                                        <span>{user.is_active === 1 ? translations.active : translations.deactivated}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+            </>
+        );
+    };
+
     if (users === null) {
         return <></>
     }
@@ -115,7 +274,7 @@ const AdminMain = () => {
             <Container className={"main_top"}>
                 <div className={"mt_elem"}>
                     <p className={"main_greeting"}>
-                        관리자 메인
+                        {translations.admin_main}
                     </p>
                 </div>
 
@@ -123,6 +282,9 @@ const AdminMain = () => {
                     <input type={"text"} placeholder={"필터"}></input>
                 </div>
             </Container>
+            {
+                userInformation(users)
+            }
 
 
         </Container>

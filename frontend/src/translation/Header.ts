@@ -1,7 +1,7 @@
 export const HeaderTranslations = {
     FIN: {
         brand: `Rokotuskirja`,
-        main: `Ettusivu`,
+        main: `Etusivu`,
         register: `Täytä lapsen tiedot`,
         account: `Omat tiedot`,
         logout: `Kirjaudu ulos`

@@ -239,6 +239,88 @@ code {
   font-weight: bold;
 }
 /*common Account page end*/
+/*common Admin Main page start*/
+.admin_main_category{
+  font-weight: bold;
+  font-size: 3rem;
+}
+.admin_main_category:nth-child(4){
+  margin-top: 40px;
+}
+.am_parent{
+  position: relative;
+  border: 1px solid #f2f4f5;
+  border-radius: 5px;
+  background-color: #f6f7f9;
+  padding: 20px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+}
+.amp_info_wrap{
+  display: flex;
+  align-items: center;
+}
+.amp_info{
+  width: 50%;
+}
+.join_only{
+  width: 100%;
+}
+.amp_info div{
+  display: flex;
+}
+.amp_info div span:nth-child(1){
+  width: 50%;
+}
+.amp_info div span:nth-child(2){
+  width: 50%;
+}
+
+.join_only div span:nth-child(1){
+  width: 25%;
+}
+.join_only div span:nth-child(2){
+  width: 75%;
+}
+.amp_button{
+  flex-grow: 1;
+  text-align: center;
+}
+.am_children_wrap{
+ margin-top: 20px;
+}
+.am_child{
+  border-radius: 5px;
+  padding: 20px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+}
+.am_child:nth-child(1n){
+  background-color: #182122;
+  color: white;
+}
+.am_child:nth-child(2n){
+  background-color: #84b6b1;
+}
+
+.am_child:last-child{
+  margin-bottom: 0;
+}
+
+.am_child div{
+  display: flex;
+}
+
+.am_child div span:nth-child(1){
+  width: 50%;
+}
+
+.am_child div span:nth-child(2){
+  width: 50%;
+}
+
+
+/*common Admin Main page end*/
 /*common header start*/
 .header_nav{
   position: fixed;
