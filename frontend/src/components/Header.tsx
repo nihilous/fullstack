@@ -53,9 +53,17 @@ const Header = () => {
 
                             {
                                 isAdmin?
-                                    <div>
-                                        관리자
-                                    </div>
+                                        <>
+                                            <Nav className="m-auto">
+                                                <Nav.Link href="/admin/main">{`${translations.main}`}</Nav.Link>
+                                            </Nav>
+                                            <Nav className="m-auto">
+                                                <Button variant="outline-secondary" onClick={handleLogout}>
+                                                    {translations.logout}
+                                                </Button>
+                                            </Nav>
+                                        </>
+
                                     :
                                     <>
                                         <Nav className="m-auto">
@@ -78,7 +86,6 @@ const Header = () => {
 
                         </Navbar.Collapse>
                     </>
-
                     :
                     null
                 }

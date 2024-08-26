@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { pool } from '../db';
 import {CustomRequest, isInjection, tokenExtractor, isNotNumber} from '../middleware/middleware';
-import { RowDataPacket } from 'mysql2';
+import { RowDataPacket, ResultSetHeader, FieldPacket } from 'mysql2';
 
 const router = Router();
 const saltRounds = 10;
@@ -285,6 +285,69 @@ router.delete('/:id', tokenExtractor, async (req: CustomRequest, res: Response) 
     }
 });
 
+router.delete('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    const user_id:number = parseInt(req.params.id, 10);
+    const user_detail_id:number = parseInt(req.params.user_detail_id, 10);
+    const token_id:number = req?.token?.userId;
+    const children = req?.token?.userDetailIds;
+    let is_own_child = false;
+
+    for (let i = 0; i < children.length; i++) {
+        if(children[i] === user_detail_id){
+            is_own_child = true;
+        }
+    }
+
+    const isAttacked:boolean = isNotNumber([user_id, user_detail_id]);
+
+    if(isAttacked){
+        return res.status(400).json({ message: 'Suspected to Attacking', childDeleteRes: 1 });
+    }
+
+    if(user_id !== token_id || !is_own_child) {
+        return res.status(403).json({ message: 'No Authority', childDeleteRes: 2 });
+    }
+
+    try {
+        const connection = await pool.getConnection();
+
+        const [historyResult]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+            DELETE
+            FROM
+                history
+            WHERE
+                user_detail_id = ?
+        `, [user_detail_id]);
+
+        const [userDetailResult]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+            DELETE
+            FROM
+                user_detail
+            WHERE
+                user_detail.id = ?
+        `, [user_detail_id]);
+
+        const affectedUserDetailRows = userDetailResult.affectedRows;
+        const affectedHistoryRows = historyResult.affectedRows;
+
+        if (affectedUserDetailRows === 0) {
+            res.status(409).json({ message: 'No Affected Row', childDeleteRes: 3 });
+        } else {
+            if(affectedHistoryRows === 0){
+                res.status(200).json({ message: `Child Record Deleted Successfully`, affectedHistoryRow: affectedHistoryRows });
+            }else{
+                res.status(200).json({ message: `Child Record And ${affectedHistoryRows} History Records Deleted Successfully`, affectedHistoryRow: affectedHistoryRows });
+            }
+        }
+
+        connection.release();
+    } catch (error) {
+        console.error('Error response users delete /user/:id/:user_detail_id', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
 
     const user_id:number = parseInt(req.params.id, 10);
@@ -364,7 +427,6 @@ router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: R
 });
 
 router.put('/new/password', async (req: Request, res: Response) => {
-
 
     const { email, old_password, new_password } = req.body;
 

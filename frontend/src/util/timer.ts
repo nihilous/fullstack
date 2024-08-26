@@ -33,7 +33,12 @@ export const startJwtTimers = (
             localStorage.removeItem('jwtExpiration');
 
             setTimeout(() => {
-                window.location.href = '/';
+                const isAdminPath = window.location.pathname.includes("admin");
+                if(isAdminPath) {
+                    window.location.href = '/admin/login';
+                }else{
+                    window.location.href = '/';
+                }
             }, 3000);
         }, timeUntilExpiration);
         localStorage.setItem('jwtExpirationTimer', expirationTimerId.toString());

@@ -6,6 +6,7 @@ import { Dispatch } from 'redux';
 const logOut = (navigate: ReturnType<typeof useNavigate>, dispatch: Dispatch<any>) => {
     const preWarningTimer = localStorage.getItem('jwtPreWarningTimer');
     const expirationTimer = localStorage.getItem('jwtExpirationTimer');
+    const isAdminPath = window.location.pathname.includes("admin");
 
     if (preWarningTimer) {
         clearTimeout(parseInt(preWarningTimer));
@@ -21,7 +22,12 @@ const logOut = (navigate: ReturnType<typeof useNavigate>, dispatch: Dispatch<any
     localStorage.removeItem('jwtExpiration');
 
     dispatch(setNoticePopUp({ on: false, is_error: null, message: '' }));
-    navigate('/');
+
+    if(isAdminPath){
+        navigate('/admin/login');
+    }else{
+        navigate('/');
+    }
     window.location.reload();
 }
 
