@@ -24,7 +24,10 @@ export const PopupMessageTranslations = {
         AdminJoinSuccess: `Admin-rekisteröinti onnistui.`,
         AdminJoinRequired: `Sähköposti, lempinimi, salasana ja admin-salasana ovat pakollisia.`,
         AdminJoinWrong: `Ei oikeutta luoda admin-tiliä.`,
-        AdminJoinAlready: `Sähköpostiosoite on jo käytössä.`
+        AdminJoinAlready: `Sähköpostiosoite on jo käytössä.`,
+        delete_success: `Lapsen tiedot poistettu onnistuneesti.`,
+        delete_history_success: `Lapsen tiedot ja rokotushistoria poistettu onnistuneesti.`,
+        delete_already: `Ei enää poistettavaa tietoa.`,
     },
     ENG: {
         injection: `Suspected to Attacking.`,
@@ -52,6 +55,9 @@ export const PopupMessageTranslations = {
         AdminJoinRequired: `Email, nickname and password and admin secret are required.`,
         AdminJoinWrong: `Not authorized to make admin account.`,
         AdminJoinAlready: `Email is already in use.`,
+        delete_success: `Child Data Deleted Successfully.`,
+        delete_history_success: `Child Data Deleted Successfully, Deleted Vaccination History `,
+        delete_already: `No Data To Delete Any More.`,
     },
     KOR: {
         injection: `네트워크 공격이 의심됩니다.`,
@@ -78,68 +84,9 @@ export const PopupMessageTranslations = {
         AdminJoinSuccess: `관리자 계정 생성 성공.`,
         AdminJoinRequired: `이메일, 닉네임, 비밀번호, 관리자키가 필요합니다.`,
         AdminJoinWrong: `승인되지 않은 관리자 계정 생성입니다.`,
-        AdminJoinAlready: `이미 사용중인 이메일입니다.`
+        AdminJoinAlready: `이미 사용중인 이메일입니다.`,
+        delete_success: `아동 정보 삭제 성공`,
+        delete_history_success: `아동 정보 삭제 성공, 삭제된 백신 접종 기록 `,
+        delete_already: `이미 삭제 되었습니다.`,
     }
 };
-
-
-/*
-res.status(201).json({ message: 'User registered successfully' }); V
-return res.status(400).json({ message: 'Suspected to Attacking', joinRes: 1 }); V
-return res.status(400).json({ message: 'Email, nickname and password are required', joinRes: 2 }); V
-return res.status(400).json({ message: 'Invalid email format', joinRes: 3 }); V
-return res.status(400).json({ message: 'Email or Nickname is already in use', joinRes: 4 }); V
-
-res.status(200).json({ message: 'Login success', token }); pass
-return res.status(400).json({ message: 'Suspected to Attacking', loginRes: 1 }); V
-return res.status(400).json({ message: 'Email and password are required', loginRes: 2 }); V
-return res.status(400).json({ message: 'Invalid email or password', loginRes: 3 }); V
-
-res.status(201).json({ message: 'User detail successfully added', token: newToken }); V
-return res.status(400).json({ message: 'name, description, gender, birthdate, nationality are required', childRes: 1}); V
-return res.status(400).json({ message: 'Suspected to Attacking', childRes: 2}); V
-return res.status(403).json({ message: 'No Authority', childRes: 3}); V
-
-관리자 전체 유저 정보
-return res.status(403).json({ message: 'No Authority', adminUserRes: 1});
-
-유저 1인 정보
-return res.status(403).json({ message: 'No Authority', UserRes: 1 }); V
-
-
-
-res.status(201).json({ message: 'Vaccination History Saved Successfully' }); V
-return res.status(403).json({ message: 'No Authority', historyRegiRes: 1 }); V
-return res.status(400).json({ message: 'Suspected to Attacking', historyRegiRes: 2 }); V
-return res.status(400).json({ message: 'That vaccine is already dosed', historyRegiRes: 3 }); V
-
-return res.status(403).json({ message: 'No Authority', historyRes: 1 }); V
-
-return res.status(403).json({ message: 'No Authority', noticeRes: 1 }); V
-
-
-res.status(201).json({ message: 'User info changed'}); v
-return res.status(400).json({ message: 'Suspected to Attacking', userChangeInfo: 1 }); v
-return res.status(403).json({ message: 'No Authority', userChangeInfo: 2 }); v
-return res.status(400).json({ message: 'No valid fields to update', userChangeInfo: 3 }); v
-return res.status(400).json({ message: 'Email or Nickname is already in use', userChangeInfo: 4 }); v
-
-res.status(201).json({ message: 'Password changed'}); v
-return res.status(400).json({ message: 'Suspected to Attacking', userNewPass: 1 }); v
-return res.status(400).json({ message: 'Email, old password and new password are required', userNewPass: 2 }); v
-return res.status(400).json({ message: 'Invalid email', userNewPass: 3 }); v
-return res.status(400).json({ message: 'Invalid password', userNewPass: 4 }); v
-
-res.status(200).json({ message: 'User Inactivated, can activate again if login within 6months, all related data will get deleted after 6 months' }); v
-return res.status(400).json({ message: 'Suspected to Attacking', userDeleteRes: 1 }); v
-return res.status(403).json({ message: 'No Authority', userDeleteRes: 2 }); v
-
-
-res.status(201).json({ message: 'Admin registered successfully' });
-return res.status(400).json({ message: 'Suspected to Attacking', adminJoinRes: 1 });
-return res.status(400).json({ message: 'Email, nickname and password and admin secret are required', adminJoinRes: 2 });
-return res.status(400).json({ message: 'Not authorized to make admin account', adminJoinRes: 3 });
-return res.status(400).json({ message: 'Invalid email format', adminJoinRes: 4 });
-return res.status(400).json({ message: 'Email is already in use', adminJoinRes: 5 });
-
-*/

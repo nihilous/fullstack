@@ -5,7 +5,7 @@ import { RootState } from '../store';
 import { useParams, useNavigate } from 'react-router-dom';
 import { HistoryTranslations } from '../translation/History';
 import {getToken, getDecodedToken} from "../util/jwtDecoder";
-import {Button, Container} from "react-bootstrap";
+import {Button, Container, Form} from "react-bootstrap";
 import {setNoticePopUp} from "../redux/slice";
 import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
 
@@ -30,6 +30,9 @@ const History = () => {
     const popupTranslations = PopupMessageTranslations[language];
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [vaccinationHistory, setVaccinationHistory] = useState<HistoryProperty[]>([]);
+    const [removeChild, setRemoveChild] = useState<boolean>(false);
+    const [deleteConfirm, setDeleteConfirm] = useState<string>(``);
+    const approveMessage = translations.agree_to_delete;
 
     userDetailIds?.map((child_id: number) => {
         if(child_id === user_detail_id && !isAuthorized){
@@ -126,25 +129,123 @@ const History = () => {
         });
     };
 
-    if (vaccinationHistory.length === 0){
-        return <></>
-    }
+    const deleteChildRecord = async () => {
+
+        let message = ``;
+        if(deleteConfirm !== approveMessage){
+            message = "not matched";
+            dispatch(setNoticePopUp({
+                on: true,
+                is_error: true,
+                message: message
+            }));
+            return
+        }
+
+        try {
+
+            const response = await axios.delete(`${apiUrl}/user/${userId}/${id}`, {
+                headers: { Authorization: `Bearer ${getToken()}` }
+            });
+
+            if(response?.data.affectedHistoryRow === 0){
+                message = popupTranslations.delete_success
+            }else{
+                message = `${popupTranslations.delete_history_success}${response?.data.affectedHistoryRow}`;
+            }
+
+            dispatch(setNoticePopUp({
+                on: true,
+                is_error: false,
+                message: message
+            }));
+
+            navigate('/main');
+
+
+        } catch (error) {
+            const axiosError = error as AxiosError<{ childDeleteRes: number }>;
+            if (axiosError.response) {
+                const ChildDeleteRes = axiosError.response.data.childDeleteRes;
+                switch (ChildDeleteRes) {
+                    case 1:
+                        message = popupTranslations.injection;
+                        break;
+                    case 2:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    case 3:
+                        message = popupTranslations.delete_already;
+                        break;
+                    default:
+                        message = popupTranslations.defaultError;
+                        break;
+                }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
+        }
+    };
+
+    const deleteChildRecordUI = () => {
+        return(
+            <div className={"popup_form"}>
+                <Container>
+                        <Form.Group controlId="DeleteApprove" className="mt-3">
+                            <Form.Label>{translations.delete_child_record}</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder={`${translations.type}${translations.agree_to_delete}`}
+                                value={deleteConfirm}
+                                onChange={(e) => setDeleteConfirm(e.target.value)}
+                            />
+                        </Form.Group>
+
+                        <Button variant="primary" type="submit" className="mt-3" onClick={() => deleteChildRecord()}>
+                            {`${translations.delete}`}
+                        </Button>
+                        <Button variant="secondary" className="mt-3 ms-2" onClick={() => setRemoveChild(!removeChild)}>
+                            {`${translations.cancel}`}
+                        </Button>
+
+                </Container>
+            </div>
+        )
+    };
+
 
     return (
 
-            <Container className="History center_ui">
-                <div className={"main_top container"}>
-                    <p className={"history_title"}>{`${translations.title}`}</p>
-                </div>
-                {
-                    vaccinationHistory.length !== 0 ?
-                        showingHistory(vaccinationHistory)
-                        :
-                        <></>
+        <Container className="History center_ui">
+            <div className={"main_top container"}>
+                <p className={"history_title"}>{`${translations.title}`}</p>
+            </div>
+            {
+                vaccinationHistory.length !== 0 ?
+                    showingHistory(vaccinationHistory)
+                    :
+                    <div className={"main_top container"}>
+                        <p className={"history_title"}>{translations.no_record}</p>
+                    </div>
 
-                }
-                <div className={"clear"}></div>
-            </Container>
+            }
+
+            <div className={"container"}>
+                <Button onClick={() => setRemoveChild(!removeChild)}>{translations.delete_child_record}</Button>
+            </div>
+            <div className={"clear"}></div>
+
+            {
+                removeChild ?
+                    deleteChildRecordUI()
+                    :
+                    null
+            }
+        </Container>
 
     );
 };
