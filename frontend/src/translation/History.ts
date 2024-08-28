@@ -10,6 +10,9 @@ export const HistoryTranslations = {
         no_record: `Ei merkintää`,
         agree_to_delete: `Hyväksyn`,
         type: `Kirjoita oikealla näkyvä teksti : `,
+        new_date: `Uusi päivämäärä`,
+        update: `Päivitä`,
+        delete_history_record: `Poista rokotushistoria`,
     },
     ENG: {
         title: `Vaccination History`,
@@ -22,6 +25,9 @@ export const HistoryTranslations = {
         no_record: `No record`,
         agree_to_delete:`agreed`,
         type:`Please Type Text On The Right : `,
+        new_date: `New Date`,
+        update: `Update`,
+        delete_history_record: `Delete Vaccination History`,
     },
     KOR: {
         title: `접종기록`,
@@ -34,5 +40,8 @@ export const HistoryTranslations = {
         no_record: `접종 기록이 없습니다.`,
         agree_to_delete:`삭제동의`,
         type:`우측에 보이는 글자를 입력해주세요 : `,
+        new_date: `변경 희망 일`,
+        update: `변경`,
+        delete_history_record: `백신 접종 기록 삭제`,
     }
 };

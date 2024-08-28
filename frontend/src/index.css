@@ -168,6 +168,24 @@ code {
 .hie_info span:nth-child(2){
   width: 60%;
 }
+
+.hie_buttons{
+  margin-top: 20px;
+  display: flex;
+}
+
+.hie_buttons span{
+  width: 50%;
+  text-align: center;
+}
+
+.hie_buttons span button{
+  min-width: 120px;
+}
+
+.his_delete{
+  text-align: right;
+}
 /*common history page end*/
 /*common Notice page start*/
 .notice_title {

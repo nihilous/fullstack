@@ -26,8 +26,12 @@ export const PopupMessageTranslations = {
         AdminJoinWrong: `Ei oikeutta luoda admin-tiliä.`,
         AdminJoinAlready: `Sähköpostiosoite on jo käytössä.`,
         delete_success: `Lapsen tiedot poistettu onnistuneesti.`,
-        delete_history_success: `Lapsen tiedot ja rokotushistoria poistettu onnistuneesti.`,
+        delete_child_record_success: `Lapsen tiedot ja rokotushistoria poistettu onnistuneesti.`,
         delete_already: `Ei enää poistettavaa tietoa.`,
+        update_history_record_zero: `Päivitetty rokotustieto 0`,
+        update_history_record_success: `Rokotushistoria päivitetty onnistuneesti.`,
+        deleted_history_record_zero: `Poistettu rokotustieto 0`,
+        delete_history_record_success: `Rokotushistoria poistettu onnistuneesti.`,
     },
     ENG: {
         injection: `Suspected to Attacking.`,
@@ -56,8 +60,13 @@ export const PopupMessageTranslations = {
         AdminJoinWrong: `Not authorized to make admin account.`,
         AdminJoinAlready: `Email is already in use.`,
         delete_success: `Child Data Deleted Successfully.`,
-        delete_history_success: `Child Data Deleted Successfully, Deleted Vaccination History `,
+        delete_child_record_success: `Child Data Deleted Successfully, Deleted Vaccination History `,
         delete_already: `No Data To Delete Any More.`,
+        update_history_record_zero: `Updated Vaccination Record 0`,
+        update_history_record_success: `Updated Vaccination History`,
+        deleted_history_record_zero: `Deleted Vaccination Record 0`,
+        delete_history_record_success: `Deleted Vaccination History`,
+
     },
     KOR: {
         injection: `네트워크 공격이 의심됩니다.`,
@@ -86,7 +95,11 @@ export const PopupMessageTranslations = {
         AdminJoinWrong: `승인되지 않은 관리자 계정 생성입니다.`,
         AdminJoinAlready: `이미 사용중인 이메일입니다.`,
         delete_success: `아동 정보 삭제 성공`,
-        delete_history_success: `아동 정보 삭제 성공, 삭제된 백신 접종 기록 `,
+        delete_child_record_success: `아동 정보 삭제 성공, 삭제된 백신 접종 기록 `,
         delete_already: `이미 삭제 되었습니다.`,
+        update_history_record_zero: `변경된 백신 접종 기록 0건`,
+        update_history_record_success: `백신 접종 기록 변경 완료되었습니다.`,
+        deleted_history_record_zero: `삭제된 백신 접종 기록 0건`,
+        delete_history_record_success: `백신 접종 정보 삭제 완료되었습니다.`,
     }
 };
