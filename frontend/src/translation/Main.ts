@@ -17,6 +17,7 @@ export const MainTranslations = {
         register: `Täytä Lapsen tiedot`,
         history: `Historia`,
         schedule: `Ohjelma`,
+        filter: `Suodata`,
     },
     ENG: {
         welcome: `Welcome,`,
@@ -36,6 +37,7 @@ export const MainTranslations = {
         register: `Register Child Information`,
         history: `History`,
         schedule: `Schedule`,
+        filter: `Filter`,
 
     },
     KOR: {
@@ -56,5 +58,6 @@ export const MainTranslations = {
         register: `자녀 정보 등록하기`,
         history: `접종기록`,
         schedule: `접종권고`,
+        filter: `필터`,
     }
 };
