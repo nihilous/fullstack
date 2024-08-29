@@ -122,10 +122,6 @@ const Main = () => {
                     ? value.gender === filterGender
                     : true;
 
-                console.log(matchesFilter);
-//                console.log(matchesNationality);
-  //              console.log(matchesGender);
-
                 return matchesFilter && matchesNationality && matchesGender;
             });
 

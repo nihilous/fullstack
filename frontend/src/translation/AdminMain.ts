@@ -26,6 +26,7 @@ export const AdminMainTranslations = {
         is_hibernate: `Lepotila`,
         active: `Aktiivinen`,
         deactivated: `Deaktivoitu`,
+        filter: `Suodata`,
 
     },
     ENG: {
@@ -55,6 +56,7 @@ export const AdminMainTranslations = {
         is_hibernate: `Hibernation`,
         active: `Active`,
         deactivated: `Deactivated`,
+        filter: `Filter`,
     },
     KOR: {
         admin_main: `관리자`,
@@ -83,5 +85,6 @@ export const AdminMainTranslations = {
         is_hibernate: `휴면`,
         active: `활성`,
         deactivated: `비활성`,
+        filter: `필터`,
     }
 };

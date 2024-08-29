@@ -132,6 +132,29 @@ code {
 .filter_wrap .select_wrap select:nth-child(2){
   margin-left: 5%;
 }
+
+.filter_wrap .select_wrap_3{
+  display: flex;
+  margin-top: 20px;
+}
+
+.filter_wrap .select_wrap_3 select{
+  min-height: 28px;
+  width: 32%;
+  padding-left: 5px;
+}
+
+.filter_wrap .select_wrap_3 select:nth-child(1){
+  margin-right: 2%;
+}
+
+.filter_wrap .select_wrap_3 select:nth-child(2){
+  margin-right: 2%;
+}
+
+.filter_wrap .select_wrap_3 select:nth-child(3){
+  margin-right: 0;
+}
 /*common main page end*/
 /*common register child page start*/
 .register_child_elem_wrapper{

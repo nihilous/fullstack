@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import axios, {AxiosError} from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import { RootState } from '../store';
@@ -7,7 +7,6 @@ import { AdminMainTranslations } from '../translation/AdminMain';
 import { getToken, getDecodedToken } from "../util/jwtDecoder";
 import {Button, Container} from "react-bootstrap";
 import {setNoticePopUp} from "../redux/slice";
-import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
 
 const AdminMain = () => {
 
@@ -18,7 +17,6 @@ const AdminMain = () => {
     const userId = getDecodedToken()?.userId;
 
     const translations = AdminMainTranslations[language];
-    const popupTranslations = PopupMessageTranslations[language];
 
     interface JoinOnlyProperty {
         id: number;
@@ -51,8 +49,14 @@ const AdminMain = () => {
         regular: RegularProperty[];
     }
 
-    const [users, setUsers] = useState<UserDataResponse | null>(null);
+    const users = useRef<UserDataResponse | null>(null);
     const [visibleChildren, setVisibleChildren] = useState<{ [key: number]: boolean }>({});
+
+    const [filter, setFilter] = useState<string>(``);
+    const [filterNationality, setFilterNationality] = useState<string | null>(null);
+    const [filterGender, setFilterGender] = useState<number | null>(null);
+    const [filterActive, setFilterActive] = useState<number | null>(null);
+    const [filteredUser, setFilteredUser] = useState<UserDataResponse | null>(null);
 
     useEffect(() => {
         const mainDataFetch = async () => {
@@ -63,8 +67,9 @@ const AdminMain = () => {
                     headers: { Authorization: `Bearer ${getToken()}` }
                 });
 
-                setUsers(response.data);
-                console.log(response.data);
+                users.current = response.data;
+                setFilteredUser(response.data);
+
             } catch (error) {
                 const axiosError = error as AxiosError<{ UserRes: number }>;
                 if (axiosError.response) {
@@ -100,11 +105,90 @@ const AdminMain = () => {
 
     }, [users]);
 
+    useEffect(() => {
+        if (users.current) {
+            const filteredJoinOnly = users.current.joinonly.filter((value) => {
+                if (filterNationality === null && filterGender === null) {
+                    const matchesFilter = filter
+                        ? value.email?.toLowerCase().includes(filter.toLowerCase()) ||
+                        value.nickname?.toLowerCase().includes(filter.toLowerCase()) ||
+                        value.created_at?.toLowerCase().includes(filter.toLowerCase()) ||
+                        value.last_login?.toLowerCase().includes(filter.toLowerCase())
+                        : true;
+
+                    const matchesActive = filterActive !== null
+                        ? value.is_active === filterActive
+                        : true;
+
+                    return matchesFilter && matchesActive;
+                }
+
+                return false;
+            });
+
+            const filteredRegular = users.current.regular
+                .map((value) => {
+                    const matchesFilter = filter
+                        ? value.email?.toLowerCase().includes(filter.toLowerCase()) ||
+                        value.nickname?.toLowerCase().includes(filter.toLowerCase()) ||
+                        value.created_at?.toLowerCase().includes(filter.toLowerCase()) ||
+                        value.last_login?.toLowerCase().includes(filter.toLowerCase())
+                        : true;
+
+                    const matchesActive = filterActive !== null
+                        ? value.is_active === filterActive
+                        : true;
+
+                    const filteredChildren = value.children.filter((child) => {
+                        const matchesChildFilter = filter
+                            ? child.name?.toLowerCase().includes(filter.toLowerCase()) ||
+                            child.description?.toLowerCase().includes(filter.toLowerCase()) ||
+                            child.birthdate?.toLowerCase().includes(filter.toLowerCase())
+                            : true;
+
+                        const matchesNationality = filterNationality
+                            ? child.nationality?.toLowerCase() === filterNationality.toLowerCase()
+                            : true;
+
+                        const matchesGender = filterGender !== null
+                            ? child.gender === filterGender
+                            : true;
+
+                        return matchesChildFilter && matchesNationality && matchesGender;
+                    });
+
+                    return (filteredChildren.length > 0 || matchesFilter) && matchesActive
+                        ? { ...value, children: filteredChildren }
+                        : null;
+                })
+                .filter((value) => value !== null);
+
+            setFilteredUser({
+                joinonly: filteredJoinOnly,
+                regular: filteredRegular as RegularProperty[],
+            });
+        }
+    }, [filter, filterNationality, filterGender, filterActive]);
+
     const toggleChildrenVisibility = (userId: number) => {
         setVisibleChildren(prevState => ({
             ...prevState,
             [userId]: !prevState[userId]
         }));
+    };
+
+    const handleFilterNationality = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilterNationality(event.target.value || null);
+    };
+
+    const handleFilterGender = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = event.target.value;
+        setFilterGender(value !== '' ? parseInt(value) : null);
+    };
+
+    const handleFilterActive = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = event.target.value;
+        setFilterActive(value !== '' ? parseInt(value) : null);
     };
 
     const userInformation = (info: UserDataResponse) => {
@@ -267,8 +351,6 @@ const AdminMain = () => {
         return <></>
     }
 
-    console.log(users);
-
     return (
         <Container className="Main center_ui">
             <Container className={"main_top"}>
@@ -278,13 +360,33 @@ const AdminMain = () => {
                     </p>
                 </div>
 
-                <div className={"mt_elem"}>
-                    <input type={"text"} placeholder={"필터"}></input>
+                <div className={"mt_elem filter_wrap"}>
+                    <input type={"text"} value={filter} onChange={(e) => setFilter(e.target.value)}
+                           placeholder={translations.filter}></input>
+                    <div className={"select_wrap_3"}>
+                        <select onChange={handleFilterNationality}>
+                            <option value="">{translations.child_nationality}</option>
+                            <option value="FIN">{translations.finland}</option>
+                            <option value="KOR">{translations.korea}</option>
+                        </select>
+                        <select onChange={handleFilterGender}>
+                            <option value="">{translations.child_gender}</option>
+                            <option value="0">{translations.boy}</option>
+                            <option value="1">{translations.girl}</option>
+
+                        </select>
+                        <select onChange={handleFilterActive}>
+                        <option value="">{translations.is_hibernate}</option>
+                            <option value="1">{translations.active}</option>
+                            <option value="0">{translations.deactivated}</option>
+
+                        </select>
+                    </div>
+
+
                 </div>
             </Container>
-            {
-                userInformation(users)
-            }
+            {filteredUser && userInformation(filteredUser)}
 
 
         </Container>
