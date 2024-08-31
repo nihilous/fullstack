@@ -35,7 +35,8 @@ code {
 
 .center_ui {
   padding-top: 76px;
-  padding-bottom: 31px;
+  padding-bottom: 70px;
+  box-sizing: border-box;
 }
 
 
@@ -229,9 +230,32 @@ code {
   min-width: 120px;
 }
 
-.his_delete{
-  text-align: right;
+.update_child_inst{
+  color: white;
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
+
+.his_delete{
+  display: flex;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.his_delete div{
+  width: 50%;
+  text-align: center;
+}
+
+.his_delete div button{
+  min-width: 120px;
+}
+
+.update_child{
+  transform: translate(0, -90%);
+}
+
 /*common history page end*/
 /*common Notice page start*/
 .notice_title {

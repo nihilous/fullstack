@@ -487,4 +487,87 @@ router.put('/new/password', async (req: Request, res: Response) => {
 
 });
 
+router.put('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+    const user_id:number = parseInt(req.params.id, 10);
+    const token_id:number = req?.token?.userId;
+
+    const user_detail_id = parseInt(req.params.user_detail_id, 10);
+    const token_user_detail_ids:number[] = req?.token?.userDetailIds;
+
+    const { name, description, gender, birthdate, nationality } = req.body;
+
+
+    let legit_child = false;
+
+    for (let i = 0; i < token_user_detail_ids.length; i++){
+        if(token_user_detail_ids[i] === user_detail_id){
+            legit_child = true;
+        }
+    }
+
+    if(user_id !== token_id || legit_child === false){
+        return res.status(403).json({ message: 'No Authority', childUpdateRes: 1 });
+    }
+
+    const isAttacked:boolean = isInjection([name, description, birthdate, nationality])
+    const isAttacked2:boolean = isNotNumber([gender])
+
+    if(isAttacked || isAttacked2){
+        return res.status(400).json({ message: 'Suspected to Attacking', childUpdateRes: 2});
+    }
+
+    let setStatement: string[] = [];
+    let setBinding: any[] = [];
+
+    if (name !== undefined && name !== "") {
+        setStatement.push('name = ?');
+        setBinding.push(name);
+    }
+
+    if (description !== undefined && description !== "") {
+        setStatement.push('description = ?');
+        setBinding.push(description);
+    }
+
+    if (gender !== undefined && gender !== null) {
+        setStatement.push('gender = ?');
+        setBinding.push(gender);
+    }
+
+    if (birthdate !== undefined && birthdate !== "") {
+        setStatement.push('birthdate = ?');
+        setBinding.push(birthdate);
+    }
+
+    if (nationality !== undefined && nationality !== "") {
+        setStatement.push('nationality = ?');
+        setBinding.push(nationality);
+    }
+
+    if (setStatement.length === 0) {
+        return res.status(400).json({ message: 'No valid fields to update', childUpdateRes: 3 });
+    }
+
+    try {
+        const connection = await pool.getConnection();
+
+        setBinding.push(user_detail_id);
+
+        await connection.query(`
+            UPDATE 
+                user_detail
+            SET
+                ${setStatement.join(', ')}
+            WHERE
+                id = ?
+        `, setBinding);
+
+        res.status(201).json({ message: 'Child info changed'});
+
+    } catch (error) {
+        console.error('Error Adding User put /user/:id/:user_detail_id', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 export default router;

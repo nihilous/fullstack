@@ -5,7 +5,7 @@ import { RootState } from '../store';
 import { useParams, useNavigate } from 'react-router-dom';
 import { HistoryTranslations } from '../translation/History';
 import {getToken, getDecodedToken} from "../util/jwtDecoder";
-import {Button, Container, Form} from "react-bootstrap";
+import {Button, Col, Container, Form, Row} from "react-bootstrap";
 import {setNoticePopUp} from "../redux/slice";
 import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
 
@@ -35,8 +35,22 @@ const History = () => {
     const [updateTargetDate, setUpdateTargetDate] = useState<string>(``);
     const [removeHistory, setRemoveHistory] = useState<boolean>(false);
     const [deleteConfirm, setDeleteConfirm] = useState<string>(``);
+    const [name, setName] = useState<string>(``);
+    const [birthdate, setBirthdate] = useState<string>(``);
+    const [gender, setGender] = useState<number | null>(null);
+    const [nationality, setNationality] = useState<string>(``);
+    const [description, setDescription] = useState<string>(``);
+    const [updateChild, setUpdateChild] = useState<boolean>(false);
     const targetHistoryRef = useRef<number | null>(null);
     const approveMessage = translations.agree_to_delete;
+
+    const clearState = () => {
+        setName('');
+        setBirthdate('');
+        setGender(null);
+        setNationality('');
+        setDescription('');
+    }
 
     userDetailIds?.map((child_id: number) => {
         if(child_id === user_detail_id && !isAuthorized){
@@ -361,9 +375,12 @@ const History = () => {
 
     const closeDeleteUI = () => {
         if(removeHistory){
-            setRemoveHistory(!removeHistory)
-        }else{
-            setRemoveChild(!removeChild)
+            setRemoveHistory(!removeHistory);
+        }else if(removeChild){
+            setRemoveChild(!removeChild);
+        }else if(updateChild){
+            setUpdateChild(!updateChild);
+            clearState();
         }
         setDeleteConfirm(``);
     }
@@ -394,6 +411,147 @@ const History = () => {
         )
     };
 
+    const updateChildRecord = async () => {
+
+        try {
+
+            console.log(name);
+            console.log(description);
+            console.log(gender);
+            console.log(birthdate);
+            console.log(nationality);
+
+            const response = await axios.put(`${apiUrl}/user/${getDecodedToken()?.userId}/${id}`, {
+                name: name,
+                description: description,
+                gender: gender,
+                birthdate: birthdate,
+                nationality: nationality,
+            }, {headers: { Authorization: `Bearer ${getToken()}` }});
+
+
+            dispatch(setNoticePopUp({
+                on: true,
+                is_error: false,
+                message: popupTranslations.update_child_record_success
+            }));
+
+            closeDeleteUI();
+
+        } catch (error) {
+
+            const axiosError = error as AxiosError<{ childUpdateRes: number }>;
+            if (axiosError.response) {
+
+                const childUpdateRes = axiosError.response.data.childUpdateRes;
+                let message = ``;
+                switch (childUpdateRes) {
+                    case 1:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    case 2:
+                        message = popupTranslations.injection;
+                        break;
+                    case 3:
+                        message = popupTranslations.AccountNoField;
+                        break;
+                    default:
+                        message = popupTranslations.defaultError;
+                        break;
+                }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+                clearState();
+            }
+        }
+    };
+
+    const updateChildUI = () => {
+        return(
+            <div className={"popup_form"}>
+                <Container className="update_child">
+                    <Row className="justify-content-md-center">
+                        <Col md={6}>
+                                <div className={"update_child_inst"}>{translations.update_child_inst}</div>
+
+                                <Form.Group controlId="registerChildName">
+                                    <Form.Label>{translations.child_name}</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder={translations.child_name}
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                    />
+                                </Form.Group>
+
+                                <Form.Group controlId="registerChildBirthdate">
+                                    <Form.Label>{translations.birthdate}</Form.Label>
+                                    <Form.Control
+                                        type="date"
+                                        placeholder={translations.birthdate}
+                                        value={birthdate}
+                                        onChange={(e) => setBirthdate(e.target.value)}
+                                    />
+                                </Form.Group>
+
+                                <Form.Group controlId="registerChildGender">
+                                    <Form.Label>{translations.gender}</Form.Label>
+                                    <Form.Select
+                                        value={gender ?? ""}
+                                        onChange={(e) => setGender(parseInt(e.target.value, 10))}
+                                    >
+                                        <option value="">{translations.select_gender}</option>
+                                        <option value={0}>{translations.boy}</option>
+                                        <option value={1}>{translations.girl}</option>
+                                    </Form.Select>
+                                </Form.Group>
+
+                                <Form.Group controlId="registerChildNationality">
+                                    <Form.Label>{translations.nationality}</Form.Label>
+                                    <Form.Select
+                                        value={nationality ?? ""}
+                                        onChange={(e) => setNationality(e.target.value)}
+                                    >
+                                        <option value="">{translations.select_nationality}</option>
+                                        <option value="FIN">{translations.finland}</option>
+                                        <option value="KOR">{translations.korea}</option>
+                                    </Form.Select>
+                                </Form.Group>
+
+                                <Form.Group controlId="registerChildDescription">
+                                    <Form.Label>{translations.description}</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder={translations.description}
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                    />
+                                </Form.Group>
+                                <div className="his_delete">
+                                    <div>
+                                        <Button variant="primary" className="mt-3" onClick={() => updateChildRecord()}>
+                                            {translations.update}
+                                        </Button>
+                                    </div>
+                                    <div>
+                                        <Button variant="secondary" className="mt-3 ms-2" onClick={() => closeDeleteUI()}>
+                                            {translations.cancel}
+                                        </Button>
+                                    </div>
+                                </div>
+
+
+                        </Col>
+                    </Row>
+                </Container>
+            </div>
+        )
+    };
+
 
     return (
 
@@ -412,8 +570,14 @@ const History = () => {
             }
             <div className={"clear"}></div>
             <div className={"container his_delete"}>
-                <Button variant="danger"
-                        onClick={() => setRemoveChild(!removeChild)}>{translations.delete_child_record}</Button>
+                <div>
+                    <Button variant="warning"
+                            onClick={() => setUpdateChild(!updateChild)}>{translations.update_child_record}</Button>
+                </div>
+                <div>
+                    <Button variant="danger"
+                            onClick={() => setRemoveChild(!removeChild)}>{translations.delete_child_record}</Button>
+                </div>
             </div>
 
 
@@ -427,6 +591,13 @@ const History = () => {
             {
                 updateHistory ?
                     updateHistoryUI()
+                    :
+                    null
+            }
+
+            {
+                updateChild ?
+                    updateChildUI()
                     :
                     null
             }

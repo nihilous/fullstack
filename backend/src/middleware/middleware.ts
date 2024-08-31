@@ -46,7 +46,7 @@ function isInjection(inputs: string[]): boolean {
         'alter', 'begin', 'cast', 'create', 'cursor', 'declare', 'delete', 'drop', 'end',
         'exec', 'execute', 'fetch', 'insert', 'kill', 'open', 'select', 'sys', 'sysobjects',
         'syscolumns', 'table', 'update',
-        'union', 'join'
+        'union', 'join', '"', "'", '='
     ];
 
     for (const input of inputs) {
@@ -65,11 +65,12 @@ function isInjection(inputs: string[]): boolean {
 function isNotNumber(inputs: any[]): boolean {
 
     for (const input of inputs) {
-        if(typeof input !== 'number') {
-            return true;
+        console.log(input);
+        if(typeof input === 'number' || input === undefined || input === null) {
+            return false;
         }
     }
-    return false;
+    return true;
 }
 
 

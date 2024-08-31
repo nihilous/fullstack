@@ -32,6 +32,7 @@ export const PopupMessageTranslations = {
         update_history_record_success: `Rokotushistoria päivitetty onnistuneesti.`,
         deleted_history_record_zero: `Poistettu rokotustieto 0`,
         delete_history_record_success: `Rokotushistoria poistettu onnistuneesti.`,
+        update_child_record_success: `Lapsen tiedot päivitetty onnistuneesti.`,
     },
     ENG: {
         injection: `Suspected to Attacking.`,
@@ -66,6 +67,7 @@ export const PopupMessageTranslations = {
         update_history_record_success: `Updated Vaccination History`,
         deleted_history_record_zero: `Deleted Vaccination Record 0`,
         delete_history_record_success: `Deleted Vaccination History`,
+        update_child_record_success: `Child Information Updated.`,
 
     },
     KOR: {
@@ -101,5 +103,6 @@ export const PopupMessageTranslations = {
         update_history_record_success: `백신 접종 기록 변경 완료되었습니다.`,
         deleted_history_record_zero: `삭제된 백신 접종 기록 0건`,
         delete_history_record_success: `백신 접종 정보 삭제 완료되었습니다.`,
+        update_child_record_success: `아동 정보 변경 완료되었습니다.`,
     }
 };
