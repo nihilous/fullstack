@@ -210,6 +210,8 @@ const AdminMain = () => {
                     return translations.finland;
                 case "KOR":
                     return translations.korea;
+                case "ENG":
+                    return translations.usa;
                 default:
                     return nationalityString;
             }
@@ -368,6 +370,7 @@ const AdminMain = () => {
                             <option value="">{translations.child_nationality}</option>
                             <option value="FIN">{translations.finland}</option>
                             <option value="KOR">{translations.korea}</option>
+                            <option value="ENG">{translations.usa}</option>
                         </select>
                         <select onChange={handleFilterGender}>
                             <option value="">{translations.child_gender}</option>

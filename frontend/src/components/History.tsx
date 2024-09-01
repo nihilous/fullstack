@@ -415,12 +415,6 @@ const History = () => {
 
         try {
 
-            console.log(name);
-            console.log(description);
-            console.log(gender);
-            console.log(birthdate);
-            console.log(nationality);
-
             const response = await axios.put(`${apiUrl}/user/${getDecodedToken()?.userId}/${id}`, {
                 name: name,
                 description: description,
@@ -519,10 +513,11 @@ const History = () => {
                                         <option value="">{translations.select_nationality}</option>
                                         <option value="FIN">{translations.finland}</option>
                                         <option value="KOR">{translations.korea}</option>
+                                        <option value="ENG">{translations.usa}</option>
                                     </Form.Select>
                                 </Form.Group>
 
-                                <Form.Group controlId="registerChildDescription">
+                            <Form.Group controlId="registerChildDescription">
                                     <Form.Label>{translations.description}</Form.Label>
                                     <Form.Control
                                         type="text"

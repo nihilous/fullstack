@@ -48,7 +48,7 @@ const Main = () => {
 
     type UserDetailResponse = UserDetailWithDetails | UserDetailWithoutDetails;
 
-    const userDetail = useRef<UserDetailResponse | null>(null);
+    const [userDetail, setUserDetail] = useState<UserDetailResponse | null>(null);
     const [filter, setFilter] = useState<string>(``);
     const [filterNationality, setFilterNationality] = useState<string | null>(null);
     const [filterGender, setFilterGender] = useState<number | null>(null);
@@ -63,9 +63,9 @@ const Main = () => {
                     headers: { Authorization: `Bearer ${getToken()}` }
                 });
 
-                userDetail.current = response.data;
-                if(response.data.user_detail){
+                setUserDetail(response.data);
 
+                if(response.data.user_detail){
                     setFilteredUser(Object.values(response.data.record));
                 }
             } catch (error) {
@@ -105,9 +105,9 @@ const Main = () => {
 
     useEffect(() => {
 
-        if (userDetail.current?.user_detail) {
+        if (userDetail?.user_detail) {
 
-            const filteredRecords = Object.values(userDetail.current.record).filter((value) => {
+            const filteredRecords = Object.values(userDetail.record).filter((value) => {
                 const matchesFilter = filter
                     ? value.name?.toLowerCase().includes(filter.toLowerCase()) ||
                     value.description?.toLowerCase().includes(filter.toLowerCase()) ||
@@ -159,6 +159,8 @@ const Main = () => {
                         return translations.finland;
                     case "KOR":
                         return translations.korea;
+                    case "USA":
+                        return translations.korea;
                     default:
                         return nationalityString;
                 }
@@ -206,7 +208,7 @@ const Main = () => {
         });
     };
 
-    if (userDetail.current === null) {
+    if (userDetail === null) {
         return <></>
     }
 
@@ -214,9 +216,9 @@ const Main = () => {
         <Container className="Main center_ui">
             <Container className={"main_top"}>
                 <div className={"mt_elem"}>
-                    <p className={"main_greeting"}>{`${translations.welcome} ${userDetail.current?.record[0]?.nickname ?? ''}  ${
-                        userDetail.current?.user_detail
-                            ? translations.have_child + Object.keys(userDetail.current.record).length + " " + ((userDetailIds?.length ?? 0) > 1 ? translations.child_datas : translations.child_data)
+                    <p className={"main_greeting"}>{`${translations.welcome} ${userDetail?.record[0]?.nickname ?? ''}  ${
+                        userDetail?.user_detail
+                            ? translations.have_child + Object.keys(userDetail.record).length + " " + ((userDetailIds?.length ?? 0) > 1 ? translations.child_datas : translations.child_data)
                             : translations.no_child
                     }`}
                     </p>
@@ -230,6 +232,7 @@ const Main = () => {
                             <option value="">{translations.child_nationality}</option>
                             <option value="FIN">{translations.finland}</option>
                             <option value="KOR">{translations.korea}</option>
+                            <option value="ENG">{translations.usa}</option>
                         </select>
                         <select onChange={handleFilterGender}>
                             <option value="">{translations.child_gender}</option>
@@ -237,14 +240,11 @@ const Main = () => {
                             <option value="1">{translations.girl}</option>
                         </select>
                     </div>
-
-
                 </div>
             </Container>
 
             {
-                userDetail?.current.user_detail ?
-
+                userDetail?.user_detail === true ?
                     <Container className={"main_info_elem_wrapper"}>
                         {childInformation(filteredUser)}
                     </Container>

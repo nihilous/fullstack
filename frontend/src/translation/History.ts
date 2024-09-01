@@ -26,6 +26,7 @@ export const HistoryTranslations = {
         select_nationality: `Valitse Kansallisuus`,
         finland: `Suomi`,
         korea: `Korea`,
+        usa: `Yhdysvallat`,
     },
     ENG: {
         title: `Vaccination History`,
@@ -54,6 +55,7 @@ export const HistoryTranslations = {
         select_nationality: `Select nationality`,
         finland: `Finland`,
         korea: `Korea`,
+        usa: `USA`,
     },
     KOR: {
         title: `접종기록`,
@@ -82,5 +84,6 @@ export const HistoryTranslations = {
         select_nationality: `국적 선택`,
         finland: `핀란드`,
         korea: `대한민국`,
+        usa: `미국`,
     }
 };

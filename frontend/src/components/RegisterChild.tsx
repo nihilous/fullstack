@@ -166,6 +166,8 @@ const RegisterChild = () => {
                         return translations.finland;
                     case "KOR":
                         return translations.korea;
+                    case "ENG":
+                        return translations.usa;
                 }
             };
 
@@ -264,6 +266,7 @@ const RegisterChild = () => {
                                     <option value="">{translations.select_nationality}</option>
                                     <option value="FIN">{translations.finland}</option>
                                     <option value="KOR">{translations.korea}</option>
+                                    <option value="ENG">{translations.usa}</option>
                                 </Form.Select>
                             </Form.Group>
 

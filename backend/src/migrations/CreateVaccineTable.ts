@@ -31,7 +31,7 @@ export class CreateVaccineTable20240806173026 implements MigrationInterface {
                     },
                     {
                         name: 'vaccine_minimum_recommend_date',
-                        type: 'tinyint',
+                        type: 'int',
                     },
                     {
                         name: 'vaccine_maximum_period_type',
@@ -40,7 +40,7 @@ export class CreateVaccineTable20240806173026 implements MigrationInterface {
                     },
                     {
                         name: 'vaccine_maximum_recommend_date',
-                        type: 'tinyint',
+                        type: 'int',
                         isNullable: true,
                     },
                     {
