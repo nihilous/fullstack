@@ -6,9 +6,9 @@ const router = Router();
 
 
 
-router.get('/bbs/:page', tokenExtractor, async (req: CustomRequest, res: Response) => {
+router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res: Response) => {
 
-    const { user_id } = req.body;
+    const user_id:number = parseInt(req.params.user_id, 10);
     const token_id:number = req?.token?.userId;
 
     if(user_id !== token_id){
@@ -67,9 +67,9 @@ router.get('/bbs/:page', tokenExtractor, async (req: CustomRequest, res: Respons
     }
 });
 
-router.get('/post/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+router.get('/post/:user_id/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
 
-    const { user_id } = req.body;
+    const user_id:number = parseInt(req.params.user_id, 10);
     const token_id:number = req?.token?.userId;
 
     if(user_id !== token_id){

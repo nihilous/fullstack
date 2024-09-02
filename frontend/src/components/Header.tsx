@@ -58,6 +58,9 @@ const Header = () => {
                                                 <Nav.Link href="/admin/main">{`${translations.main}`}</Nav.Link>
                                             </Nav>
                                             <Nav className="m-auto">
+                                                <Nav.Link href="/board">{`${translations.board}`}</Nav.Link>
+                                            </Nav>
+                                            <Nav className="m-auto">
                                                 <Button variant="outline-secondary" onClick={handleLogout}>
                                                     {translations.logout}
                                                 </Button>
@@ -71,6 +74,9 @@ const Header = () => {
                                         </Nav>
                                         <Nav className="m-auto">
                                             <Nav.Link href="/register_child">{`${translations.register}`}</Nav.Link>
+                                        </Nav>
+                                        <Nav className="m-auto">
+                                            <Nav.Link href="/board">{`${translations.board}`}</Nav.Link>
                                         </Nav>
                                         <Nav className="m-auto">
                                             <Nav.Link href="/account">{`${translations.account}`}</Nav.Link>

@@ -14,6 +14,7 @@ import Notice from './components/Notice';
 import Account from './components/Account';
 import AdminLoginJoin from "./components/AdminLoginJoin";
 import AdminMain from "./components/AdminMain";
+import Board from "./components/Board";
 const App = () => {
 
     const dispatch = useDispatch();
@@ -43,6 +44,8 @@ const App = () => {
                 <Route path="/account" element={<Account />} />
                 <Route path="/admin/login" element={<AdminLoginJoin />} />
                 <Route path="/admin/main" element={<AdminMain />} />
+                <Route path="/board" element={<Board />} />
+                <Route path="/board/:page" element={<Board />} />
             </Routes>
             <Footer />
         </Router>
