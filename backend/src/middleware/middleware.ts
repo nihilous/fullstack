@@ -65,7 +65,6 @@ function isInjection(inputs: string[]): boolean {
 function isNotNumber(inputs: any[]): boolean {
 
     for (const input of inputs) {
-        console.log(input);
         if(typeof input === 'number' || input === undefined || input === null) {
             return false;
         }

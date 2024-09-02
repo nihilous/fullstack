@@ -9,6 +9,7 @@ import loginRouter from './controllers/loginController';
 import vaccineRouter from './controllers/vaccineController';
 import historyRouter from './controllers/historyController';
 import noticeRouter from './controllers/noticeController';
+import boardRouter from './controllers/boardController';
 import runMigrations from './runMigration';
 import { checkDatabaseConnection } from './db';
 import { seedVaccines } from './seeds/VaccineSeed';
@@ -27,6 +28,7 @@ app.use('/login', loginRouter);
 app.use('/vaccine', vaccineRouter);
 app.use('/history', historyRouter);
 app.use('/notice', noticeRouter);
+app.use('/board', boardRouter);
 
 app.get('/', (req, res) => {
     res.send('API is working');
