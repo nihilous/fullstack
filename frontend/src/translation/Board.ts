@@ -1,3 +1,5 @@
+import React from "react";
+
 export const BoardTranslations = {
     FIN: {
         no: `Numero`,
@@ -6,6 +8,13 @@ export const BoardTranslations = {
         datetime: `Aika`,
         next: `Seuraava`,
         prev: `Edellinen`,
+        find: `Etsi`,
+        cancel: `Peruuta`,
+        write: `Kirjoita`,
+        select: `Valitse`,
+        text: `Teksti`,
+        reply: `Vastaus`,
+        search_inst: `Hakusana`,
     },
     ENG: {
         no: `No`,
@@ -14,6 +23,13 @@ export const BoardTranslations = {
         datetime: `Time`,
         next: `Next`,
         prev: `Prev`,
+        find: `Find`,
+        cancel: `Cancel`,
+        write: `Write`,
+        select: `Select`,
+        text: `Text`,
+        reply: `Reply`,
+        search_inst: `Search Keyword`,
 
     },
     KOR: {
@@ -23,6 +39,13 @@ export const BoardTranslations = {
         datetime: `시간`,
         next: `다음`,
         prev: `이전`,
+        find: `찾기`,
+        cancel: `취소`,
+        write: `글쓰기`,
+        select: `선택`,
+        text: `내용`,
+        reply: `댓글`,
+        search_inst: `검색어`,
 
     }
 };

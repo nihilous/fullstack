@@ -3,7 +3,7 @@ import axios, {AxiosError} from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import { RootState } from '../store';
 import { BoardTranslations } from '../translation/Board';
-import { Button, Container } from 'react-bootstrap';
+import {Button, Container, Form} from 'react-bootstrap';
 import { getToken, getDecodedToken } from "../util/jwtDecoder";
 import { useNavigate} from "react-router-dom";
 import {setNoticePopUp} from "../redux/slice";
@@ -29,6 +29,12 @@ const Board = () => {
     const totalNavi = useRef<number>(0);
 
     const [posts, setPosts] = useState<post[]>();
+    const [where, setWhere] = useState<string>(``);
+    const [keyword, setKeyword] = useState<string>(``);
+    const [toggleUI, setToggleUI] = useState<boolean>(false);
+
+    const [title, setTitle] = useState<string>(``);
+    const [text, setText] = useState<string>(``);
 
     const translations = BoardTranslations[language];
     const popupTranslations = PopupMessageTranslations[language];
@@ -39,10 +45,18 @@ const Board = () => {
         try {
 
             const response = await axios.get(`${apiUrl}/board/bbs/${userId}/${page}`, {
-                headers: { Authorization: `Bearer ${getToken()}` }
+                headers: { Authorization: `Bearer ${getToken()}` },
+                params: {
+                    where: where,
+                    keyword: keyword,
+                }
             });
 
             totalNavi.current = response.data.post;
+            if(page === 0)
+            {
+                setNaviNum(page);
+            }
             setPosts(response.data.data);
 
         } catch (error) {
@@ -83,6 +97,8 @@ const Board = () => {
 
 
     }, [naviNum]);
+
+
 
     const generateNavi = (total: number, recent: number) => {
         const buttons = [];
@@ -129,6 +145,93 @@ const Board = () => {
         );
     };
 
+    const wrightPost = async () => {
+
+        try {
+
+            const response = await axios.post(`${apiUrl}/board/`, {"user_id":userId,"title":title,"text":text},{
+                headers: { Authorization: `Bearer ${getToken()}` }
+            });
+
+            if(response.status === 201) {
+                existingDataFetch(0);
+
+                const message = popupTranslations.BoardPostingSuccess;
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: false,
+                    message: message
+                }));
+                setToggleUI(!toggleUI)
+            }
+
+        } catch (error) {
+
+            const axiosError = error as AxiosError<{ boardPostWriteRes: number }>;
+            if (axiosError.response) {
+                const BoardPostWriteRes = axiosError.response.data.boardPostWriteRes;
+                let message = ``;
+                switch (BoardPostWriteRes) {
+                    case 1:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    case 2:
+                        message = popupTranslations.injection;
+                        break;
+                    case 3:
+                        message = popupTranslations.BoardWriteRequire;
+                        break;
+                    default:
+                        message = popupTranslations.defaultError;
+                        break;
+                }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
+
+        }
+    };
+
+    const writePostUI = () => {
+        return(
+            <div className={"popup_form"}>
+                <Container className="write_post">
+                    <Form.Group controlId="PostTitle" className="mt-3">
+                        <Form.Label>{`title`}</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder={`title`}
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                        />
+                    </Form.Group>
+
+                    <Form.Group controlId="PostText" className="mt-3">
+                        <Form.Label>{`text`}</Form.Label>
+                        <Form.Control
+                            as="textarea" rows={6}
+                            placeholder={`text`}
+                            value={text}
+                            onChange={(e) => setText(e.target.value)}
+                        />
+                    </Form.Group>
+
+                    <Button variant="primary" type="submit" className="mt-3" onClick={() => wrightPost()}>
+                        {translations.write}
+                    </Button>
+                    <Button variant="secondary" className="mt-3 ms-2" onClick={() => setToggleUI(!toggleUI)}>
+                        {translations.cancel}
+                    </Button>
+
+                </Container>
+            </div>
+        )
+    };
+
     return (
         <Container className="center_ui">
             <div>
@@ -164,8 +267,43 @@ const Board = () => {
                         null
                     }
                 </div>
+            </div>
+
+            <div className={"board_input_bar"}>
+
+                <div>
+                    <Form.Select value={where ?? ""} onChange={(e) => setWhere(e.target.value)}>
+                        <option value="">{translations.select}</option>
+                        <option value="nickname">{translations.nickname}</option>
+                        <option value="title">{translations.title}</option>
+                        <option value="text">{translations.text}</option>
+                        <option value="reply">{translations.reply}</option>
+                    </Form.Select>
+                </div>
+                <div>
+                    <input type={"text"} value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder={translations.search_inst}></input>
+                    <Button variant="primary" type="submit" className="mt-3" onClick={() => existingDataFetch(0)}>
+                        {translations.find}
+                    </Button>
+                </div>
+
+                <div>
+                    <Button variant="primary" type="submit" className="mt-3" onClick={() => setToggleUI(!toggleUI)}>
+                        {translations.write}
+                    </Button>
+                </div>
+
+
+
 
             </div>
+
+            {
+                toggleUI ?
+                    writePostUI()
+                    :
+                    null
+            }
         </Container>
     );
 };

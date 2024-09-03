@@ -385,6 +385,10 @@ code {
 }
 /*common Admin Main page end*/
 /*common board start*/
+
+.post:nth-child(2){
+  min-height: 490px;
+}
 .post div{
   display: flex;
   margin-bottom: 10px;
@@ -447,10 +451,6 @@ code {
 }
 
 
-
-
-.post_img{}
-
 .now_nav{
   font-weight: bold;
   color: black;
@@ -479,6 +479,54 @@ code {
 }
 .nav_prev{
   width: 5%;
+}
+
+.board_input_bar{
+  margin-top: 30px;
+  display: flex;
+  align-content: center;
+}
+
+.board_input_bar div{
+  align-content: center;
+}
+
+.board_input_bar div:nth-child(1){
+  width: 20%;
+  padding-right: 40px;
+}
+
+.board_input_bar div:nth-child(2){
+  width: 60%;
+}
+
+.board_input_bar div:nth-child(2) input{
+  width: 80%;
+  padding-left: 40px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  min-height: 26px;
+  border-radius: 6px;
+}
+
+.board_input_bar div:nth-child(2) button{
+  width: 15%;
+  margin-top: 0 !important;
+  float: right;
+}
+
+.board_input_bar div:nth-child(3){
+  width: 20%;
+}
+
+.board_input_bar div:nth-child(3) button{
+  margin-top: 0 !important;
+  width: 45%;
+  float: right;
+}
+
+.write_post{
+  transform: translate(0, -40%);
 }
 
 /*common board page end*/

@@ -10,6 +10,9 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
 
     const user_id:number = parseInt(req.params.user_id, 10);
     const token_id:number = req?.token?.userId;
+    const where: string | undefined = typeof req.query.where === 'string' ? req.query.where : undefined;
+    const keyword: string | undefined = typeof req.query.keyword === 'string' ? req.query.keyword : undefined;
+
 
     if(user_id !== token_id){
         return res.status(403).json({ message: 'No Authority', boardGetRes: 1 });
@@ -17,21 +20,55 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
 
     const page = 10 * parseInt(req.params.page, 10);
 
-    const isAttacked:boolean = isNotNumber([page])
+    const isAttacked:boolean = isInjection([where as string, keyword as string]);
+    const isAttacked2:boolean = isNotNumber([page])
 
-    if(isAttacked){
+    if(isAttacked || isAttacked2){
         return res.status(400).json({ message: 'Suspected to Attacking', boardGetRes: 2 });
     }
 
     try {
         const connection = await pool.getConnection();
 
+        let whereClause = '';
+
+        if (where && keyword) {
+
+            switch (where) {
+                case 'nickname':
+                    whereClause = `WHERE user.nickname LIKE ?`;
+                    break;
+                case 'title':
+                    whereClause = `WHERE board.title LIKE ?`;
+                    break;
+                case 'text':
+                    whereClause = `WHERE board.text LIKE ?`;
+                    break;
+                case 'reply':
+                    whereClause = `WHERE reply.text LIKE ?`;
+                    break;
+                default:
+                    whereClause = '';
+                    break;
+            }
+        }
+
         const [countRows]: any = await connection.query(`
             SELECT
                 count(*) as count
             FROM
                 board
-        `);
+            JOIN
+                user
+            ON
+                board.user_id = user.id
+            LEFT JOIN
+                reply
+            ON
+                board.id = reply.board_id
+            ${whereClause}`
+        , [`%${keyword}%`]);
+
 
         const count =  (Math.trunc(countRows[0].count / 10) + 1);
 
@@ -48,6 +85,11 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
                 user
             ON
                 board.user_id = user.id
+            LEFT JOIN
+                reply
+            ON
+                board.id = reply.board_id
+            ${whereClause}
             ORDER BY
                 id
             DESC
@@ -55,8 +97,7 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
                 10
             OFFSET
                 ?
-            
-        `, [page]);
+        `, where === "" ? [page] : [`%${keyword}%`, page]);
 
         res.status(200).json({"data":rows, "post": count});
 

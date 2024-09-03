@@ -33,6 +33,8 @@ export const PopupMessageTranslations = {
         deleted_history_record_zero: `Poistettu rokotustieto 0`,
         delete_history_record_success: `Rokotushistoria poistettu onnistuneesti.`,
         update_child_record_success: `Lapsen tiedot päivitetty onnistuneesti.`,
+        BoardWriteRequire: `Otsikko ja teksti ovat pakollisia`,
+        BoardPostingSuccess: `Käyttäjän viesti rekisteröity onnistuneesti`
     },
     ENG: {
         injection: `Suspected to Attacking.`,
@@ -68,6 +70,8 @@ export const PopupMessageTranslations = {
         deleted_history_record_zero: `Deleted Vaccination Record 0`,
         delete_history_record_success: `Deleted Vaccination History`,
         update_child_record_success: `Child Information Updated.`,
+        BoardWriteRequire: `Title and Text are required`,
+        BoardPostingSuccess: `User Post Registered`
 
     },
     KOR: {
@@ -104,5 +108,7 @@ export const PopupMessageTranslations = {
         deleted_history_record_zero: `삭제된 백신 접종 기록 0건`,
         delete_history_record_success: `백신 접종 정보 삭제 완료되었습니다.`,
         update_child_record_success: `아동 정보 변경 완료되었습니다.`,
+        BoardWriteRequire: `제목과 내용이 필요합니다.`,
+        BoardPostingSuccess: `글 게시 완료`
     }
 };
