@@ -11,12 +11,28 @@ import {PopupMessageTranslations} from "../translation/PopupMessageTranslations"
 
 const Board = () => {
 
-    interface post {
+    interface post_for_bbs {
         id: number
         user_id: number
         title: string
         nickname: string
         updated_at: string
+    }
+
+    interface post_with_replies  {
+        id: number
+        user_id: number
+        title: string
+        text: string
+        nickname: string
+        updated_at: string
+        replies: {
+            reply_id: number
+            reply_user_id: number
+            reply_user_nickname: string
+            reply_text: string
+            reply_updated_at: string
+        }[] | null
     }
 
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
@@ -28,13 +44,17 @@ const Board = () => {
     const [naviNum, setNaviNum] = useState<number>(0);
     const totalNavi = useRef<number>(0);
 
-    const [posts, setPosts] = useState<post[]>();
+    const [posts, setPosts] = useState<post_for_bbs[]>();
     const [where, setWhere] = useState<string>(``);
     const [keyword, setKeyword] = useState<string>(``);
     const [toggleUI, setToggleUI] = useState<boolean>(false);
 
     const [title, setTitle] = useState<string>(``);
     const [text, setText] = useState<string>(``);
+
+    const [watchPost, setWatchPost] = useState<boolean>(false);
+    const [postNum, setPostNum] = useState<number | null>(null);
+    const [post, setPost] = useState<post_with_replies | null>(null);
 
     const translations = BoardTranslations[language];
     const popupTranslations = PopupMessageTranslations[language];
@@ -130,15 +150,103 @@ const Board = () => {
     };
 
 
-    const generatePosts = (posts: post[]) => {
+    const fetchPost = async (post_id: number) => {
+
+        try {
+
+            const response = await axios.get(`${apiUrl}/board/post/${userId}/${post_id}`, {
+                headers: { Authorization: `Bearer ${getToken()}` }
+            });
+
+            if (response.status === 200) {
+
+                setPost(response.data[0]);
+                setPostNum(response.data[0].id);
+                setWatchPost(true);
+            }
+
+        } catch (error) {
+
+            const axiosError = error as AxiosError<{ boardPostGetRes: number }>;
+            if (axiosError.response) {
+                const BoardPostGetRes = axiosError.response.data.boardPostGetRes;
+                let message = ``;
+                switch (BoardPostGetRes) {
+                    case 1:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    case 2:
+                        message = popupTranslations.injection;
+                        break;
+                    default:
+                        message = popupTranslations.defaultError;
+                        break;
+                }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
+
+        }
+
+    }
+
+    const readPostUI = (post_info: post_with_replies) => {
+
+        const replies = post_info.replies;
+        const reply_elem = [];
+
+        if(replies !== null){
+            const parsed_repies = JSON.parse(JSON.stringify(replies));
+            for(let i = 0; i < parsed_repies.length; i++){
+                reply_elem.push(
+                    <div key={parsed_repies[i].reply_id}>
+                        <div>{parsed_repies[i].reply_user_nickname}</div>
+                        <div>{parsed_repies[i].reply_text}</div>
+                        <div>{parsed_repies[i].reply_updated_at}</div>
+                        <div>{parsed_repies[i].reply_user_id === userId ? "댓글삭제": null}</div>
+                    </div>
+                )
+
+            }
+        }
+
+        return(
+            <div key={`post_view_${post_info.id}`}>
+                <div>
+                    {post_info.title}
+                </div>
+                <div>
+                    {post_info.text}
+                </div>
+                <div>
+                    {post_info.user_id === userId ? "글삭제" : null}
+                </div>
+                <div>
+                    {reply_elem.length !== 0 ? reply_elem : null}
+                </div>
+            </div>
+
+        )
+
+
+    }
+
+
+    const generatePosts = (posts: post_for_bbs[]) => {
+
         return (
             <div className={"post"}>
-                {posts.map((post: post) => (
-                    <div key={post.id} className={"post_elem"}>
-                        <span>{post.id}</span>
-                        <span>{post.nickname}</span>
-                        <span>{post.title}</span>
-                        <span>{formatDate(post.updated_at, language)}</span>
+                {posts.map((post_elem: post_for_bbs) => (
+
+                    <div key={post_elem.id} className={`${postNum === post_elem.id ? "post_elem post_viewing" : "post_elem "}`} onClick={() => fetchPost(post_elem.id)}>
+                        <span>{post_elem.id}</span>
+                        <span>{post_elem.nickname}</span>
+                        <span>{post_elem.title}</span>
+                        <span>{formatDate(post_elem.updated_at, language)}</span>
                     </div>
                 ))}
             </div>
@@ -234,6 +342,12 @@ const Board = () => {
 
     return (
         <Container className="center_ui">
+            {post && watchPost ?
+                readPostUI(post)
+                :
+                null
+            }
+
             <div>
                 <div className={"post"}>
                     <div className={"post_header"}>

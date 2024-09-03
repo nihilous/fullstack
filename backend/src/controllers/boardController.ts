@@ -90,8 +90,10 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
             ON
                 board.id = reply.board_id
             ${whereClause}
+            GROUP BY
+                board.id
             ORDER BY
-                id
+                board.id
             DESC
             LIMIT
                 10
@@ -131,7 +133,7 @@ router.get('/post/:user_id/:id', tokenExtractor, async (req: CustomRequest, res:
 
         const [post] = await connection.query(`
             SELECT
-                board_user.id,
+                board_user.id as user_id,
                 board_user.nickname,
                 board.id,
                 board.title,

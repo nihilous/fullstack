@@ -450,6 +450,9 @@ code {
   text-align: center;
 }
 
+.post_viewing span{
+  font-weight: bold;
+}
 
 .now_nav{
   font-weight: bold;
