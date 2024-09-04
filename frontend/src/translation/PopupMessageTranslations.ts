@@ -33,8 +33,12 @@ export const PopupMessageTranslations = {
         deleted_history_record_zero: `Poistettu rokotustieto 0`,
         delete_history_record_success: `Rokotushistoria poistettu onnistuneesti.`,
         update_child_record_success: `Lapsen tiedot päivitetty onnistuneesti.`,
-        BoardWriteRequire: `Otsikko ja teksti ovat pakollisia`,
-        BoardPostingSuccess: `Käyttäjän viesti rekisteröity onnistuneesti`
+        BoardWriteRequire: `Otsikko ja teksti ovat pakollisia.`,
+        BoardPostingSuccess: `Käyttäjän viesti rekisteröity onnistuneesti.`,
+        BoardDeletePostSuccess: `Viesti poistettu.`,
+        BoardDeletePostReplySuccess: `Viesti poistettu, poistettu vastaus.`,
+        BoardDeleteReplySuccess: `Vastaus poistettu.`,
+        BoardDeleteAlready: `Jo poistettu.`,
     },
     ENG: {
         injection: `Suspected to Attacking.`,
@@ -71,7 +75,11 @@ export const PopupMessageTranslations = {
         delete_history_record_success: `Deleted Vaccination History`,
         update_child_record_success: `Child Information Updated.`,
         BoardWriteRequire: `Title and Text are required`,
-        BoardPostingSuccess: `User Post Registered`
+        BoardPostingSuccess: `User Post Registered`,
+        BoardDeletePostSuccess: `Post Deleted`,
+        BoardDeletePostReplySuccess: `Post Deleted, Deleted Reply `,
+        BoardDeleteReplySuccess: `Reply Deleted`,
+        BoardDeleteAlready: `Already Deleted`,
 
     },
     KOR: {
@@ -109,6 +117,10 @@ export const PopupMessageTranslations = {
         delete_history_record_success: `백신 접종 정보 삭제 완료되었습니다.`,
         update_child_record_success: `아동 정보 변경 완료되었습니다.`,
         BoardWriteRequire: `제목과 내용이 필요합니다.`,
-        BoardPostingSuccess: `글 게시 완료`
+        BoardPostingSuccess: `글 게시 완료.`,
+        BoardDeletePostSuccess: `글 삭제 완료.`,
+        BoardDeletePostReplySuccess: `글 삭제 완료, 삭제된 댓글 `,
+        BoardDeleteReplySuccess: `댓글 삭제 완료.`,
+        BoardDeleteAlready: `이미 삭제되었습니다.`,
     }
 };

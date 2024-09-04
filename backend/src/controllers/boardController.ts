@@ -1,6 +1,7 @@
 import { Router, Response } from 'express';
 import { pool } from '../db';
 import {CustomRequest, isInjection, isNotNumber, tokenExtractor} from '../middleware/middleware';
+import {FieldPacket, ResultSetHeader} from "mysql2";
 
 const router = Router();
 
@@ -268,14 +269,107 @@ router.put('/post:id', tokenExtractor, async (req: CustomRequest, res: Response)
 router.put('/reply:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
 
 });
-
-router.delete('/post/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
-
-});
-
-router.delete('/reply/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
-
-});
 */
+router.delete('/post/:user_id/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+    const user_id:number = parseInt(req.params.user_id, 10);
+    const token_id:number = req?.token?.userId;
+
+    if(user_id !== token_id) {
+        return res.status(403).json({ message: 'No Authority', boardDeleteRes: 1});
+    }
+
+
+    const id:number = parseInt(req.params.id, 10);
+    const isAttacked:boolean = isNotNumber([id])
+
+    if(isAttacked){
+        return res.status(400).json({ message: 'Suspected to Attacking', boardDeleteRes: 2 });
+    }
+
+    try {
+
+        const connection = await pool.getConnection();
+
+        const [boardDeleteResult]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+            DELETE
+            FROM
+                board
+            WHERE
+                id = ?
+            AND
+                user_id = ?
+        `, [id, user_id]);
+
+        const affectedBoardRows = boardDeleteResult.affectedRows;
+
+        if(affectedBoardRows === 0){
+            res.status(409).json({ message: 'No Affected Row', boardDeleteRes: 3 });
+        }else{
+            const [replyDeleteResult]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+            DELETE
+            FROM
+                reply
+            WHERE
+                board_id = ?
+        `, [id]);
+
+            const affectedReplyRows = replyDeleteResult.affectedRows;
+
+            res.status(200).json({ message: `Affected Board Row ${affectedBoardRows}`, affectedBoardRow: affectedBoardRows, affectedReplyRows:affectedReplyRows});
+        }
+
+        connection.release();
+    } catch (error) {
+        console.error('Error delete /board/post/:user_id/:id', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.delete('/reply/:user_id/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+    const user_id:number = parseInt(req.params.user_id, 10);
+    const token_id:number = req?.token?.userId;
+
+    if(user_id !== token_id) {
+        return res.status(403).json({ message: 'No Authority', boardDeleteRes: 1});
+    }
+
+
+    const id:number = parseInt(req.params.id, 10);
+    const isAttacked:boolean = isNotNumber([id])
+
+    if(isAttacked){
+        return res.status(400).json({ message: 'Suspected to Attacking', boardDeleteRes: 2 });
+    }
+
+    try {
+
+        const connection = await pool.getConnection();
+
+        const [replyDeleteResult]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+            DELETE
+            FROM
+                reply
+            WHERE
+                id = ?
+            AND
+                user_id = ?
+        `, [id, user_id]);
+
+        const affectedReplyRows = replyDeleteResult.affectedRows;
+
+        if(affectedReplyRows === 0){
+            res.status(409).json({ message: 'No Affected Row', boardDeleteRes: 3 });
+        }else{
+
+            res.status(200).json({ message: `Affected Reply Row ${affectedReplyRows}`, affectedReplyRows: affectedReplyRows});
+        }
+
+        connection.release();
+    } catch (error) {
+        console.error('Error delete /board/reply/:user_id/:id', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 
 export default router;

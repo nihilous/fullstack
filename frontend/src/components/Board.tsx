@@ -124,7 +124,7 @@ const Board = () => {
 
     const generateNavi = (total: number, recent: number) => {
         const buttons = [];
-        const itemsPerPage = 10;
+        const itemsPerPage = 5;
 
         const currentSet = Math.floor(recent / itemsPerPage);
 
@@ -248,6 +248,68 @@ const Board = () => {
         }
     };
 
+    const deletePostReply = async (table:string, post_id:number) => {
+
+        let message = ``;
+
+        try {
+
+            const response = await axios.delete(`${apiUrl}/board/${table}/${userId}/${post_id}`, {
+                headers: { Authorization: `Bearer ${getToken()}` }
+            });
+
+            if(table === "reply"){
+                if(response?.data.affectedReplyRows !== 0){
+                    message = popupTranslations.BoardDeleteReplySuccess
+                }
+                if(postNum){
+                    fetchPost(postNum);
+                }
+            }else{
+                if(response?.data.affectedReplyRows === 0){
+                    message = popupTranslations.BoardDeletePostSuccess
+                }else{
+                    message = `${popupTranslations.BoardDeletePostReplySuccess}${response?.data.affectedReplyRows}`;
+                }
+                setWatchPost(false);
+                setPost(null);
+                setPostNum(null);
+                existingDataFetch(naviNum);
+            }
+
+            dispatch(setNoticePopUp({
+                on: true,
+                is_error: false,
+                message: message
+            }));
+
+        } catch (error) {
+            const axiosError = error as AxiosError<{ boardDeleteRes: number }>;
+            if (axiosError.response) {
+                const BoardDeleteRes = axiosError.response.data.boardDeleteRes;
+                switch (BoardDeleteRes) {
+                    case 1:
+                        message = popupTranslations.injection;
+                        break;
+                    case 2:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    case 3:
+                        message = popupTranslations.BoardDeleteAlready;
+                        break;
+                    default:
+                        message = popupTranslations.defaultError;
+                        break;
+                }
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
+        }
+    };
+
     const readPostUI = (post_info: post_with_replies) => {
 
         const replies = post_info.replies;
@@ -265,8 +327,8 @@ const Board = () => {
 
                             {parsed_repies[i].reply_user_id === userId ?
                                 <div>
-                                    <Button>
-                                        댓글삭제
+                                    <Button onClick={() => deletePostReply("reply",parsed_repies[i].reply_id)}>
+                                        {translations.delete}
                                     </Button>
                                 </div>
                                 :
@@ -284,19 +346,19 @@ const Board = () => {
                 <div className={"post_main"}>
                     <div className={"pm_top"}>
                         <div className={"pmt_no"}>
-                            <div>글번호</div>
+                            <div>{translations.no}</div>
                             <div>{post_info.id}</div>
                         </div>
                         <div className={"pmt_writer"}>
-                            <div>작성자</div>
+                            <div>{translations.nickname}</div>
                             <div>{post_info.nickname}</div>
                         </div>
                         <div className={"pmt_title"}>
-                            <div>제목</div>
+                            <div>{translations.title}</div>
                             <div>{post_info.title}</div>
                         </div>
                         <div className={"pmt_time"}>
-                            <div>작성시간</div>
+                            <div>{translations.datetime}</div>
                             <div>{formatDate(post_info.updated_at, language)}</div>
                         </div>
                     </div>
@@ -306,7 +368,7 @@ const Board = () => {
 
                         {post_info.user_id === userId ?
                             <div className={"pm_bot"}>
-                                <Button>글삭제</Button>
+                                <Button onClick={() => deletePostReply("post",post_info.id)}>{translations.delete}</Button>
                             </div>
                             :
                             null
@@ -329,7 +391,7 @@ const Board = () => {
                     </div>
                     <div>
                         <Button variant="primary" type="submit" className="mt-3" onClick={() => writeReply(post_info.id)}>
-                            {translations.write}
+                            {translations.reply}
                         </Button>
                     </div>
                 </div>
@@ -467,8 +529,8 @@ const Board = () => {
 
             <div className="board_navs">
                 <div className={"nav_prev"}>
-                    {totalNavi.current > 9 && naviNum > 9 ?
-                        <Button onClick={() => setNaviNum(Math.max(naviNum - 10, 0))}>
+                    {totalNavi.current > 4 && naviNum > 4 ?
+                        <Button onClick={() => setNaviNum(Math.max(naviNum - 5, 0))}>
                             {"<"}
                         </Button>
                         :
@@ -478,8 +540,8 @@ const Board = () => {
 
                 {generateNavi(totalNavi.current, naviNum)}
                 <div className={"nav_next"}>
-                    {totalNavi.current > 9 && naviNum < totalNavi.current - totalNavi.current%10 ?
-                        <Button onClick={() => setNaviNum(Math.min(naviNum + 10, totalNavi.current - 1))}>
+                    {totalNavi.current > 4 && naviNum < totalNavi.current - totalNavi.current%5 ?
+                        <Button onClick={() => setNaviNum(Math.min(naviNum + 5, totalNavi.current - 1))}>
                             {">"}
                         </Button>
                         :

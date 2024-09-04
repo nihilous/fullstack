@@ -467,11 +467,13 @@ code {
 .board_navs div:nth-child(2){
   width: 90%;
   display: flex;
+  padding-left: 5%;
+  padding-right: 5%;
 }
 
 
 .nav_target{
-  width: 8%;
+  width: 18%;
   margin-left: 1%;
   margin-right: 1%;
   text-align: center;
@@ -482,6 +484,7 @@ code {
 }
 .nav_prev{
   width: 5%;
+  margin-right: 10px;
 }
 
 .board_input_bar{
@@ -843,6 +846,116 @@ code {
     text-align: center;
   }
   /*pc Admin Main page end*/
+  /*pc board start*/
+  .post div span{
+    font-size: 20px;
+  }
+
+  .post .post_header span:nth-child(1){
+    width: 10%;
+    text-align: center;
+  }
+
+  .post .post_header span:nth-child(2){
+    width: 10%;
+    text-align: center;
+  }
+
+  .post .post_header span:nth-child(3){
+    width: 65%;
+    padding-left: 5%;
+    text-align: center;
+  }
+
+  .post .post_header span:nth-child(4){
+    width: 15%;
+    text-align: center;
+  }
+
+  .post .post_elem span:nth-child(1){
+    width: 10%;
+    text-align: right;
+  }
+
+  .post .post_elem span:nth-child(2){
+    width: 10%;
+    text-align: center;
+  }
+
+  .post .post_elem span:nth-child(3){
+    width: 65%;
+    padding-left: 5%;
+    text-align: left;
+  }
+
+  .post .post_elem span:nth-child(4){
+    width: 15%;
+    text-align: center;
+  }
+
+  .post_viewing span{
+    font-weight: bold;
+  }
+
+
+  .board_input_bar{
+    margin-top: 30px;
+    display: flex;
+    align-content: center;
+  }
+
+  .board_input_bar div{
+    align-content: center;
+  }
+
+  .board_input_bar div:nth-child(1){
+    width: 20%;
+    padding-right: 40px;
+  }
+
+  .board_input_bar div:nth-child(2){
+    width: 60%;
+  }
+
+  .board_input_bar div:nth-child(2) input{
+    width: 80%;
+    padding-left: 40px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    min-height: 26px;
+    border-radius: 6px;
+  }
+
+  .board_input_bar div:nth-child(2) button{
+    width: 15%;
+    margin-top: 0 !important;
+    float: right;
+  }
+
+  .board_input_bar div:nth-child(3){
+    width: 20%;
+  }
+
+  .board_input_bar div:nth-child(3) button{
+    margin-top: 0 !important;
+    width: 45%;
+    float: right;
+  }
+
+  .pm_top .pmt_no{
+    width: 10%;
+  }
+  .pm_top .pmt_writer{
+    width: 10%;
+  }
+  .pm_top .pmt_title{
+    width: 65%;
+    padding-left: 5%;
+  }
+  .pm_top .pmt_time{
+    width: 15%;
+  }
+  /*pc board page end*/
   /*pc header start*/
   .header_pop_up{
     width: 50%;
@@ -1010,8 +1123,117 @@ code {
     width: 50%;
     text-align: center;
   }
-
   /*tablet Admin Main page end*/
+  /*tablet board start*/
+  .post div span{
+    font-size: 20px;
+  }
+
+  .post .post_header span:nth-child(1){
+    width: 10%;
+    text-align: center;
+  }
+
+  .post .post_header span:nth-child(2){
+    width: 10%;
+    text-align: center;
+  }
+
+  .post .post_header span:nth-child(3){
+    width: 65%;
+    padding-left: 5%;
+    text-align: center;
+  }
+
+  .post .post_header span:nth-child(4){
+    width: 15%;
+    text-align: center;
+  }
+
+  .post .post_elem span:nth-child(1){
+    width: 10%;
+    text-align: right;
+  }
+
+  .post .post_elem span:nth-child(2){
+    width: 10%;
+    text-align: center;
+  }
+
+  .post .post_elem span:nth-child(3){
+    width: 65%;
+    padding-left: 5%;
+    text-align: left;
+  }
+
+  .post .post_elem span:nth-child(4){
+    width: 15%;
+    text-align: center;
+  }
+
+  .post_viewing span{
+    font-weight: bold;
+  }
+
+
+  .board_input_bar{
+    margin-top: 30px;
+    display: flex;
+    align-content: center;
+  }
+
+  .board_input_bar div{
+    align-content: center;
+  }
+
+  .board_input_bar div:nth-child(1){
+    width: 20%;
+    padding-right: 40px;
+  }
+
+  .board_input_bar div:nth-child(2){
+    width: 60%;
+  }
+
+  .board_input_bar div:nth-child(2) input{
+    width: 80%;
+    padding-left: 40px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    min-height: 26px;
+    border-radius: 6px;
+  }
+
+  .board_input_bar div:nth-child(2) button{
+    width: 15%;
+    margin-top: 0 !important;
+    float: right;
+  }
+
+  .board_input_bar div:nth-child(3){
+    width: 20%;
+  }
+
+  .board_input_bar div:nth-child(3) button{
+    margin-top: 0 !important;
+    width: 45%;
+    float: right;
+  }
+
+  .pm_top .pmt_no{
+    width: 10%;
+  }
+  .pm_top .pmt_writer{
+    width: 10%;
+  }
+  .pm_top .pmt_title{
+    width: 65%;
+    padding-left: 5%;
+  }
+  .pm_top .pmt_time{
+    width: 15%;
+  }
+  /*tablet board page end*/
   /*tablet header start*/
   .header_pop_up{
     width: 80%;
@@ -1177,8 +1399,117 @@ code {
     margin-top: 20px;
     text-align: center;
   }
-
   /*mobile Admin Main page end*/
+  /*mobile board start*/
+  .post div span{
+    font-size: 20px;
+  }
+
+  .post .post_header span:nth-child(1){
+    width: 10%;
+    text-align: center;
+  }
+
+  .post .post_header span:nth-child(2){
+    width: 10%;
+    text-align: center;
+  }
+
+  .post .post_header span:nth-child(3){
+    width: 65%;
+    padding-left: 5%;
+    text-align: center;
+  }
+
+  .post .post_header span:nth-child(4){
+    width: 15%;
+    text-align: center;
+  }
+
+  .post .post_elem span:nth-child(1){
+    width: 10%;
+    text-align: right;
+  }
+
+  .post .post_elem span:nth-child(2){
+    width: 10%;
+    text-align: center;
+  }
+
+  .post .post_elem span:nth-child(3){
+    width: 65%;
+    padding-left: 5%;
+    text-align: left;
+  }
+
+  .post .post_elem span:nth-child(4){
+    width: 15%;
+    text-align: center;
+  }
+
+  .post_viewing span{
+    font-weight: bold;
+  }
+
+
+  .board_input_bar{
+    margin-top: 30px;
+    display: flex;
+    align-content: center;
+  }
+
+  .board_input_bar div{
+    align-content: center;
+  }
+
+  .board_input_bar div:nth-child(1){
+    width: 20%;
+    padding-right: 40px;
+  }
+
+  .board_input_bar div:nth-child(2){
+    width: 60%;
+  }
+
+  .board_input_bar div:nth-child(2) input{
+    width: 80%;
+    padding-left: 40px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    min-height: 26px;
+    border-radius: 6px;
+  }
+
+  .board_input_bar div:nth-child(2) button{
+    width: 15%;
+    margin-top: 0 !important;
+    float: right;
+  }
+
+  .board_input_bar div:nth-child(3){
+    width: 20%;
+  }
+
+  .board_input_bar div:nth-child(3) button{
+    margin-top: 0 !important;
+    width: 45%;
+    float: right;
+  }
+
+  .pm_top .pmt_no{
+    width: 10%;
+  }
+  .pm_top .pmt_writer{
+    width: 10%;
+  }
+  .pm_top .pmt_title{
+    width: 65%;
+    padding-left: 5%;
+  }
+  .pm_top .pmt_time{
+    width: 15%;
+  }
+  /*mobile board page end*/
   /*mobile header start*/
   .header_pop_up{
     width: 90%;
