@@ -419,13 +419,13 @@ code {
 }
 
 .post .post_header span:nth-child(3){
-  width: 70%;
+  width: 65%;
   padding-left: 5%;
   text-align: center;
 }
 
 .post .post_header span:nth-child(4){
-  width: 10%;
+  width: 15%;
   text-align: center;
 }
 
@@ -440,13 +440,13 @@ code {
 }
 
 .post .post_elem span:nth-child(3){
-  width: 70%;
+  width: 65%;
   padding-left: 5%;
   text-align: left;
 }
 
 .post .post_elem span:nth-child(4){
-  width: 10%;
+  width: 15%;
   text-align: center;
 }
 
@@ -530,6 +530,106 @@ code {
 
 .write_post{
   transform: translate(0, -40%);
+}
+
+.post_wrap{
+  border: 1px solid black;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  padding: 20px;
+}
+
+.pm_top{
+  display: flex;
+  background-color: grey;
+  margin-bottom: 20px;
+}
+
+.pm_top .pmt_no{
+  width: 10%;
+}
+.pm_top .pmt_writer{
+  width: 10%;
+}
+.pm_top .pmt_title{
+  width: 65%;
+  padding-left: 5%;
+}
+.pm_top .pmt_time{
+  width: 15%;
+}
+
+.pm_top .pmt_no div:nth-child(2){
+  text-align: right;
+}
+.pm_top .pmt_writer div:nth-child(2){
+  text-align: center;
+}
+.pm_top .pmt_title div:nth-child(2){
+  text-align: left;
+}
+.pm_top .pmt_time div:nth-child(2){
+  text-align: center;
+}
+
+.pm_top div div:nth-child(1){
+  text-align: center;
+}
+
+.pm_mid{
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.pm_bot{
+  text-align: right;
+  padding: 20px;
+}
+
+.post_reply{
+
+}
+
+.reply_elem{
+  display: flex;
+  padding: 20px;
+  margin-bottom: 10px;
+}
+
+.reply_elem:nth-child(1n){
+  background-color: darkgray;
+}
+
+.reply_elem:nth-child(2n){
+  background-color: grey;
+}
+
+.reply_elem:last-child{
+  margin-bottom: 0;
+}
+
+.rep_writer{
+  width: 10%;
+}
+
+.rep_text{
+  width: 75%;
+}
+
+.rep_date_delete{
+  width: 15%;
+}
+
+.rep_date_delete div{
+  text-align: right;
+}
+
+.new_reply{
+  margin-top: 20px;
+}
+
+.new_reply div:nth-child(2){
+  text-align: right;
 }
 
 /*common board page end*/

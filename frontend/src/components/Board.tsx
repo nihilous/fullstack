@@ -56,6 +56,8 @@ const Board = () => {
     const [postNum, setPostNum] = useState<number | null>(null);
     const [post, setPost] = useState<post_with_replies | null>(null);
 
+    const [newReply, setNewReply] = useState<string>(``);
+
     const translations = BoardTranslations[language];
     const popupTranslations = PopupMessageTranslations[language];
 
@@ -142,11 +144,12 @@ const Board = () => {
 
     const formatDate = (dateString: string, language: string) => {
 
-        const [year, month, day] = dateString.split('T')[0].split('-');
-        if (language === "FIN") {
-            return `${day} ${month} ${year}`;
-        }
-        return `${year} ${month} ${day}`;
+            const [year, month, day] = dateString.includes("T") ? dateString.split('T')[0].split('-') : dateString.split(' ')[0].split('-');
+            if (language === "FIN") {
+                return `${day} ${month} ${year}`;
+            }
+            return `${year} ${month} ${day}`;
+
     };
 
 
@@ -194,6 +197,57 @@ const Board = () => {
 
     }
 
+    const writeReply = async (post_id:number) => {
+
+        try {
+
+            const response = await axios.post(`${apiUrl}/board/${post_id}`, {"user_id":userId,"text":newReply},{
+                headers: { Authorization: `Bearer ${getToken()}` }
+            });
+
+            if(response.status === 201) {
+                fetchPost(post_id);
+
+                const message = popupTranslations.BoardPostingSuccess;
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: false,
+                    message: message
+                }));
+
+            }
+
+        } catch (error) {
+
+            const axiosError = error as AxiosError<{ boardReplyWriteRes: number }>;
+            if (axiosError.response) {
+                const BoardReplyWriteRes = axiosError.response.data.boardReplyWriteRes;
+                let message = ``;
+                switch (BoardReplyWriteRes) {
+                    case 1:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    case 2:
+                        message = popupTranslations.injection;
+                        break;
+                    case 3:
+                        message = popupTranslations.BoardWriteRequire;
+                        break;
+                    default:
+                        message = popupTranslations.defaultError;
+                        break;
+                }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
+
+        }
+    };
+
     const readPostUI = (post_info: post_with_replies) => {
 
         const replies = post_info.replies;
@@ -203,11 +257,22 @@ const Board = () => {
             const parsed_repies = JSON.parse(JSON.stringify(replies));
             for(let i = 0; i < parsed_repies.length; i++){
                 reply_elem.push(
-                    <div key={parsed_repies[i].reply_id}>
-                        <div>{parsed_repies[i].reply_user_nickname}</div>
-                        <div>{parsed_repies[i].reply_text}</div>
-                        <div>{parsed_repies[i].reply_updated_at}</div>
-                        <div>{parsed_repies[i].reply_user_id === userId ? "댓글삭제": null}</div>
+                    <div key={parsed_repies[i].reply_id} className={"reply_elem"}>
+                        <div className={"rep_writer"}>{parsed_repies[i].reply_user_nickname}</div>
+                        <div className={"rep_text"}>{parsed_repies[i].reply_text}</div>
+                        <div className={"rep_date_delete"}>
+                            <div>{formatDate(parsed_repies[i].reply_updated_at, language)}</div>
+
+                            {parsed_repies[i].reply_user_id === userId ?
+                                <div>
+                                    <Button>
+                                        댓글삭제
+                                    </Button>
+                                </div>
+                                :
+                                null
+                            }
+                        </div>
                     </div>
                 )
 
@@ -215,18 +280,58 @@ const Board = () => {
         }
 
         return(
-            <div key={`post_view_${post_info.id}`}>
-                <div>
-                    {post_info.title}
+            <div key={`post_view_${post_info.id}`} className={"post_wrap"}>
+                <div className={"post_main"}>
+                    <div className={"pm_top"}>
+                        <div className={"pmt_no"}>
+                            <div>글번호</div>
+                            <div>{post_info.id}</div>
+                        </div>
+                        <div className={"pmt_writer"}>
+                            <div>작성자</div>
+                            <div>{post_info.nickname}</div>
+                        </div>
+                        <div className={"pmt_title"}>
+                            <div>제목</div>
+                            <div>{post_info.title}</div>
+                        </div>
+                        <div className={"pmt_time"}>
+                            <div>작성시간</div>
+                            <div>{formatDate(post_info.updated_at, language)}</div>
+                        </div>
+                    </div>
+                    <div className={"pm_mid"}>
+                        {post_info.text}
+                    </div>
+
+                        {post_info.user_id === userId ?
+                            <div className={"pm_bot"}>
+                                <Button>글삭제</Button>
+                            </div>
+                            :
+                            null
+                        }
+
                 </div>
-                <div>
-                    {post_info.text}
-                </div>
-                <div>
-                    {post_info.user_id === userId ? "글삭제" : null}
-                </div>
-                <div>
+
+                <div className={"post_reply"}>
                     {reply_elem.length !== 0 ? reply_elem : null}
+                </div>
+
+                <div className={"new_reply"}>
+                    <div>
+                        <Form.Control
+                            as="textarea" rows={6}
+                            placeholder={`text`}
+                            value={newReply}
+                            onChange={(e) => setNewReply(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <Button variant="primary" type="submit" className="mt-3" onClick={() => writeReply(post_info.id)}>
+                            {translations.write}
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -253,7 +358,7 @@ const Board = () => {
         );
     };
 
-    const wrightPost = async () => {
+    const writePost = async () => {
 
         try {
 
@@ -328,7 +433,7 @@ const Board = () => {
                         />
                     </Form.Group>
 
-                    <Button variant="primary" type="submit" className="mt-3" onClick={() => wrightPost()}>
+                    <Button variant="primary" type="submit" className="mt-3" onClick={() => writePost()}>
                         {translations.write}
                     </Button>
                     <Button variant="secondary" className="mt-3 ms-2" onClick={() => setToggleUI(!toggleUI)}>
