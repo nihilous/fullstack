@@ -58,6 +58,15 @@ const Board = () => {
 
     const [newReply, setNewReply] = useState<string>(``);
 
+    const [editPost, setEditPost] = useState<boolean>(false);
+    const [editPostNum, setEditPostNum] = useState<number | null>(null);
+    const [editPostTitle, setEditPostTitle] = useState<string>(``);
+    const [editPostText, setEditPostText] = useState<string>(``);
+
+    const [editReply, setEditReply] = useState<boolean>(false);
+    const [editReplyNum, setEditReplyNum] = useState<number | null>(null);
+    const [editReplyText, setEditReplyText] = useState<string>(``);
+
     const translations = BoardTranslations[language];
     const popupTranslations = PopupMessageTranslations[language];
 
@@ -133,9 +142,9 @@ const Board = () => {
 
         for (let i = start; i < end; i++) {
             buttons.push(
-                <Button className={`nav_target ${i === naviNum ? "now_nav" : ""}`} key={i} onClick={() => setNaviNum(i)}>
+                <span className={`nav_target ${i === naviNum ? "now_nav" : ""}`} key={i} onClick={() => setNaviNum(i)}>
                     {i + 1}
-                </Button>
+                </span>
             );
         }
 
@@ -248,6 +257,12 @@ const Board = () => {
         }
     };
 
+    const closePost = () => {
+        setWatchPost(false);
+        setPost(null);
+        setPostNum(null);
+    }
+
     const deletePostReply = async (table:string, post_id:number) => {
 
         let message = ``;
@@ -271,9 +286,7 @@ const Board = () => {
                 }else{
                     message = `${popupTranslations.BoardDeletePostReplySuccess}${response?.data.affectedReplyRows}`;
                 }
-                setWatchPost(false);
-                setPost(null);
-                setPostNum(null);
+                closePost();
                 existingDataFetch(naviNum);
             }
 
@@ -310,6 +323,98 @@ const Board = () => {
         }
     };
 
+    const modifyPostOrReply = (table: string, edit_target_id: number, edit_target_title: string | null, edit_target_text: string) => {
+        if(table === "post"){
+            setEditReply(false);
+            setEditReplyNum(null);
+            setEditReplyText('');
+
+            setEditPost(true);
+            setEditPostNum(edit_target_id);
+            if(edit_target_title){
+                setEditPostTitle(edit_target_title);
+            }
+            setEditPostText(edit_target_text);
+        }else{
+            setEditPost(false);
+            setEditPostNum(null);
+            if(edit_target_title){
+                setEditPostTitle(``);
+            }
+            setEditPostText(``);
+
+            setEditReply(true);
+            setEditReplyNum(edit_target_id);
+            setEditReplyText(edit_target_text);
+        }
+
+    }
+
+    const updatePostOrReply = async (edit_target_table:string) => {
+        let message = ``;
+
+        try {
+
+            const response = await axios.put(`${apiUrl}/board/${edit_target_table}/${edit_target_table === "post" ? editPostNum : editReplyNum}`,
+                edit_target_table === "post" ? {"user_id" : userId, "title" : editPostTitle, "text" : editPostText} : {"user_id" : userId, "text" : editReplyText},{
+                headers: { Authorization: `Bearer ${getToken()}` }
+            });
+
+            if(edit_target_table === "post"){
+
+                    setEditPost(false);
+                    setEditPostNum(null);
+                    setEditPostTitle(``);
+                    setEditPostText(``);
+
+            }else {
+                    setEditReply(false);
+                    setEditReplyNum(null);
+                    setEditReplyText(``);
+
+            }
+
+            if(response.status === 201 && postNum){
+                fetchPost(postNum)
+            }
+
+
+            dispatch(setNoticePopUp({
+                on: true,
+                is_error: false,
+                message: popupTranslations.BoardUpdateSuccess
+            }));
+
+        } catch (error) {
+            const axiosError = error as AxiosError<{ boardUpdateRes: number }>;
+            if (axiosError.response) {
+                const BoardUpdateRes = axiosError.response.data.boardUpdateRes;
+                switch (BoardUpdateRes) {
+                    case 1:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    case 2:
+                        message = popupTranslations.injection;
+                        break;
+                    case 3:
+                        message = popupTranslations.injection;
+                        break;
+                    case 4:
+                        message = edit_target_table === "post" ? popupTranslations.BoardWriteRequire : popupTranslations.BoardUpdateNotExist;
+                        break;
+                    default:
+                        message = popupTranslations.defaultError;
+                        break;
+                }
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
+        }
+    }
+
     const readPostUI = (post_info: post_with_replies) => {
 
         const replies = post_info.replies;
@@ -320,21 +425,50 @@ const Board = () => {
             for(let i = 0; i < parsed_repies.length; i++){
                 reply_elem.push(
                     <div key={parsed_repies[i].reply_id} className={"reply_elem"}>
-                        <div className={"rep_writer"}>{parsed_repies[i].reply_user_nickname}</div>
-                        <div className={"rep_text"}>{parsed_repies[i].reply_text}</div>
-                        <div className={"rep_date_delete"}>
-                            <div>{formatDate(parsed_repies[i].reply_updated_at, language)}</div>
+                        <div className={"rep_info"}>
+                            <div className={"rep_writer"}>{parsed_repies[i].reply_user_nickname}</div>
+                            {
+                                editReply && editReplyNum === parsed_repies[i].reply_id ?
+                                    <Form.Group controlId="ReplyEditText" className={"rep_text"}>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder={`${editReplyText}`}
+                                            value={editReplyText}
+                                            onChange={(e) => setEditReplyText(e.target.value)}
+                                        />
+                                    </Form.Group>
+                                    :
+                                    <div className={"rep_text"}>{parsed_repies[i].reply_text}</div>
+                            }
 
-                            {parsed_repies[i].reply_user_id === userId ?
+                            <div className={"rep_date_delete"}>
+                                <div>{formatDate(parsed_repies[i].reply_updated_at, language)}</div>
+                            </div>
+                        </div>
+                        {parsed_repies[i].reply_user_id === userId ?
+
+                            <div  className={"rep_interaction"}>
                                 <div>
-                                    <Button onClick={() => deletePostReply("reply",parsed_repies[i].reply_id)}>
+                                    {
+                                        editReply && editReplyNum === parsed_repies[i].reply_id ?
+                                            <Button
+                                                onClick={() => updatePostOrReply("reply")}>{translations.save}</Button>
+                                            :
+                                            <Button
+                                                onClick={() => modifyPostOrReply("reply", parsed_repies[i].reply_id, null, parsed_repies[i].reply_text)}>{translations.edit}</Button>
+
+                                    }
+                                </div>
+                                <div>
+                                    <Button onClick={() => deletePostReply("reply", parsed_repies[i].reply_id)}>
                                         {translations.delete}
                                     </Button>
                                 </div>
-                                :
-                                null
-                            }
-                        </div>
+                            </div>
+                            :
+                            null
+                        }
+
                     </div>
                 )
 
@@ -345,17 +479,28 @@ const Board = () => {
             <div key={`post_view_${post_info.id}`} className={"post_wrap"}>
                 <div className={"post_main"}>
                     <div className={"pm_top"}>
-                        <div className={"pmt_no"}>
-                            <div>{translations.no}</div>
-                            <div>{post_info.id}</div>
-                        </div>
                         <div className={"pmt_writer"}>
                             <div>{translations.nickname}</div>
                             <div>{post_info.nickname}</div>
                         </div>
                         <div className={"pmt_title"}>
-                            <div>{translations.title}</div>
-                            <div>{post_info.title}</div>
+                            {editPost ?
+                                <Form.Group controlId="PostTitle">
+                                    <Form.Control
+                                        type="text"
+                                        placeholder={`${editPostTitle}`}
+                                        value={editPostTitle}
+                                        onChange={(e) => setEditPostTitle(e.target.value)}
+                                    />
+                                </Form.Group>
+                                :
+                                <>
+                                    <div>{translations.title}</div>
+                                    <div>{post_info.title}</div>
+                                </>
+
+                            }
+
                         </div>
                         <div className={"pmt_time"}>
                             <div>{translations.datetime}</div>
@@ -363,13 +508,42 @@ const Board = () => {
                         </div>
                     </div>
                     <div className={"pm_mid"}>
-                        {post_info.text}
+                        {editPost ?
+                            <Form.Group controlId="PostText">
+                                <Form.Control
+                                    as="textarea" rows={6}
+                                    placeholder={`${editPostText}`}
+                                    value={editPostText}
+                                    onChange={(e) => setEditPostText(e.target.value)}
+                                />
+                            </Form.Group>
+                            :
+                            post_info.text
+                        }
+
                     </div>
 
                         {post_info.user_id === userId ?
                             <div className={"pm_bot"}>
-                                <Button onClick={() => deletePostReply("post",post_info.id)}>{translations.delete}</Button>
+                                <div>
+                                    {
+                                        editPost ?
+                                            <Button
+                                                onClick={() => updatePostOrReply("post")}>{translations.save}</Button>
+                                            :
+                                            <Button
+                                                onClick={() => modifyPostOrReply("post",post_info.id, post_info.title, post_info.text)}>{translations.edit}</Button>
+
+                                    }
+
+                                </div>
+
+                                <div>
+                                    <Button
+                                        onClick={() => deletePostReply("post", post_info.id)}>{translations.delete}</Button>
+                                </div>
                             </div>
+
                             :
                             null
                         }
@@ -409,8 +583,7 @@ const Board = () => {
             <div className={"post"}>
                 {posts.map((post_elem: post_for_bbs) => (
 
-                    <div key={post_elem.id} className={`${postNum === post_elem.id ? "post_elem post_viewing" : "post_elem "}`} onClick={() => fetchPost(post_elem.id)}>
-                        <span>{post_elem.id}</span>
+                    <div key={post_elem.id} className={`${postNum === post_elem.id ? "post_elem post_viewing" : "post_elem "}`} onClick={() => postNum === post_elem.id ? closePost() : fetchPost(post_elem.id)}>
                         <span>{post_elem.nickname}</span>
                         <span>{post_elem.title}</span>
                         <span>{formatDate(post_elem.updated_at, language)}</span>
@@ -518,7 +691,6 @@ const Board = () => {
             <div>
                 <div className={"post"}>
                     <div className={"post_header"}>
-                        <span>{translations.no}</span>
                         <span>{translations.nickname}</span>
                         <span>{translations.title}</span>
                         <span>{translations.datetime}</span>
@@ -530,9 +702,9 @@ const Board = () => {
             <div className="board_navs">
                 <div className={"nav_prev"}>
                     {totalNavi.current > 4 && naviNum > 4 ?
-                        <Button onClick={() => setNaviNum(Math.max(naviNum - 5, 0))}>
+                        <span onClick={() => setNaviNum(Math.max(naviNum - 1 - (naviNum % 5), 0))}>
                             {"<"}
-                        </Button>
+                        </span>
                         :
                         null
                     }
@@ -541,9 +713,9 @@ const Board = () => {
                 {generateNavi(totalNavi.current, naviNum)}
                 <div className={"nav_next"}>
                     {totalNavi.current > 4 && naviNum < totalNavi.current - totalNavi.current%5 ?
-                        <Button onClick={() => setNaviNum(Math.min(naviNum + 5, totalNavi.current - 1))}>
+                        <span onClick={() => setNaviNum(Math.min(naviNum + (5 - (naviNum % 5)), totalNavi.current - 1))}>
                             {">"}
-                        </Button>
+                        </span>
                         :
                         null
                     }
@@ -551,30 +723,33 @@ const Board = () => {
             </div>
 
             <div className={"board_input_bar"}>
-
-                <div>
-                    <Form.Select value={where ?? ""} onChange={(e) => setWhere(e.target.value)}>
-                        <option value="">{translations.select}</option>
-                        <option value="nickname">{translations.nickname}</option>
-                        <option value="title">{translations.title}</option>
-                        <option value="text">{translations.text}</option>
-                        <option value="reply">{translations.reply}</option>
-                    </Form.Select>
+                <div className={"board_input_search"}>
+                    <div>
+                        <Form.Select value={where ?? ""} onChange={(e) => setWhere(e.target.value)}>
+                            <option value="">{translations.select}</option>
+                            <option value="nickname">{translations.nickname}</option>
+                            <option value="title">{translations.title}</option>
+                            <option value="text">{translations.text}</option>
+                            <option value="reply">{translations.reply}</option>
+                        </Form.Select>
+                    </div>
+                    <div>
+                        <input type={"text"} value={keyword} onChange={(e) => setKeyword(e.target.value)}
+                               placeholder={translations.search_inst}></input>
+                    </div>
                 </div>
-                <div>
-                    <input type={"text"} value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder={translations.search_inst}></input>
-                    <Button variant="primary" type="submit" className="mt-3" onClick={() => existingDataFetch(0)}>
-                        {translations.find}
-                    </Button>
+                <div className={"board_input_buttons"}>
+                    <div>
+                        <Button variant="primary" type="submit" className="mt-3" onClick={() => existingDataFetch(0)}>
+                            {translations.find}
+                        </Button>
+                    </div>
+                    <div>
+                        <Button variant="primary" type="submit" className="mt-3" onClick={() => setToggleUI(!toggleUI)}>
+                            {translations.write}
+                        </Button>
+                    </div>
                 </div>
-
-                <div>
-                    <Button variant="primary" type="submit" className="mt-3" onClick={() => setToggleUI(!toggleUI)}>
-                        {translations.write}
-                    </Button>
-                </div>
-
-
 
 
             </div>

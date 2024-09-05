@@ -420,7 +420,7 @@ router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: R
 
         connection.release();
     } catch (error) {
-        console.error('Error response put /user/change/info:id', error);
+        console.error('Error response put /user/change/info/:id', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 

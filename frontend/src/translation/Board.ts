@@ -15,7 +15,9 @@ export const BoardTranslations = {
         text: `Teksti`,
         reply: `Vastaus`,
         search_inst: `Hakusana`,
-        delete: `Poista`
+        delete: `Poista`,
+        edit: `Muokkaa`,
+        save: `Tallenna`
     },
     ENG: {
         no: `No`,
@@ -31,7 +33,9 @@ export const BoardTranslations = {
         text: `Text`,
         reply: `Reply`,
         search_inst: `Search Keyword`,
-        delete: `Delete`
+        delete: `Delete`,
+        edit: `Edit`,
+        save: `Save`
 
     },
     KOR: {
@@ -48,7 +52,9 @@ export const BoardTranslations = {
         text: `내용`,
         reply: `댓글`,
         search_inst: `검색어`,
-        delete: `삭제`
+        delete: `삭제`,
+        edit: `수정`,
+        save: `저장`
 
     }
 };

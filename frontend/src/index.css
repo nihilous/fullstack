@@ -407,46 +407,39 @@ code {
 .post div span{
   font-size: 20px;
 }
-
+.post .post_header span{
+  font-weight: bold;
+}
 .post .post_header span:nth-child(1){
-  width: 10%;
+  width: 15%;
   text-align: center;
 }
 
 .post .post_header span:nth-child(2){
-  width: 10%;
-  text-align: center;
-}
-
-.post .post_header span:nth-child(3){
   width: 65%;
   padding-left: 5%;
   text-align: center;
 }
 
-.post .post_header span:nth-child(4){
+.post .post_header span:nth-child(3){
+  width: 20%;
+  text-align: center;
+}
+
+
+.post .post_elem span:nth-child(1){
   width: 15%;
   text-align: center;
 }
 
-.post .post_elem span:nth-child(1){
-  width: 10%;
-  text-align: right;
-}
-
 .post .post_elem span:nth-child(2){
-  width: 10%;
-  text-align: center;
-}
-
-.post .post_elem span:nth-child(3){
   width: 65%;
   padding-left: 5%;
   text-align: left;
 }
 
-.post .post_elem span:nth-child(4){
-  width: 15%;
+.post .post_elem span:nth-child(3){
+  width: 20%;
   text-align: center;
 }
 
@@ -489,46 +482,35 @@ code {
 
 .board_input_bar{
   margin-top: 30px;
+  align-content: center;
+}
+
+.board_input_bar .board_input_search{
   display: flex;
-  align-content: center;
 }
 
-.board_input_bar div{
-  align-content: center;
+.board_input_bar .board_input_buttons{
+  display: flex;
 }
 
-.board_input_bar div:nth-child(1){
-  width: 20%;
-  padding-right: 40px;
+.board_input_bar .board_input_search div:nth-child(2){
+  padding-left: 10%;
 }
 
-.board_input_bar div:nth-child(2){
-  width: 60%;
-}
-
-.board_input_bar div:nth-child(2) input{
-  width: 80%;
-  padding-left: 40px;
+.board_input_search input{
+  padding-left: 20px;
   padding-top: 6px;
   padding-bottom: 6px;
   min-height: 26px;
   border-radius: 6px;
 }
 
-.board_input_bar div:nth-child(2) button{
-  width: 15%;
-  margin-top: 0 !important;
-  float: right;
+.board_input_buttons div{
+  width: 50%;
 }
 
-.board_input_bar div:nth-child(3){
-  width: 20%;
-}
-
-.board_input_bar div:nth-child(3) button{
+.board_input_buttons div button{
   margin-top: 0 !important;
-  width: 45%;
-  float: right;
 }
 
 .write_post{
@@ -544,27 +526,26 @@ code {
 
 .pm_top{
   display: flex;
-  background-color: grey;
+  padding: 10px;
   margin-bottom: 20px;
+  border-radius: 10px;
+  background-color: grey;
+
 }
 
-.pm_top .pmt_no{
-  width: 10%;
-}
 .pm_top .pmt_writer{
-  width: 10%;
+  width: 15%;
 }
 .pm_top .pmt_title{
   width: 65%;
   padding-left: 5%;
+  align-content: center;
 }
 .pm_top .pmt_time{
-  width: 15%;
+  width: 20%;
 }
 
-.pm_top .pmt_no div:nth-child(2){
-  text-align: right;
-}
+
 .pm_top .pmt_writer div:nth-child(2){
   text-align: center;
 }
@@ -577,6 +558,8 @@ code {
 
 .pm_top div div:nth-child(1){
   text-align: center;
+  margin-bottom: 10px;
+  font-weight: bold;
 }
 
 .pm_mid{
@@ -585,18 +568,47 @@ code {
 }
 
 .pm_bot{
-  text-align: right;
+  display: flex;
   padding: 20px;
 }
 
-.post_reply{
+.pm_bot div{
+  width: 50%;
+}
 
+.pm_bot div:nth-child(1){
+  text-align: left;
+}
+
+.pm_bot div:nth-child(2){
+  text-align: right;
 }
 
 .reply_elem{
-  display: flex;
   padding: 20px;
   margin-bottom: 10px;
+  border-radius: 10px;
+}
+
+.reply_elem .rep_info{
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.reply_elem .rep_interaction{
+  display: flex;
+}
+
+.reply_elem .rep_interaction div{
+  width: 50%;
+}
+
+.reply_elem .rep_interaction div:nth-child(1){
+  text-align: left;
+}
+
+.reply_elem .rep_interaction div:nth-child(2){
+  text-align: right;
 }
 
 .reply_elem:nth-child(1n){
@@ -612,15 +624,15 @@ code {
 }
 
 .rep_writer{
-  width: 10%;
+  width: 15%;
 }
 
 .rep_text{
-  width: 75%;
+  width: 55%;
 }
 
 .rep_date_delete{
-  width: 15%;
+  width: 30%;
 }
 
 .rep_date_delete div{
@@ -632,6 +644,7 @@ code {
 }
 
 .new_reply div:nth-child(2){
+  padding-right: 20px;
   text-align: right;
 }
 
@@ -852,44 +865,35 @@ code {
   }
 
   .post .post_header span:nth-child(1){
-    width: 10%;
+    width: 15%;
     text-align: center;
   }
 
   .post .post_header span:nth-child(2){
-    width: 10%;
-    text-align: center;
-  }
-
-  .post .post_header span:nth-child(3){
     width: 65%;
     padding-left: 5%;
     text-align: center;
   }
 
-  .post .post_header span:nth-child(4){
+  .post .post_header span:nth-child(3){
+    width: 20%;
+    text-align: center;
+  }
+
+
+  .post .post_elem span:nth-child(1){
     width: 15%;
     text-align: center;
   }
 
-  .post .post_elem span:nth-child(1){
-    width: 10%;
-    text-align: right;
-  }
-
   .post .post_elem span:nth-child(2){
-    width: 10%;
-    text-align: center;
-  }
-
-  .post .post_elem span:nth-child(3){
     width: 65%;
     padding-left: 5%;
     text-align: left;
   }
 
-  .post .post_elem span:nth-child(4){
-    width: 15%;
+  .post .post_elem span:nth-child(3){
+    width: 20%;
     text-align: center;
   }
 
@@ -897,63 +901,48 @@ code {
     font-weight: bold;
   }
 
-
   .board_input_bar{
-    margin-top: 30px;
     display: flex;
-    align-content: center;
   }
 
-  .board_input_bar div{
-    align-content: center;
+  .board_input_bar .board_input_search{
+    width: 70%;
   }
 
-  .board_input_bar div:nth-child(1){
+  .board_input_bar .board_input_buttons{
+    width: 30%;
+  }
+
+  .board_input_bar .board_input_search div:nth-child(1){
     width: 20%;
-    padding-right: 40px;
   }
 
-  .board_input_bar div:nth-child(2){
-    width: 60%;
-  }
-
-  .board_input_bar div:nth-child(2) input{
+  .board_input_bar .board_input_search div:nth-child(2){
     width: 80%;
-    padding-left: 40px;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    min-height: 26px;
-    border-radius: 6px;
+    padding-left: 10%;
   }
 
-  .board_input_bar div:nth-child(2) button{
-    width: 15%;
-    margin-top: 0 !important;
-    float: right;
+  .board_input_buttons div{
+    padding-left: 20%;
   }
 
-  .board_input_bar div:nth-child(3){
-    width: 20%;
+  .board_input_buttons div:nth-child(1){
+    text-align: right;
   }
 
-  .board_input_bar div:nth-child(3) button{
-    margin-top: 0 !important;
-    width: 45%;
-    float: right;
+  .board_input_buttons div:nth-child(2){
+    text-align: right;
   }
 
-  .pm_top .pmt_no{
-    width: 10%;
-  }
   .pm_top .pmt_writer{
-    width: 10%;
+    width: 15%;
   }
   .pm_top .pmt_title{
     width: 65%;
     padding-left: 5%;
   }
   .pm_top .pmt_time{
-    width: 15%;
+    width: 20%;
   }
   /*pc board page end*/
   /*pc header start*/
@@ -1130,44 +1119,35 @@ code {
   }
 
   .post .post_header span:nth-child(1){
-    width: 10%;
+    width: 15%;
     text-align: center;
   }
 
   .post .post_header span:nth-child(2){
-    width: 10%;
-    text-align: center;
-  }
-
-  .post .post_header span:nth-child(3){
     width: 65%;
     padding-left: 5%;
     text-align: center;
   }
 
-  .post .post_header span:nth-child(4){
+  .post .post_header span:nth-child(3){
+    width: 20%;
+    text-align: center;
+  }
+
+
+  .post .post_elem span:nth-child(1){
     width: 15%;
     text-align: center;
   }
 
-  .post .post_elem span:nth-child(1){
-    width: 10%;
-    text-align: right;
-  }
-
   .post .post_elem span:nth-child(2){
-    width: 10%;
-    text-align: center;
-  }
-
-  .post .post_elem span:nth-child(3){
     width: 65%;
     padding-left: 5%;
     text-align: left;
   }
 
-  .post .post_elem span:nth-child(4){
-    width: 15%;
+  .post .post_elem span:nth-child(3){
+    width: 20%;
     text-align: center;
   }
 
@@ -1176,62 +1156,44 @@ code {
   }
 
 
-  .board_input_bar{
-    margin-top: 30px;
-    display: flex;
-    align-content: center;
+  .board_input_bar .board_input_search{
+    width: 100%;
   }
 
-  .board_input_bar div{
-    align-content: center;
+  .board_input_bar .board_input_buttons{
+    margin-top: 20px;
+    width: 100%;
   }
 
-  .board_input_bar div:nth-child(1){
+  .board_input_bar .board_input_search div:nth-child(1){
     width: 20%;
-    padding-right: 40px;
   }
 
-  .board_input_bar div:nth-child(2){
-    width: 60%;
-  }
-
-  .board_input_bar div:nth-child(2) input{
+  .board_input_bar .board_input_search div:nth-child(2){
     width: 80%;
-    padding-left: 40px;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    min-height: 26px;
-    border-radius: 6px;
+    padding-left: 10%;
   }
 
-  .board_input_bar div:nth-child(2) button{
-    width: 15%;
-    margin-top: 0 !important;
-    float: right;
+
+
+  .board_input_buttons div:nth-child(1){
+    text-align: left;
   }
 
-  .board_input_bar div:nth-child(3){
-    width: 20%;
+  .board_input_buttons div:nth-child(2){
+    text-align: right;
   }
 
-  .board_input_bar div:nth-child(3) button{
-    margin-top: 0 !important;
-    width: 45%;
-    float: right;
-  }
 
-  .pm_top .pmt_no{
-    width: 10%;
-  }
   .pm_top .pmt_writer{
-    width: 10%;
+    width: 15%;
   }
   .pm_top .pmt_title{
     width: 65%;
     padding-left: 5%;
   }
   .pm_top .pmt_time{
-    width: 15%;
+    width: 20%;
   }
   /*tablet board page end*/
   /*tablet header start*/
@@ -1406,44 +1368,37 @@ code {
   }
 
   .post .post_header span:nth-child(1){
-    width: 10%;
+    width: 15%;
     text-align: center;
   }
 
   .post .post_header span:nth-child(2){
-    width: 10%;
+    width: 65%;
+    padding-left: 5%;
     text-align: center;
   }
 
   .post .post_header span:nth-child(3){
-    width: 65%;
-    padding-left: 5%;
+    width: 20%;
     text-align: center;
   }
 
-  .post .post_header span:nth-child(4){
-    width: 15%;
-    text-align: center;
+  .post .post_elem span{
+    font-size: 14px;
   }
-
   .post .post_elem span:nth-child(1){
-    width: 10%;
-    text-align: right;
+    width: 20%;
+    text-align: center;
   }
 
   .post .post_elem span:nth-child(2){
-    width: 10%;
-    text-align: center;
-  }
-
-  .post .post_elem span:nth-child(3){
-    width: 65%;
+    width: 55%;
     padding-left: 5%;
     text-align: left;
   }
 
-  .post .post_elem span:nth-child(4){
-    width: 15%;
+  .post .post_elem span:nth-child(3){
+    width: 25%;
     text-align: center;
   }
 
@@ -1451,63 +1406,45 @@ code {
     font-weight: bold;
   }
 
-
-  .board_input_bar{
-    margin-top: 30px;
+  .board_input_bar .board_input_search{
+    width: 100%;
     display: flex;
-    align-content: center;
   }
 
-  .board_input_bar div{
-    align-content: center;
+  .board_input_bar .board_input_buttons{
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
   }
 
-  .board_input_bar div:nth-child(1){
-    width: 20%;
-    padding-right: 40px;
+  .board_input_bar .board_input_search div:nth-child(1){
+    width: 35%;
   }
 
-  .board_input_bar div:nth-child(2){
-    width: 60%;
+  .board_input_bar .board_input_search div:nth-child(2){
+    width: 65%;
+    padding-left: 10%;
   }
 
-  .board_input_bar div:nth-child(2) input{
-    width: 80%;
-    padding-left: 40px;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    min-height: 26px;
-    border-radius: 6px;
+
+  .board_input_buttons div:nth-child(1){
+    text-align: left;
   }
 
-  .board_input_bar div:nth-child(2) button{
-    width: 15%;
-    margin-top: 0 !important;
-    float: right;
+  .board_input_buttons div:nth-child(2){
+    text-align: right;
   }
 
-  .board_input_bar div:nth-child(3){
-    width: 20%;
-  }
 
-  .board_input_bar div:nth-child(3) button{
-    margin-top: 0 !important;
-    width: 45%;
-    float: right;
-  }
-
-  .pm_top .pmt_no{
-    width: 10%;
-  }
   .pm_top .pmt_writer{
-    width: 10%;
+    width: 15%;
   }
   .pm_top .pmt_title{
-    width: 65%;
+    width: 55%;
     padding-left: 5%;
   }
   .pm_top .pmt_time{
-    width: 15%;
+    width: 30%;
   }
   /*mobile board page end*/
   /*mobile header start*/

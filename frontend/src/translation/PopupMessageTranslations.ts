@@ -39,6 +39,9 @@ export const PopupMessageTranslations = {
         BoardDeletePostReplySuccess: `Viesti poistettu, poistettu vastaus.`,
         BoardDeleteReplySuccess: `Vastaus poistettu.`,
         BoardDeleteAlready: `Jo poistettu.`,
+        BoardUpdateRequire: `teksti on pakollisia`,
+        BoardUpdateNotExist: `Muokkauskohde on jo poistettu`,
+        BoardUpdateSuccess: `Muokkaus valmis`
     },
     ENG: {
         injection: `Suspected to Attacking.`,
@@ -80,7 +83,9 @@ export const PopupMessageTranslations = {
         BoardDeletePostReplySuccess: `Post Deleted, Deleted Reply `,
         BoardDeleteReplySuccess: `Reply Deleted`,
         BoardDeleteAlready: `Already Deleted`,
-
+        BoardUpdateRequire: `Text is required`,
+        BoardUpdateNotExist: `Edit Target Is Deleted Already`,
+        BoardUpdateSuccess: `Edit Complete`,
     },
     KOR: {
         injection: `네트워크 공격이 의심됩니다.`,
@@ -122,5 +127,8 @@ export const PopupMessageTranslations = {
         BoardDeletePostReplySuccess: `글 삭제 완료, 삭제된 댓글 `,
         BoardDeleteReplySuccess: `댓글 삭제 완료.`,
         BoardDeleteAlready: `이미 삭제되었습니다.`,
+        BoardUpdateRequire: `내용이 필요합니다.`,
+        BoardUpdateNotExist: `수정 대상이 이미 삭제되었습니다.`,
+        BoardUpdateSuccess: `수정 완료`,
     }
 };

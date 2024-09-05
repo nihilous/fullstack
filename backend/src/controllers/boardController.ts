@@ -261,15 +261,111 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
     }
 });
 
-/*
-router.put('/post:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+router.put('/post/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+    const { user_id, title, text } = req.body;
+    const token_id:number = req?.token?.userId;
+
+    if(user_id !== token_id) {
+        return res.status(403).json({ message: 'No Authority', boardUpdateRes: 1});
+    }
+
+    const isAttacked:boolean = isInjection([title, text])
+
+    const id:number = parseInt(req.params.id, 10);
+    const isAttacked2:boolean = isNotNumber([id])
+
+
+    if(isAttacked || isAttacked2){
+        return res.status(400).json({ message: 'Suspected to Attacking', boardUpdateRes: 2 });
+    }
+
+    if ((title === undefined || title === "") || (text === undefined || text === "")) {
+        return res.status(400).json({ message: 'Title and Text are required', boardUpdateRes: 3 });
+    }
+
+    try {
+        const connection = await pool.getConnection();
+
+        const [boardUpdateResult]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+            UPDATE 
+                board
+            SET
+                title = ?,
+                text = ?
+            WHERE
+                id = ?
+            AND
+                user_id = ?
+        `, [title, text, id, user_id]);
+
+        const affectedBoardRows = boardUpdateResult.affectedRows;
+
+        if(affectedBoardRows === 1){
+            res.status(201).json({ message: 'Post Updated'});
+        }else{
+            return res.status(400).json({ message: 'No valid fields to update', boardUpdateRes: 4 });
+        }
+
+        connection.release();
+    } catch (error) {
+        console.error('Error response put /board/post/:id', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+
 
 });
 
-router.put('/reply:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+router.put('/reply/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+    const { user_id, text } = req.body;
+    const token_id:number = req?.token?.userId;
 
+    if(user_id !== token_id) {
+        return res.status(403).json({ message: 'No Authority', boardUpdateRes: 1});
+    }
+
+    const isAttacked:boolean = isInjection([text])
+
+    const id:number = parseInt(req.params.id, 10);
+    const isAttacked2:boolean = isNotNumber([id])
+
+
+    if(isAttacked || isAttacked2){
+        return res.status(400).json({ message: 'Suspected to Attacking', boardUpdateRes: 2 });
+    }
+
+    if (text === undefined || text === "") {
+        return res.status(400).json({ message: 'Text is required', boardUpdateRes: 3 });
+    }
+
+    try {
+        const connection = await pool.getConnection();
+
+        const [boardUpdateResult]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+            UPDATE 
+                reply
+            SET
+                text = ?
+            WHERE
+                id = ?
+            AND
+                user_id = ?
+        `, [text, id, user_id]);
+
+        const affectedBoardRows = boardUpdateResult.affectedRows;
+        if(affectedBoardRows === 1){
+            res.status(201).json({ message: 'Reply Updated'});
+        }else{
+            return res.status(400).json({ message: 'No valid fields to update', boardUpdateRes: 4 });
+        }
+
+        connection.release();
+    } catch (error) {
+        console.error('Error response put /board/reply:id', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
 });
-*/
+
 router.delete('/post/:user_id/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
     const user_id:number = parseInt(req.params.user_id, 10);
     const token_id:number = req?.token?.userId;
