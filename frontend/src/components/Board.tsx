@@ -45,7 +45,7 @@ const Board = () => {
     const totalNavi = useRef<number>(0);
 
     const [posts, setPosts] = useState<post_for_bbs[]>();
-    const [where, setWhere] = useState<string>(``);
+    const [where, setWhere] = useState<string>(`title`);
     const [keyword, setKeyword] = useState<string>(``);
     const [toggleUI, setToggleUI] = useState<boolean>(false);
 
@@ -725,10 +725,9 @@ const Board = () => {
             <div className={"board_input_bar"}>
                 <div className={"board_input_search"}>
                     <div>
-                        <Form.Select value={where ?? ""} onChange={(e) => setWhere(e.target.value)}>
-                            <option value="">{translations.select}</option>
-                            <option value="nickname">{translations.nickname}</option>
+                        <Form.Select value={where} onChange={(e) => setWhere(e.target.value)}>
                             <option value="title">{translations.title}</option>
+                            <option value="nickname">{translations.nickname}</option>
                             <option value="text">{translations.text}</option>
                             <option value="reply">{translations.reply}</option>
                         </Form.Select>

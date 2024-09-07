@@ -1426,6 +1426,10 @@ code {
     padding-left: 10%;
   }
 
+  .board_input_bar .board_input_search div:nth-child(2) input{
+    max-width: 100%;
+  }
+
 
   .board_input_buttons div:nth-child(1){
     text-align: left;

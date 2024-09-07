@@ -48,10 +48,11 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
                 case 'reply':
                     whereClause = `WHERE reply.text LIKE ?`;
                     break;
-                default:
-                    whereClause = '';
-                    break;
             }
+        }
+
+        if(keyword === ""){
+            whereClause = "";
         }
 
         const [countRows]: any = await connection.query(`
@@ -68,7 +69,7 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
             ON
                 board.id = reply.board_id
             ${whereClause}`
-        , [`%${keyword}%`]);
+        , [keyword === "" ? "" :`%${keyword}%`]);
 
 
         const count =  (Math.trunc(countRows[0].count / 10) + 1);
@@ -100,7 +101,7 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
                 10
             OFFSET
                 ?
-        `, where === "" ? [page] : [`%${keyword}%`, page]);
+        `, whereClause === "" ? [page] : [`%${keyword}%`, page]);
 
         res.status(200).json({"data":rows, "post": count});
 
