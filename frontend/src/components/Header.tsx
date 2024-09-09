@@ -136,8 +136,9 @@ const Header = () => {
     const settings = [
         { name: translations.account, path: `/account` },
         { name: translations.register, path: `/register_child` },
-        `Logout`,
-        `JWT`
+        `JWT`,
+        `Logout`
+
     ];
 
     return (
