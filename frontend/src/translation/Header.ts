@@ -7,6 +7,7 @@ export const HeaderTranslations = {
         logout: `Kirjaudu ulos`,
         board: `Foorumi`,
         settings: `Asetukset`,
+        about: `Tietoja`,
     },
     ENG: {
         brand: `Vaccination Log`,
@@ -16,6 +17,7 @@ export const HeaderTranslations = {
         logout: `Logout`,
         board: `BBS`,
         settings: `Settings`,
+        about: `About`,
 
     },
     KOR: {
@@ -26,5 +28,6 @@ export const HeaderTranslations = {
         logout: `접속종료`,
         board: `게시판`,
         settings: `설정`,
+        about: `소개`,
     }
 };

@@ -72,12 +72,14 @@ const Header = () => {
 
     const pagesUser = [
         { name: translations.main, path: '/main' },
-        { name: translations.board, path: '/board' }
+        { name: translations.board, path: '/board' },
+        { name: translations.about, path: '/about' }
     ];
 
     const pagesAdmin = [
         { name: translations.main, path: '/admin/main' },
-        { name: translations.board, path: '/board' }
+        { name: translations.board, path: '/board' },
+        { name: translations.about, path: '/about' }
     ];
 
     const settings = [

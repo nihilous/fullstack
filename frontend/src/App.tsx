@@ -15,6 +15,7 @@ import Account from './components/Account';
 import AdminLoginJoin from "./components/AdminLoginJoin";
 import AdminMain from "./components/AdminMain";
 import Board from "./components/Board";
+import About from "./components/About";
 const App = () => {
 
     const dispatch = useDispatch();
@@ -46,6 +47,7 @@ const App = () => {
                 <Route path="/admin/main" element={<AdminMain />} />
                 <Route path="/board" element={<Board />} />
                 <Route path="/board/:page" element={<Board />} />
+                <Route path="/about" element={<About />} />
             </Routes>
             <Footer />
         </Router>
