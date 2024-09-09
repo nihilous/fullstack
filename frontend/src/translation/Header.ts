@@ -5,7 +5,8 @@ export const HeaderTranslations = {
         register: `Täytä lapsen tiedot`,
         account: `Omat tiedot`,
         logout: `Kirjaudu ulos`,
-        board: `Foorumi`
+        board: `Foorumi`,
+        settings: `Asetukset`,
     },
     ENG: {
         brand: `Vaccination Log`,
@@ -13,7 +14,8 @@ export const HeaderTranslations = {
         register: `Register Child Information`,
         account: `Account`,
         logout: `Logout`,
-        board: `BBS`
+        board: `BBS`,
+        settings: `Settings`,
 
     },
     KOR: {
@@ -22,6 +24,7 @@ export const HeaderTranslations = {
         register: `자녀 정보 등록`,
         account: `계정정보`,
         logout: `접속종료`,
-        board: `게시판`
+        board: `게시판`,
+        settings: `설정`,
     }
 };
