@@ -41,7 +41,8 @@ export const PopupMessageTranslations = {
         BoardDeleteAlready: `Jo poistettu.`,
         BoardUpdateRequire: `teksti on pakollisia`,
         BoardUpdateNotExist: `Muokkauskohde on jo poistettu`,
-        BoardUpdateSuccess: `Muokkaus valmis`
+        BoardUpdateSuccess: `Muokkaus valmis`,
+        JWT_Renew: `Istunnon kesto pidennetty yhdellä tunnilla`,
     },
     ENG: {
         injection: `Suspected to Attacking.`,
@@ -86,6 +87,7 @@ export const PopupMessageTranslations = {
         BoardUpdateRequire: `Text is required`,
         BoardUpdateNotExist: `Edit Target Is Deleted Already`,
         BoardUpdateSuccess: `Edit Complete`,
+        JWT_Renew: `Login Time Extended to an Hour`,
     },
     KOR: {
         injection: `네트워크 공격이 의심됩니다.`,
@@ -130,5 +132,6 @@ export const PopupMessageTranslations = {
         BoardUpdateRequire: `내용이 필요합니다.`,
         BoardUpdateNotExist: `수정 대상이 이미 삭제되었습니다.`,
         BoardUpdateSuccess: `수정 완료`,
+        JWT_Renew: `접속시간 1시간 연장 완료`,
     }
 };

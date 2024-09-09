@@ -4,9 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import Cookies from 'js-cookie';
 import { HeaderTranslations } from '../translation/Header';
+import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
 import { useNavigate } from 'react-router-dom';
 import logout from "../util/logout";
-import { getDecodedToken } from "../util/jwtDecoder";
+import {getDecodedToken, getToken} from "../util/jwtDecoder";
+import axios, {AxiosError} from "axios";
+import {startJwtTimers} from "../util/timer";
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -22,6 +25,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import VaccinesIcon from '@mui/icons-material/Vaccines';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 
+
 const Header = () => {
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -31,8 +35,11 @@ const Header = () => {
     const language = useSelector((state: RootState) => state.app.language);
     const notice_popup = useSelector((state: RootState) => state.app.notice_popup);
     const translations = HeaderTranslations[language];
+    const popupTranslations = PopupMessageTranslations[language];
     const isAdmin = getDecodedToken()?.admin;
     const isCookieSet = Cookies.get('token') !== undefined;
+    const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
+    const userId = getDecodedToken()?.userId;
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -54,6 +61,50 @@ const Header = () => {
         logout(navigate, dispatch);
     };
 
+    const handleCookieRenew = async () => {
+        try {
+
+            const response = await axios.get(`${apiUrl}/login/jwt/${userId}`, {headers: { Authorization: `Bearer ${getToken()}` }});
+
+            Cookies.set('token', response.data.token);
+
+            const expirationTime = Date.now() + 60 * 60 * 1000;
+            const preWarningTime = expirationTime - 10 * 60 * 1000;
+            localStorage.setItem('jwtExpiration', expirationTime.toString());
+            startJwtTimers(dispatch, expirationTime, preWarningTime);
+
+            dispatch(setNoticePopUp({
+                on: true,
+                is_error: false,
+                message: popupTranslations.JWT_Renew
+            }));
+
+
+        } catch (error) {
+
+            const axiosError = error as AxiosError<{ jwtRenewRes: number }>;
+            if (axiosError.response) {
+
+                const jwtRenewRes = axiosError.response.data.jwtRenewRes;
+                let message = ``;
+                switch (jwtRenewRes) {
+                    case 1:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    default:
+                        message = popupTranslations.defaultError;
+                        break;
+                }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
+        }
+    }
+
     const noticePopUpOn = () => {
         const clearing = () => {
             dispatch(setNoticePopUp({ on: false, is_error: null, message: '' }));
@@ -71,21 +122,22 @@ const Header = () => {
     };
 
     const pagesUser = [
-        { name: translations.main, path: '/main' },
-        { name: translations.board, path: '/board' },
-        { name: translations.about, path: '/about' }
+        { name: translations.main, path: `/main` },
+        { name: translations.board, path: `/board` },
+        { name: translations.about, path: `/about` }
     ];
 
     const pagesAdmin = [
-        { name: translations.main, path: '/admin/main' },
-        { name: translations.board, path: '/board' },
-        { name: translations.about, path: '/about' }
+        { name: translations.main, path: `/admin/main` },
+        { name: translations.board, path: `/board` },
+        { name: translations.about, path: `/about` }
     ];
 
     const settings = [
-        { name: translations.account, path: '/account' },
-        { name: translations.register, path: '/register_child' },
-        'Logout'
+        { name: translations.account, path: `/account` },
+        { name: translations.register, path: `/register_child` },
+        `Logout`,
+        `JWT`
     ];
 
     return (
@@ -208,11 +260,11 @@ const Header = () => {
                                     <MenuItem
                                         key={typeof setting === 'string' ? setting : setting.name}
                                         onClick={() =>
-                                            setting === 'Logout' ? handleLogout() : navigate(typeof setting === 'string' ? setting : setting.path)
+                                            setting === 'JWT' ? handleCookieRenew() : setting === 'Logout' ? handleLogout() : navigate(typeof setting === 'string' ? setting : setting.path)
                                         }
                                     >
                                         <Typography textAlign="center">
-                                            {typeof setting === 'string' ? translations.logout : setting.name}
+                                            {typeof setting === 'string' ? setting === 'JWT' ? translations.jwt : translations.logout : setting.name}
                                         </Typography>
                                     </MenuItem>
                                 ))}

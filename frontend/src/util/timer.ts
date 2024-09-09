@@ -2,11 +2,29 @@ import { Dispatch } from 'redux';
 import { setNoticePopUp } from '../redux/slice';
 import Cookies from 'js-cookie';
 
+const clearStoredTimers = () => {
+    const preWarningTimerId = localStorage.getItem('jwtPreWarningTimer');
+    const expirationTimerId = localStorage.getItem('jwtExpirationTimer');
+
+    if (preWarningTimerId) {
+        clearTimeout(Number(preWarningTimerId));
+        localStorage.removeItem('jwtPreWarningTimer');
+    }
+
+    if (expirationTimerId) {
+        clearTimeout(Number(expirationTimerId));
+        localStorage.removeItem('jwtExpirationTimer');
+    }
+};
+
 export const startJwtTimers = (
     dispatch: Dispatch<any>,
     expirationTime: number,
     preWarningTime: number
 ) => {
+
+    clearStoredTimers();
+
     const timeUntilPreWarning = preWarningTime - Date.now();
     const timeUntilExpiration = expirationTime - Date.now();
 

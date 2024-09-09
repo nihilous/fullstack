@@ -8,6 +8,7 @@ export const HeaderTranslations = {
         board: `Foorumi`,
         settings: `Asetukset`,
         about: `Tietoja`,
+        jwt: `Kirjautumisen jatkaminen`,
     },
     ENG: {
         brand: `Vaccination Log`,
@@ -18,6 +19,7 @@ export const HeaderTranslations = {
         board: `BBS`,
         settings: `Settings`,
         about: `About`,
+        jwt: `Renew Login`,
 
     },
     KOR: {
@@ -29,5 +31,6 @@ export const HeaderTranslations = {
         board: `게시판`,
         settings: `설정`,
         about: `소개`,
+        jwt: `접속시간연장`,
     }
 };

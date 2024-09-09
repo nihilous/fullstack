@@ -2,7 +2,8 @@ import { Router, Request, Response } from 'express';
 import { pool } from '../db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import {isInjection} from "../middleware/middleware";
+import {CustomRequest, isInjection, tokenExtractor} from "../middleware/middleware";
+import {RowDataPacket} from "mysql2";
 
 const router = Router();
 
@@ -146,6 +147,45 @@ router.post('/', (req: Request, res: Response) => {
 
 router.post('/admin', (req: Request, res: Response) => {
     handleLogin(req, res, 'admin', true);
+});
+
+router.get('/jwt/:id',tokenExtractor, async (req: CustomRequest, res: Response) => {
+    const user_id:number = parseInt(req.params.id, 10);
+    const token_id:number = req?.token?.userId;
+
+    if(user_id !== token_id) {
+        return res.status(403).json({ message: 'No Authority', jwtRenewRes: 1});
+    }
+
+    try {
+        const connection = await pool.getConnection();
+
+        const [results] = await connection.query<(RowDataPacket & { user_detail_ids: string })[]>(`
+            SELECT
+                *
+            FROM
+                user_detail 
+            WHERE
+                user_id = ?
+        `, [user_id]);
+
+        const childrenIds = results.map(row => row.id);
+
+        const tokenPayload = {
+            userId: user_id,
+            admin: req.token?.admin || false,
+            userDetailIds: childrenIds,
+            record: results
+        };
+        const newToken = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
+        res.status(201).json({ message: 'JWT Expiration Refreshed', token: newToken });
+
+        connection.release();
+    } catch (error) {
+        console.error('Error Refreshing JWT Expiration /login/jwt/:id', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+
 });
 
 export default router;
