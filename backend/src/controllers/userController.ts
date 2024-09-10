@@ -32,7 +32,6 @@ router.post('/', async (req: Request, res: Response) => {
         return res.status(400).json({ message: 'Invalid email format', joinRes: 3 });
     }
 
-
     try {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -79,8 +78,6 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
     if(user_id !== token_id) {
         return res.status(403).json({ message: 'No Authority', childRes: 3});
     }
-
-
 
     try {
         const connection = await pool.getConnection();
@@ -135,73 +132,6 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
         connection.release();
     } catch (error) {
         console.error('Error Adding User post /user/:id', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-
-
-router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
-
-    if(req?.token?.admin === false){
-        return res.status(403).json({ message: 'No Authority', adminUserRes: 1});
-    }
-
-    try {
-        const connection = await pool.getConnection();
-
-        const [join_only_user] = await connection.query(`
-            SELECT
-                user.id,
-                user.email,
-                user.nickname,
-                user.is_active,
-                user.last_login,
-                user.created_at
-            FROM
-                user
-            LEFT OUTER JOIN
-                user_detail ON user.id = user_detail.user_id
-            WHERE
-                user_detail.user_id IS NULL;
-        `);
-
-        const [regular_user] = await connection.query(`
-            SELECT
-                user.id,
-                user.email,
-                user.nickname,
-                user.is_active,
-                user.last_login,
-                user.created_at,
-                IFNULL(
-                    JSON_ARRAYAGG(
-                        JSON_OBJECT(
-                        'detail_id', user_detail.id,
-                        'name', user_detail.name,
-                        'description', user_detail.description,
-                        'gender', user_detail.gender,
-                        'birthdate', user_detail.birthdate,
-                        'nationality', user_detail.nationality
-                        )
-                    ),
-                    JSON_ARRAY()
-                ) AS children
-            FROM
-                user
-            JOIN
-                user_detail ON user.id = user_detail.user_id
-            GROUP BY
-                user.id
-        `);
-
-        const user_info_total = {"joinonly" : join_only_user, "regular" : regular_user}
-
-        res.status(200).json(user_info_total);
-
-        connection.release();
-    } catch (error) {
-        console.error('Error response get user/', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
@@ -515,7 +445,6 @@ router.put('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
     const token_user_detail_ids:number[] = req?.token?.userDetailIds;
 
     const { name, description, gender, birthdate, nationality } = req.body;
-
 
     let legit_child = false;
 

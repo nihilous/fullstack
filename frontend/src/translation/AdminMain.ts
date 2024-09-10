@@ -28,6 +28,8 @@ export const AdminMainTranslations = {
         active: `Aktiivinen`,
         deactivated: `Deaktivoitu`,
         filter: `Suodata`,
+        post_wrote: `Kirjoitettu viesti`,
+        reply_wrote: `Kirjoitettu vastaus`,
 
     },
     ENG: {
@@ -59,6 +61,8 @@ export const AdminMainTranslations = {
         active: `Active`,
         deactivated: `Deactivated`,
         filter: `Filter`,
+        post_wrote: `Post Wrote`,
+        reply_wrote: `Reply Wrote`,
     },
     KOR: {
         admin_main: `관리자`,
@@ -89,5 +93,7 @@ export const AdminMainTranslations = {
         active: `활성`,
         deactivated: `비활성`,
         filter: `필터`,
+        post_wrote: `작성 글`,
+        reply_wrote: `작성 댓글`,
     }
 };

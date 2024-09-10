@@ -222,6 +222,8 @@ const Board = () => {
             });
 
             if(response.status === 201) {
+
+                setNewReply(``);
                 fetchPost(post_id);
 
                 const message = popupTranslations.BoardPostingSuccess;
@@ -436,9 +438,6 @@ const Board = () => {
             const parsed_repies = JSON.parse(JSON.stringify(replies));
             for(let i = 0; i < parsed_repies.length; i++){
 
-                console.log(Boolean(parsed_repies[i].is_admin));
-                console.log("admin", admin);
-
                 reply_elem.push(
                     <div key={parsed_repies[i].reply_id} className={"reply_elem"}>
                         <div className={"rep_info"}>
@@ -637,6 +636,9 @@ const Board = () => {
             });
 
             if(response.status === 201) {
+
+                setTitle(``);
+                setText(``);
                 existingDataFetch(0);
 
                 const message = popupTranslations.BoardPostingSuccess;

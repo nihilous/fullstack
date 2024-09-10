@@ -66,6 +66,122 @@ router.post('/', async (req: Request, res: Response) => {
     }
 });
 
+router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    if(req?.token?.admin === false){
+        return res.status(403).json({ message: 'No Authority', adminUserRes: 1});
+    }
+
+    try {
+        const connection = await pool.getConnection();
+
+        const [join_only_user] = await connection.query(`
+            SELECT
+                user.id,
+                user.email,
+                user.nickname,
+                user.is_active,
+                user.last_login,
+                user.created_at,
+                COUNT(DISTINCT board.id) AS post_count,
+                COUNT(DISTINCT reply.id) AS reply_count
+            FROM
+                user
+            LEFT OUTER JOIN
+                user_detail
+            ON
+                user.id = user_detail.user_id
+            LEFT JOIN
+                board
+            ON
+                user.id = board.user_id
+            AND
+                board.is_admin = 0
+            LEFT JOIN
+                reply
+            ON
+                user.id = reply.user_id
+            AND
+                reply.is_admin = 0
+            WHERE
+                user_detail.user_id IS NULL
+            GROUP BY
+                user.id, user.email, user.nickname, user.is_active, user.last_login, user.created_at;
+        `);
+
+        const [regular_user] = await connection.query(`
+            SELECT
+                user.id,
+                user.email,
+                user.nickname,
+                user.is_active,
+                user.last_login,
+                user.created_at,
+                IFNULL(
+                    (
+                        SELECT
+                            JSON_ARRAYAGG(
+                                JSON_OBJECT(
+                                    'detail_id', user_detail.id,
+                                    'name', user_detail.name,
+                                    'description', user_detail.description,
+                                    'gender', user_detail.gender,
+                                    'birthdate', user_detail.birthdate,
+                                    'nationality', user_detail.nationality
+                                )
+                            )
+                        FROM
+                            user_detail
+                        WHERE
+                            user_detail.user_id = user.id
+                    ),
+                    JSON_ARRAY()
+                )
+                AS
+                    children,
+                (
+                    SELECT
+                        COUNT(DISTINCT board.id)
+                    FROM
+                        board
+                    WHERE
+                        board.user_id = user.id
+                    AND
+                        board.is_admin = 0
+                )
+                AS
+                    post_count,
+                (   
+                    SELECT
+                        COUNT(DISTINCT reply.id)
+                    FROM
+                        reply
+                    WHERE
+                        reply.user_id = user.id
+                    AND
+                        reply.is_admin = 0
+                )
+                AS
+                    reply_count
+            FROM
+                user
+            WHERE
+                EXISTS (SELECT 1 FROM user_detail WHERE user_detail.user_id = user.id)
+            ORDER BY
+                user.id;
+        `);
+
+        const user_info_total = {"joinonly" : join_only_user, "regular" : regular_user}
+
+        res.status(200).json(user_info_total);
+
+        connection.release();
+    } catch (error) {
+        console.error('Error response get user/', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 router.delete('/post/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
     const is_admin:boolean = req?.token?.admin;
 

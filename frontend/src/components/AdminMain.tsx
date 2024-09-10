@@ -29,6 +29,8 @@ const AdminMain = () => {
         is_active: number;
         last_login: string;
         created_at: string;
+        post_count: number;
+        reply_count: number;
     }
 
     interface RegularProperty {
@@ -38,6 +40,8 @@ const AdminMain = () => {
         is_active: number;
         last_login: string;
         created_at: string;
+        post_count: number;
+        reply_count: number;
         children: {
             detail_id: number;
             name: string;
@@ -67,7 +71,7 @@ const AdminMain = () => {
 
             try {
 
-                const response = await axios.get<UserDataResponse>(`${apiUrl}/user/`, {
+                const response = await axios.get<UserDataResponse>(`${apiUrl}/admin/`, {
                     headers: { Authorization: `Bearer ${getToken()}` }
                 });
 
@@ -98,9 +102,12 @@ const AdminMain = () => {
             }
         };
 
-        if(userId === undefined || !admin) {
+        if(userId === undefined){
             navigagte("/");
-        }else{
+        }else if(!admin){
+            navigagte("/main");
+        }
+        else{
             mainDataFetch();
         }
 
@@ -263,10 +270,18 @@ const AdminMain = () => {
                                         <span>{translations.registered_children}</span>
                                         <span>{`${user.children.length} ${translations.count_people}`}</span>
                                     </div>
+                                    <div>
+                                        <span>{translations.post_wrote}</span>
+                                        <span>{user.post_count}</span>
+                                    </div>
+                                    <div>
+                                        <span>{translations.reply_wrote}</span>
+                                        <span>{user.reply_count}</span>
+                                    </div>
                                 </div>
                                 <div className={"amp_button"}>
                                     <Button onClick={() => toggleChildrenVisibility(user.id)}>
-                                        {visibleChildren[user.id] ?  translations.fold : translations.watch}
+                                        {visibleChildren[user.id] ? translations.fold : translations.watch}
                                     </Button>
                                 </div>
 
@@ -343,6 +358,14 @@ const AdminMain = () => {
                                     <div>
                                         <span>{translations.is_hibernate}</span>
                                         <span>{user.is_active === 1 ? translations.active : translations.deactivated}</span>
+                                    </div>
+                                    <div>
+                                        <span>{translations.post_wrote}</span>
+                                        <span>{user.post_count}</span>
+                                    </div>
+                                    <div>
+                                        <span>{translations.reply_wrote}</span>
+                                        <span>{user.reply_count}</span>
                                     </div>
                                 </div>
                             </div>
