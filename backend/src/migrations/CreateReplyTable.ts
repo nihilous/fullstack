@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
-export class CreateReplyTable20240902153000 implements MigrationInterface {
+export class CreateReplyTable20241009170000 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
@@ -24,6 +24,10 @@ export class CreateReplyTable20240902153000 implements MigrationInterface {
                     {
                         name: 'text',
                         type: 'varchar',
+                    },
+                    {
+                        name: 'is_admin',
+                        type: 'boolean',
                     },
                     {
                         name: 'created_at',

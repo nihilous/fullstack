@@ -17,6 +17,7 @@ const AdminMain = () => {
     const navigagte = useNavigate();
     const dispatch = useDispatch();
     const userId = getDecodedToken()?.userId;
+    const admin = getDecodedToken()?.admin;
 
     const translations = AdminMainTranslations[language];
     const popupTranslations = PopupMessageTranslations[language];
@@ -97,7 +98,7 @@ const AdminMain = () => {
             }
         };
 
-        if(userId === undefined) {
+        if(userId === undefined || !admin) {
             navigagte("/");
         }else{
             mainDataFetch();

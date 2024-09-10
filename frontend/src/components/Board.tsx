@@ -17,6 +17,7 @@ const Board = () => {
         user_id: number
         title: string
         nickname: string
+        is_admin: boolean
         updated_at: string
     }
 
@@ -26,12 +27,14 @@ const Board = () => {
         title: string
         text: string
         nickname: string
+        is_admin: boolean
         updated_at: string
         replies: {
             reply_id: number
             reply_user_id: number
             reply_user_nickname: string
             reply_text: string
+            reply_is_admin: boolean
             reply_updated_at: string
         }[] | null
     }
@@ -41,6 +44,7 @@ const Board = () => {
     const naviagte = useNavigate();
     const dispatch = useDispatch();
     const userId = getDecodedToken()?.userId;
+    const admin = getDecodedToken()?.admin;
 
     const [naviNum, setNaviNum] = useState<number>(0);
     const totalNavi = useRef<number>(0);
@@ -267,13 +271,15 @@ const Board = () => {
         setPostNum(null);
     }
 
-    const deletePostReply = async (table:string, post_id:number) => {
+    const deletePostReply = async (table:string, post_id:number, is_admin:boolean) => {
 
         let message = ``;
 
         try {
 
-            const response = await axios.delete(`${apiUrl}/board/${table}/${userId}/${post_id}`, {
+            const response = is_admin ? await axios.delete(`${apiUrl}/admin/${table}/${post_id}`, {
+                headers: { Authorization: `Bearer ${getToken()}` }
+            }) : await axios.delete(`${apiUrl}/board/${table}/${userId}/${post_id}`, {
                 headers: { Authorization: `Bearer ${getToken()}` }
             });
 
@@ -429,6 +435,10 @@ const Board = () => {
         if(replies !== null){
             const parsed_repies = JSON.parse(JSON.stringify(replies));
             for(let i = 0; i < parsed_repies.length; i++){
+
+                console.log(Boolean(parsed_repies[i].is_admin));
+                console.log("admin", admin);
+
                 reply_elem.push(
                     <div key={parsed_repies[i].reply_id} className={"reply_elem"}>
                         <div className={"rep_info"}>
@@ -451,7 +461,7 @@ const Board = () => {
                                 <div>{formatDate(parsed_repies[i].reply_updated_at, language)}</div>
                             </div>
                         </div>
-                        {parsed_repies[i].reply_user_id === userId ?
+                        {parsed_repies[i].reply_user_id === userId && Boolean(parsed_repies[i].is_admin)=== admin ?
 
                             <div  className={"rep_interaction"}>
                                 <div>
@@ -466,13 +476,22 @@ const Board = () => {
                                     }
                                 </div>
                                 <div>
-                                    <Button onClick={() => deletePostReply("reply", parsed_repies[i].reply_id)}>
+                                    <Button onClick={() => deletePostReply("reply", parsed_repies[i].reply_id, false)}>
                                         {translations.delete}
                                     </Button>
                                 </div>
                             </div>
                             :
-                            null
+                            admin === true ?
+                                <div className={"rep_interaction"}>
+                                    <div>
+                                        <Button onClick={() => deletePostReply("reply", parsed_repies[i].reply_id, admin)}>
+                                            {translations.delete}
+                                        </Button>
+                                    </div>
+                                </div>
+                                :
+                                null
                         }
 
                     </div>
@@ -481,7 +500,7 @@ const Board = () => {
             }
         }
 
-        return(
+        return (
             <div key={`post_view_${post_info.id}`} className={"post_wrap"}>
                 <div className={"post_main"}>
                     <div className={"pm_top"}>
@@ -529,7 +548,7 @@ const Board = () => {
 
                     </div>
 
-                        {post_info.user_id === userId ?
+                        {post_info.user_id === userId && Boolean(post_info.is_admin) === admin ?
                             <div className={"pm_bot"}>
                                 <div>
                                     {
@@ -546,12 +565,21 @@ const Board = () => {
 
                                 <div>
                                     <Button
-                                        onClick={() => deletePostReply("post", post_info.id)}>{translations.delete}</Button>
+                                        onClick={() => deletePostReply("post", post_info.id, false)}>{translations.delete}</Button>
                                 </div>
                             </div>
 
                             :
-                            null
+
+                            admin === true ?
+                                <div className={"pm_bot"}>
+                                    <div>
+                                        <Button
+                                            onClick={() => deletePostReply("post", post_info.id, admin)}>{translations.delete}</Button>
+                                    </div>
+                                </div>
+                                :
+                                null
                         }
 
                 </div>
@@ -570,7 +598,8 @@ const Board = () => {
                         />
                     </div>
                     <div>
-                        <Button variant="primary" type="submit" className="mt-3" onClick={() => writeReply(post_info.id)}>
+                        <Button variant="primary" type="submit" className="mt-3"
+                                onClick={() => writeReply(post_info.id)}>
                             {translations.reply}
                         </Button>
                     </div>

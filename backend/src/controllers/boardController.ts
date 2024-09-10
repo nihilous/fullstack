@@ -80,6 +80,7 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
                 board.user_id,
                 board.title,
                 board.updated_at,
+                board.is_admin,
                 user.nickname
             FROM
                 board
@@ -140,6 +141,7 @@ router.get('/post/:user_id/:id', tokenExtractor, async (req: CustomRequest, res:
                 board.id,
                 board.title,
                 board.text,
+                board.is_admin,
                 board.updated_at,
             CASE
                 WHEN
@@ -153,6 +155,7 @@ router.get('/post/:user_id/:id', tokenExtractor, async (req: CustomRequest, res:
                             'reply_user_id', reply_user.id,
                             'reply_id', reply.id,
                             'reply_text', reply.text,
+                            'reply_is_admin', reply.is_admin,
                             'reply_updated_at', reply.updated_at
                         )
                     )
@@ -185,6 +188,7 @@ router.post('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
     const { user_id, title, text } = req.body;
 
     const token_id:number = req?.token?.userId;
+    const admin:boolean = req.token?.admin;
 
     if(user_id !== token_id) {
         return res.status(403).json({ message: 'No Authority', boardPostWriteRes: 1});
@@ -206,10 +210,10 @@ router.post('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
 
         await connection.query(`
             INSERT INTO
-                board (user_id, title, text)
+                board (user_id, title, text, is_admin)
             VALUES
-                (?, ?, ?)
-        `, [user_id, title, text]);
+                (?, ?, ?, ?)
+        `, [user_id, title, text, admin]);
 
         res.status(201).json({ message: 'User Post Registered'});
 
@@ -224,6 +228,7 @@ router.post('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
 router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
     const { user_id, text } = req.body;
     const token_id:number = req?.token?.userId;
+    const admin:boolean = req.token?.admin;
 
     if(user_id !== token_id) {
         return res.status(403).json({ message: 'No Authority', boardReplyWriteRes: 1});
@@ -248,10 +253,10 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
 
         await connection.query(`
             INSERT INTO
-                reply (board_id, user_id, text)
+                reply (board_id, user_id, text, is_admin)
             VALUES
-                (?, ?, ?)
-        `, [id, user_id, text]);
+                (?, ?, ?, ?)
+        `, [id, user_id, text, admin]);
 
         res.status(201).json({ message: 'User Reply Registered'});
 
@@ -467,6 +472,5 @@ router.delete('/reply/:user_id/:id', tokenExtractor, async (req: CustomRequest, 
         res.status(500).json({ message: 'Internal server error' });
     }
 });
-
 
 export default router;

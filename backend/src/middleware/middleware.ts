@@ -23,7 +23,9 @@ const tokenExtractor = async (req: CustomRequest, res: Response, next: NextFunct
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    if (!token) {
+    const isAttack = isInjection([token as string]);
+
+    if (!token || isAttack) {
         return res.sendStatus(401);
     }
 
@@ -32,11 +34,13 @@ const tokenExtractor = async (req: CustomRequest, res: Response, next: NextFunct
 
         const connection = await pool.getConnection();
 
+        const table = decodedToken.admin === true ? "admin" : "user";
+
         const [results]: [RowDataPacket[], any] = await connection.query(`
             SELECT
                 jwt_token, jwt_expires_at
             FROM
-                user
+                ${table}
             WHERE
                 jwt_token = ?
             AND

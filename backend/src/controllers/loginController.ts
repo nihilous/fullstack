@@ -191,6 +191,7 @@ router.post('/admin', (req: Request, res: Response) => {
 router.get('/jwt/:id',tokenExtractor, async (req: CustomRequest, res: Response) => {
     const user_id:number = parseInt(req.params.id, 10);
     const token_id:number = req?.token?.userId;
+    const admin:boolean = req.token?.admin;
 
     if(user_id !== token_id) {
         return res.status(403).json({ message: 'No Authority', jwtRenewRes: 1});
@@ -212,7 +213,7 @@ router.get('/jwt/:id',tokenExtractor, async (req: CustomRequest, res: Response) 
 
         const tokenPayload = {
             userId: user_id,
-            admin: req.token?.admin || false,
+            admin: admin,
             userDetailIds: childrenIds,
             record: results
         };
@@ -220,9 +221,11 @@ router.get('/jwt/:id',tokenExtractor, async (req: CustomRequest, res: Response) 
         const expiration = new Date(Date.now() + 60 * 60 * 1000);
         const formattedExpiration = expiration.toISOString().slice(0, 19).replace('T', ' ');
 
+        const table = admin === true ? "admin" : "user";
+
         const [TokenUpdateResult]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
                 UPDATE 
-                    user
+                    ${table}
                 SET
                     jwt_token = ?,
                     jwt_expires_at = ?
