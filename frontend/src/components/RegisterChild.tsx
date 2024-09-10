@@ -6,9 +6,10 @@ import { RootState } from '../store';
 import { RegisterChildTranslations } from '../translation/RegisterChild';
 import { Form, Button, Container, Col, Row } from 'react-bootstrap';
 import { getToken, getDecodedToken, decodeToken } from "../util/jwtDecoder";
-import {Link, useNavigate} from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import {setNoticePopUp} from "../redux/slice";
 import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
+import jwtChecker from "../util/jwtChecker";
 
 const RegisterChild = () => {
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
@@ -72,7 +73,8 @@ const RegisterChild = () => {
                             message = popupTranslations.noAuthority;
                             break;
                         default:
-                            message = popupTranslations.defaultError;
+                            const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                            message = checkRes.message;
                             break;
                     }
 
@@ -139,7 +141,8 @@ const RegisterChild = () => {
                         message = popupTranslations.noAuthority;
                         break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
 

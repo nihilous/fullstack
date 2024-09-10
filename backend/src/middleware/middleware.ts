@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { pool } from '../db';
+import { RowDataPacket } from 'mysql2';
 
 const secretKey = process.env.SECRET;
 
@@ -17,7 +19,7 @@ interface CustomRequest extends Request {
     token?: TokenType | JwtPayload ;
 }
 
-const tokenExtractor = (req: CustomRequest, res: Response, next: NextFunction) => {
+const tokenExtractor = async (req: CustomRequest, res: Response, next: NextFunction) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -27,6 +29,34 @@ const tokenExtractor = (req: CustomRequest, res: Response, next: NextFunction) =
 
     try {
         const decodedToken = jwt.verify(token, secretKey) as JwtPayload;
+
+        const connection = await pool.getConnection();
+
+        const [results]: [RowDataPacket[], any] = await connection.query(`
+            SELECT
+                jwt_token, jwt_expires_at
+            FROM
+                user
+            WHERE
+                jwt_token = ?
+            AND
+                id = ?
+        `, [token, decodedToken.userId]);
+
+        connection.release();
+
+        if (results.length === 0) {
+            return res.status(403).json({ message: 'Invalid token', tokenExpired: false });
+        }
+
+        const { jwt_expires_at } = results[0];
+        const expirationDate = new Date(jwt_expires_at).getTime();
+        const currentTime = Date.now();
+
+        if (currentTime > expirationDate) {
+            return res.status(403).json({ message: 'Token expired', tokenExpired: true });
+        }
+
         req.token = decodedToken;
     } catch (error) {
         return res.sendStatus(403);

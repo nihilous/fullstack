@@ -43,6 +43,9 @@ export const PopupMessageTranslations = {
         BoardUpdateNotExist: `Muokkauskohde on jo poistettu`,
         BoardUpdateSuccess: `Muokkaus valmis`,
         JWT_Renew: `Istunnon kesto pidennetty yhdellä tunnilla`,
+        JWT_Invalid: `Todennus ei ole kelvollinen`,
+        JWT_Expired: `Todennus on vanhentunut, Kirjaudu uudelleen`,
+        TokenSaveFailure: `Todennuksen tallentaminen epäonnistui`,
     },
     ENG: {
         injection: `Suspected to Attacking.`,
@@ -88,6 +91,9 @@ export const PopupMessageTranslations = {
         BoardUpdateNotExist: `Edit Target Is Deleted Already`,
         BoardUpdateSuccess: `Edit Complete`,
         JWT_Renew: `Login Time Extended to an Hour`,
+        JWT_Invalid: `Authentication is invalid`,
+        JWT_Expired: `Authentication is expired, Please login again`,
+        TokenSaveFailure: `Failed to save authentication`,
     },
     KOR: {
         injection: `네트워크 공격이 의심됩니다.`,
@@ -133,5 +139,8 @@ export const PopupMessageTranslations = {
         BoardUpdateNotExist: `수정 대상이 이미 삭제되었습니다.`,
         BoardUpdateSuccess: `수정 완료`,
         JWT_Renew: `접속시간 1시간 연장 완료`,
+        JWT_Invalid: `유효하지 않은 인증 입니다.`,
+        JWT_Expired: `인증이 만료되었습니다. 다시 접속해주세요.`,
+        TokenSaveFailure: `인증 저장에 실패하였습니다.`,
     }
 };

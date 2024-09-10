@@ -8,6 +8,7 @@ import {getToken, getDecodedToken} from "../util/jwtDecoder";
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
 import {setNoticePopUp} from "../redux/slice";
 import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
+import jwtChecker from "../util/jwtChecker";
 
 const History = () => {
 
@@ -78,7 +79,8 @@ const History = () => {
                         message = popupTranslations.noAuthority;
                         break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
 
@@ -218,7 +220,8 @@ const History = () => {
                         message = popupTranslations.delete_already;
                         break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
 
@@ -271,7 +274,8 @@ const History = () => {
                         message = popupTranslations.injection;
                         break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
 
@@ -360,7 +364,8 @@ const History = () => {
                         message = popupTranslations.injection;
                         break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
 
@@ -450,7 +455,8 @@ const History = () => {
                         message = popupTranslations.AccountNoField;
                         break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
 

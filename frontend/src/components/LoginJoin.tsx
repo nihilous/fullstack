@@ -59,6 +59,9 @@ const LoginJoin = () => {
                     case 3:
                         message = popupTranslations.LoginInvalid;
                         break;
+                    case 4:
+                        message = popupTranslations.TokenSaveFailure;
+                        break;
                     default:
                         message = popupTranslations.defaultError;
                         break;

@@ -110,7 +110,27 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
             record: results
         };
         const newToken = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
-        res.status(201).json({ message: 'User detail successfully added', token: newToken });
+
+        const expiration = new Date(Date.now() + 60 * 60 * 1000);
+        const formattedExpiration = expiration.toISOString().slice(0, 19).replace('T', ' ');
+
+        const [TokenUpdateResult]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+                UPDATE 
+                    user
+                SET
+                    jwt_token = ?,
+                    jwt_expires_at = ?
+                WHERE
+                    id = ?
+            `, [newToken, formattedExpiration, user_id]);
+
+        const affectedUserRows = TokenUpdateResult.affectedRows;
+
+        if(affectedUserRows === 1){
+            res.status(201).json({ message: 'User detail successfully added', token: newToken });
+        }else{
+            return res.status(400).json({ message: 'Token save fail', childRes: 4 });
+        }
 
         connection.release();
     } catch (error) {

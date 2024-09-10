@@ -3,7 +3,7 @@ import { pool } from '../db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import {CustomRequest, isInjection, tokenExtractor} from "../middleware/middleware";
-import {RowDataPacket} from "mysql2";
+import {FieldPacket, ResultSetHeader, RowDataPacket} from "mysql2";
 
 const router = Router();
 
@@ -100,7 +100,27 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
                 };
 
             const token = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
-            res.status(200).json({ message: 'Login successful', token });
+            const expiration = new Date(Date.now() + 60 * 60 * 1000);
+            const formattedExpiration = expiration.toISOString().slice(0, 19).replace('T', ' ');
+
+            const [TokenUpdateResult]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+                UPDATE 
+                    user
+                SET
+                    jwt_token = ?,
+                    jwt_expires_at = ?
+                WHERE
+                    id = ?
+            `, [token, formattedExpiration, user.id]);
+
+            const affectedUserRows = TokenUpdateResult.affectedRows;
+
+            if(affectedUserRows === 1){
+                res.status(200).json({ message: 'Login successful', token });
+            }else{
+                return res.status(400).json({ message: 'Token save fail', loginRes: 4 });
+            }
+
             connection.release();
 
         }else{
@@ -131,7 +151,26 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
 
             const tokenPayload = { userId: user.id, admin: isAdmin };
             const token = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
-            res.status(200).json({ message: 'Login successful', token });
+            const expiration = new Date(Date.now() + 60 * 60 * 1000);
+            const formattedExpiration = expiration.toISOString().slice(0, 19).replace('T', ' ');
+
+            const [TokenUpdateResult]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+                UPDATE 
+                    admin
+                SET
+                    jwt_token = ?,
+                    jwt_expires_at = ?
+                WHERE
+                    id = ?
+            `, [token, formattedExpiration, user.id]);
+
+            const affectedAdminRows = TokenUpdateResult.affectedRows;
+
+            if(affectedAdminRows === 1){
+                res.status(200).json({ message: 'Login successful', token });
+            }else{
+                return res.status(400).json({ message: 'Token save fail', loginRes: 4 });
+            }
             connection.release();
         }
 
@@ -178,7 +217,26 @@ router.get('/jwt/:id',tokenExtractor, async (req: CustomRequest, res: Response) 
             record: results
         };
         const newToken = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
-        res.status(201).json({ message: 'JWT Expiration Refreshed', token: newToken });
+        const expiration = new Date(Date.now() + 60 * 60 * 1000);
+        const formattedExpiration = expiration.toISOString().slice(0, 19).replace('T', ' ');
+
+        const [TokenUpdateResult]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+                UPDATE 
+                    user
+                SET
+                    jwt_token = ?,
+                    jwt_expires_at = ?
+                WHERE
+                    id = ?
+            `, [newToken, formattedExpiration, user_id]);
+
+        const affectedUserRows = TokenUpdateResult.affectedRows;
+
+        if(affectedUserRows === 1){
+            res.status(201).json({ message: 'JWT Expiration Refreshed', token: newToken });
+        }else{
+            return res.status(400).json({ message: 'Token save fail', jwtRenewRes: 2 });
+        }
 
         connection.release();
     } catch (error) {

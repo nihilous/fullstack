@@ -8,6 +8,7 @@ import { getToken, getDecodedToken } from "../util/jwtDecoder";
 import {Button, Container} from "react-bootstrap";
 import { setNoticePopUp} from "../redux/slice";
 import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
+import jwtChecker from "../util/jwtChecker";
 
 const Main = () => {
 
@@ -78,7 +79,8 @@ const Main = () => {
                             message = popupTranslations.noAuthority;
                             break;
                         default:
-                            message = popupTranslations.defaultError;
+                            const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                            message = checkRes.message;
                             break;
                     }
 

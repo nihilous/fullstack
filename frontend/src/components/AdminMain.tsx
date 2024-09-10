@@ -2,11 +2,13 @@ import React, {useState, useEffect, useRef} from 'react';
 import axios, {AxiosError} from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import { RootState } from '../store';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AdminMainTranslations } from '../translation/AdminMain';
+import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
 import { getToken, getDecodedToken } from "../util/jwtDecoder";
 import {Button, Container} from "react-bootstrap";
 import {setNoticePopUp} from "../redux/slice";
+import jwtChecker from "../util/jwtChecker";
 
 const AdminMain = () => {
 
@@ -17,6 +19,7 @@ const AdminMain = () => {
     const userId = getDecodedToken()?.userId;
 
     const translations = AdminMainTranslations[language];
+    const popupTranslations = PopupMessageTranslations[language];
 
     interface JoinOnlyProperty {
         id: number;
@@ -80,7 +83,8 @@ const AdminMain = () => {
                             message = "";
                             break;
                         default:
-                            message = "";
+                            const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                            message = checkRes.message;
                             break;
                     }
 

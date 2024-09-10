@@ -8,6 +8,7 @@ import { getToken, getDecodedToken } from "../util/jwtDecoder";
 import { useNavigate} from "react-router-dom";
 import {setNoticePopUp} from "../redux/slice";
 import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
+import jwtChecker from "../util/jwtChecker";
 
 const Board = () => {
 
@@ -104,7 +105,8 @@ const Board = () => {
                         message = popupTranslations.injection;
                         break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
 
@@ -191,7 +193,8 @@ const Board = () => {
                         message = popupTranslations.injection;
                         break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
 
@@ -243,7 +246,8 @@ const Board = () => {
                         message = popupTranslations.BoardWriteRequire;
                         break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
 
@@ -311,7 +315,8 @@ const Board = () => {
                         message = popupTranslations.BoardDeleteAlready;
                         break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
                 dispatch(setNoticePopUp({
@@ -403,7 +408,8 @@ const Board = () => {
                         message = edit_target_table === "post" ? popupTranslations.BoardWriteRequire : popupTranslations.BoardUpdateNotExist;
                         break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
                 dispatch(setNoticePopUp({
@@ -630,7 +636,8 @@ const Board = () => {
                         message = popupTranslations.BoardWriteRequire;
                         break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
 

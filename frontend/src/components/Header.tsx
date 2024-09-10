@@ -24,6 +24,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuIcon from '@mui/icons-material/Menu';
 import VaccinesIcon from '@mui/icons-material/Vaccines';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
+import jwtChecker from "../util/jwtChecker";
 
 
 const Header = () => {
@@ -91,8 +92,12 @@ const Header = () => {
                     case 1:
                         message = popupTranslations.noAuthority;
                         break;
+                    case 2:
+                        message = popupTranslations.TokenSaveFailure;
+                        break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
 

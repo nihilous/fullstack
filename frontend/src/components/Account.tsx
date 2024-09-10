@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState} from 'react';
 import axios, { AxiosError } from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import { RootState } from '../store';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AccountTranslations } from '../translation/Account';
-import {getToken, getDecodedToken, decodeToken} from "../util/jwtDecoder";
+import {getToken, getDecodedToken} from "../util/jwtDecoder";
 import {Button, Container, Form} from "react-bootstrap";
 import logout from "../util/logout";
 import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
-import Cookies from "js-cookie";
 import {setNoticePopUp} from "../redux/slice";
+import jwtChecker from "../util/jwtChecker";
 
 const Account = () => {
 
@@ -86,7 +86,8 @@ const Account = () => {
                         message = popupTranslations.JoinExist;
                         break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
 
@@ -184,7 +185,8 @@ const Account = () => {
                         message = popupTranslations.AccountWrongPass;
                         break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
 
@@ -310,7 +312,8 @@ const Account = () => {
                         message = popupTranslations.noAuthority;
                         break;
                     default:
-                        message = popupTranslations.defaultError;
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
                         break;
                 }
 

@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
-export class CreateAdminTable20240808145500 implements MigrationInterface {
+export class CreateAdminTable20240910123000 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
@@ -25,6 +25,16 @@ export class CreateAdminTable20240808145500 implements MigrationInterface {
                     {
                         name: 'password',
                         type: 'varchar',
+                    },
+                    {
+                        name: 'jwt_token',
+                        type: 'text',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'jwt_expires_at',
+                        type: 'timestamp',
+                        isNullable: true,
                     },
                     {
                         name: 'created_at',
