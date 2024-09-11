@@ -441,7 +441,7 @@ const Board = () => {
                 reply_elem.push(
                     <div key={parsed_repies[i].reply_id} className={"reply_elem"}>
                         <div className={"rep_info"}>
-                            <div className={"rep_writer"}>{parsed_repies[i].reply_user_nickname}</div>
+                            <div className={"rep_writer"}>{parsed_repies[i].reply_is_admin ? translations.admin : parsed_repies[i].reply_user_nickname === null ? translations.quit : parsed_repies[i].reply_user_nickname}</div>
                             {
                                 editReply && editReplyNum === parsed_repies[i].reply_id ?
                                     <Form.Group controlId="ReplyEditText" className={"rep_text"}>
@@ -505,7 +505,7 @@ const Board = () => {
                     <div className={"pm_top"}>
                         <div className={"pmt_writer"}>
                             <div>{translations.nickname}</div>
-                            <div>{post_info.nickname}</div>
+                            <div>{post_info.is_admin ? translations.admin : post_info.nickname === null ? translations.quit : post_info.nickname}</div>
                         </div>
                         <div className={"pmt_title"}>
                             {editPost ?
@@ -618,7 +618,7 @@ const Board = () => {
                 {posts.map((post_elem: post_for_bbs) => (
 
                     <div key={post_elem.id} className={`${postNum === post_elem.id ? "post_elem post_viewing" : "post_elem "}`} onClick={() => postNum === post_elem.id ? closePost() : fetchPost(post_elem.id)}>
-                        <span>{post_elem.nickname}</span>
+                        <span>{post_elem.is_admin ? translations.admin : post_elem.nickname === null ? translations.quit : post_elem.nickname}</span>
                         <span>{post_elem.title}</span>
                         <span>{formatDate(post_elem.updated_at, language)}</span>
                     </div>

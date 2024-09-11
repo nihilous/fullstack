@@ -60,7 +60,7 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
                 count(*) as count
             FROM
                 board
-            JOIN
+            LEFT JOIN
                 user
             ON
                 board.user_id = user.id
@@ -84,7 +84,7 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
                 user.nickname
             FROM
                 board
-            JOIN
+            LEFT JOIN
                 user
             ON
                 board.user_id = user.id

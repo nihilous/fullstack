@@ -17,7 +17,9 @@ export const BoardTranslations = {
         search_inst: `Hakusana`,
         delete: `Poista`,
         edit: `Muokkaa`,
-        save: `Tallenna`
+        save: `Tallenna`,
+        admin: `Ylläpitäjä`,
+        quit: `Poistunut jäsen`,
     },
     ENG: {
         no: `No`,
@@ -35,7 +37,9 @@ export const BoardTranslations = {
         search_inst: `Search Keyword`,
         delete: `Delete`,
         edit: `Edit`,
-        save: `Save`
+        save: `Save`,
+        admin: `Admin`,
+        quit: `Withdraw`,
 
     },
     KOR: {
@@ -54,7 +58,9 @@ export const BoardTranslations = {
         search_inst: `검색어`,
         delete: `삭제`,
         edit: `수정`,
-        save: `저장`
+        save: `저장`,
+        admin: `관리자`,
+        quit: `탈퇴회원`,
 
     }
 };
