@@ -13,6 +13,7 @@ import boardRouter from './controllers/boardController';
 import runMigrations from './runMigration';
 import { checkDatabaseConnection } from './db';
 import { seedVaccines } from './seeds/VaccineSeed';
+import './scheduler/scheduler'
 
 dotenv.config();
 
