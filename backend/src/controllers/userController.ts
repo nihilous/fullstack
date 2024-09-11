@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { pool } from '../db';
-import {CustomRequest, isInjection, tokenExtractor, isNotNumber} from '../middleware/middleware';
+import {CustomRequest, isInjection, injectionChecker, patternChecker, tokenExtractor, isNotNumber, isDateFormat} from '../middleware/middleware';
 import { RowDataPacket, ResultSetHeader, FieldPacket } from 'mysql2';
 
 const router = Router();
@@ -18,17 +18,14 @@ if (!secretKey) {
 router.post('/', async (req: Request, res: Response) => {
     const { email, nickname, password } = req.body;
 
-    const isAttacked:boolean = isInjection([email, nickname, password])
+    const checked_email = injectionChecker(email);
+    const checked_nickname = injectionChecker(nickname);
 
-    if(isAttacked){
-        return res.status(400).json({ message: 'Suspected to Attacking', joinRes: 1 });
-    }
-
-    if ((email === undefined || email === "") || (nickname === undefined || nickname === "") || (password === undefined || password === "")) {
+    if ((checked_email === undefined || email === "") || (checked_nickname === undefined || nickname === "") || (password === undefined || password === "")) {
         return res.status(400).json({ message: 'Email, nickname and password are required', joinRes: 2 });
     }
 
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(checked_email)) {
         return res.status(400).json({ message: 'Invalid email format', joinRes: 3 });
     }
 
@@ -37,21 +34,33 @@ router.post('/', async (req: Request, res: Response) => {
 
         const connection = await pool.getConnection();
 
-        const [results] = await connection.query('SELECT COUNT(*) AS count FROM user WHERE email = ? OR nickname = ?', [email, nickname]);
+        const [results] = await connection.query(`
+            SELECT
+                COUNT(*) AS count
+            FROM
+                user
+            WHERE
+                email = ?
+            OR
+                nickname = ?
+        `, [checked_email, checked_nickname]);
 
         const result = results as { count: number }[];
 
         if (result[0].count > 0) {
             return res.status(400).json({ message: 'Email or Nickname is already in use', joinRes: 4 });
         }
-        await connection.query(
-            'INSERT INTO user (email, nickname, password) VALUES (?, ?, ?)',
-            [email, nickname, hashedPassword]
-        );
+
+        await connection.query(`
+            INSERT INTO
+                user (email, nickname, password)
+            VALUES (?, ?, ?)
+        `, [checked_email, checked_nickname, hashedPassword]);
 
         res.status(201).json({ message: 'User registered successfully' });
 
         connection.release();
+
     } catch (error) {
         console.error('Error registering user post /user/', error);
         res.status(500).json({ message: 'Internal server error' });
@@ -61,12 +70,16 @@ router.post('/', async (req: Request, res: Response) => {
 router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
     const { name, description, gender, birthdate, nationality } = req.body;
 
-    if ((name === undefined || name === "") || (description === undefined || description === "") || (gender === undefined || gender === null) || (birthdate === undefined || birthdate === "") || (nationality === undefined || nationality === "")) {
+    const checked_name = injectionChecker(name);
+    const checked_description = injectionChecker(description);
+    const checked_nationality = injectionChecker(nationality);
+
+    if ((checked_name === undefined || checked_name === "") || (checked_description === undefined || checked_description === "") || (gender === undefined || gender === null) || (birthdate === undefined || birthdate === "") || (checked_nationality === undefined || checked_nationality === "")) {
         return res.status(400).json({ message: 'name, description, gender, birthdate, nationality are required', childRes: 1});
     }
 
-    const isAttacked:boolean = isInjection([name, description, birthdate, nationality])
-    const isAttacked2:boolean = isNotNumber([gender])
+    const isAttacked:boolean = isDateFormat(birthdate);
+    const isAttacked2:boolean = isNotNumber([gender]);
 
     if(isAttacked || isAttacked2){
         return res.status(400).json({ message: 'Suspected to Attacking', childRes: 2});
@@ -87,7 +100,7 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
                 user_detail (user_id, name, description, gender, birthdate, nationality)
             VALUES
                 (?, ?, ?, ?, ?, ?)
-        `, [user_id, name, description, gender, birthdate, nationality]);
+        `, [user_id, checked_name, checked_description, gender, birthdate, checked_nationality]);
 
         const [results] = await connection.query<(RowDataPacket & { user_detail_ids: string })[]>(`
             SELECT
@@ -97,6 +110,12 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
             WHERE
                 user_id = ?
         `, [user_id]);
+
+        for (let i = 0; i < results.length; i++) {
+            results[i].name = patternChecker(results[i].name);
+            results[i].description = patternChecker(results[i].description);
+            results[i].nationality = patternChecker(results[i].nationality);
+        }
 
         const childrenIds = results.map(row => row.id);
 
@@ -149,13 +168,20 @@ router.get('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => 
     try {
         const connection = await pool.getConnection();
 
-        const [results] = await connection.query('SELECT COUNT(*) AS count FROM user_detail WHERE user_id = ?', [user_id]);
+        const [results] = await connection.query(`
+            SELECT
+                COUNT(*) AS count
+            FROM
+                user_detail
+            WHERE
+                user_id = ?
+        `, [user_id]);
 
         const result = results as { count: number }[];
 
         if (result[0].count > 0) {
 
-            const [rows] = await connection.query(`
+            const [rows] = await connection.query<RowDataPacket[]>(`
                 SELECT
                     user.nickname,
                     user_detail.id,
@@ -173,11 +199,19 @@ router.get('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => 
                 WHERE
                     user.id = ?
                     `, [user_id]);
+
+            for (let i = 0; i < rows.length; i++) {
+                rows[i].nickname = patternChecker(rows[i].nickname);
+                rows[i].name = patternChecker(rows[i].name);
+                rows[i].description = patternChecker(rows[i].description);
+                rows[i].nationality = patternChecker(rows[i].nationality);
+            }
+
             const response = { user_detail: true, record: {...rows} };
             res.status(200).json(response);
 
         }else{
-            const [rows] = await connection.query(`
+            const [rows] = await connection.query<RowDataPacket[]>(`
                 SELECT
                     id,
                     email,
@@ -187,6 +221,10 @@ router.get('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => 
                 WHERE
                     user.id = ?
                     `, [user_id]);
+
+            rows[0].email = patternChecker(rows[0].email);
+            rows[0].nickname = patternChecker(rows[0].nickname);
+
             const response = { user_detail: false, record: {...rows} };
             res.status(200).json(response);
         }

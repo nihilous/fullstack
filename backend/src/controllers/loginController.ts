@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { pool } from '../db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import {CustomRequest, isInjection, tokenExtractor} from "../middleware/middleware";
+import {CustomRequest, isInjection, injectionChecker, patternChecker, tokenExtractor} from "../middleware/middleware";
 import {FieldPacket, ResultSetHeader, RowDataPacket} from "mysql2";
 
 const router = Router();
@@ -21,14 +21,9 @@ interface User {
 
 const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin', isAdmin: boolean = false) => {
     const { email, password } = req.body;
+    const checked_email = injectionChecker(email);
 
-    const isAttacked:boolean = isInjection([email,password])
-
-    if(isAttacked){
-        return res.status(400).json({ message: 'Suspected to Attacking', loginRes: 1 });
-    }
-
-    if ((email === undefined || email === "")|| (password === undefined || password === "")) {
+    if ((checked_email === undefined || checked_email === "")|| (password === undefined || password === "")) {
         return res.status(400).json({ message: 'Email and password are required', loginRes: 2 });
     }
 
@@ -51,7 +46,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
                     email = ? 
                 GROUP BY
                     user.id, user.password
-            `, [email]);
+            `, [checked_email]);
 
             const users = results as User[];
 
@@ -133,7 +128,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
                     ${table}
                 WHERE
                     email = ?
-            `, [email]);
+            `, [checked_email]);
 
             const users = results as User[];
 
