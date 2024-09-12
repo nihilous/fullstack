@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { pool } from '../db';
-import {CustomRequest, isInjection, isNotNumber, tokenExtractor} from '../middleware/middleware';
+import {CustomRequest, isNotNumber, isDateFormat, tokenExtractor} from '../middleware/middleware';
 import { ResultSetHeader, FieldPacket } from 'mysql2';
 
 const router = Router();
@@ -27,7 +27,7 @@ router.post('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, r
 
     const { vaccine_id, history_date } = req.body;
 
-    const isAttacked:boolean = isInjection([history_date])
+    const isAttacked:boolean = isDateFormat(history_date)
     const isAttacked2:boolean = isNotNumber([vaccine_id])
     if(isAttacked || isAttacked2){
         return res.status(400).json({ message: 'Suspected to Attacking', historyRegiRes: 2 });
@@ -137,7 +137,7 @@ router.put('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
 
     const { id, history_date } = req.body;
 
-    const isAttacked:boolean = isInjection([history_date])
+    const isAttacked:boolean = isDateFormat(history_date)
     const isAttacked2:boolean = isNotNumber([id])
     if(isAttacked || isAttacked2){
         return res.status(400).json({ message: 'Suspected to Attacking', historyUpdateRes: 2 });

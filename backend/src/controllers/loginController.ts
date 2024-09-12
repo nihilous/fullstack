@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { pool } from '../db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import {CustomRequest, isInjection, injectionChecker, patternChecker, tokenExtractor} from "../middleware/middleware";
+import {CustomRequest, injectionChecker, tokenExtractor} from "../middleware/middleware";
 import {FieldPacket, ResultSetHeader, RowDataPacket} from "mysql2";
 
 const router = Router();
@@ -24,7 +24,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
     const checked_email = injectionChecker(email);
 
     if ((checked_email === undefined || checked_email === "")|| (password === undefined || password === "")) {
-        return res.status(400).json({ message: 'Email and password are required', loginRes: 2 });
+        return res.status(400).json({ message: 'Email and password are required', loginRes: 1 });
     }
 
     try {
@@ -51,7 +51,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
             const users = results as User[];
 
             if (users.length === 0) {
-                return res.status(400).json({ message: 'Invalid email or password', loginRes: 3 });
+                return res.status(400).json({ message: 'Invalid email or password', loginRes: 2 });
             }
 
             const user = users[0];
@@ -59,7 +59,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
             const passwordMatch = await bcrypt.compare(password, user.password);
 
             if (!passwordMatch) {
-                return res.status(400).json({ message: 'Invalid email or password', loginRes: 3 });
+                return res.status(400).json({ message: 'Invalid email or password', loginRes: 2 });
             }
 
             let setStatement: string[] = [];
@@ -113,7 +113,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
             if(affectedUserRows === 1){
                 res.status(200).json({ message: 'Login successful', token });
             }else{
-                return res.status(400).json({ message: 'Token save fail', loginRes: 4 });
+                return res.status(400).json({ message: 'Token save fail', loginRes: 3 });
             }
 
             connection.release();
@@ -133,7 +133,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
             const users = results as User[];
 
             if (users.length === 0) {
-                return res.status(400).json({ message: 'Invalid email or password', loginRes: 3 });
+                return res.status(400).json({ message: 'Invalid email or password', loginRes: 2 });
             }
 
             const user = users[0];
@@ -141,7 +141,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
             const passwordMatch = await bcrypt.compare(password, user.password);
 
             if (!passwordMatch) {
-                return res.status(400).json({ message: 'Invalid email or password', loginRes: 3 });
+                return res.status(400).json({ message: 'Invalid email or password', loginRes: 2 });
             }
 
             const tokenPayload = { userId: user.id, admin: isAdmin };
@@ -164,7 +164,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
             if(affectedAdminRows === 1){
                 res.status(200).json({ message: 'Login successful', token });
             }else{
-                return res.status(400).json({ message: 'Token save fail', loginRes: 4 });
+                return res.status(400).json({ message: 'Token save fail', loginRes: 3 });
             }
             connection.release();
         }

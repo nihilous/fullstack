@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { pool } from '../db';
-import {CustomRequest, isInjection, isNotNumber, tokenExtractor} from "../middleware/middleware";
-import {FieldPacket, ResultSetHeader} from "mysql2";
+import {CustomRequest, isNotNumber, injectionChecker, patternChecker, tokenExtractor} from "../middleware/middleware";
+import {FieldPacket, ResultSetHeader, RowDataPacket} from "mysql2";
 const router = Router();
 const saltRounds = 10;
 
@@ -11,24 +11,20 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 router.post('/', async (req: Request, res: Response) => {
     const { email, nickname, password, adminSecret } = req.body;
 
-    const isAttacked:boolean = isInjection([email, nickname, password, adminSecret])
+    const checked_email = injectionChecker(email);
+    const checked_nickname = injectionChecker(nickname);
 
-    if(isAttacked){
-        return res.status(400).json({ message: 'Suspected to Attacking', adminJoinRes: 1 });
-    }
-
-    if ((email === undefined || email === "" ) || (nickname === undefined || nickname === "") || (password === undefined || password === "") || (adminSecret === undefined || adminSecret === "")) {
-        return res.status(400).json({ message: 'Email, nickname and password and admin secret are required', adminJoinRes: 2 });
+    if ((checked_email === undefined || checked_email === "" ) || (checked_nickname === undefined || checked_nickname === "") || (password === undefined || password === "") || (adminSecret === undefined || adminSecret === "")) {
+        return res.status(400).json({ message: 'Email, nickname and password and admin secret are required', adminJoinRes: 1 });
     }
 
     if( adminSecret !== process.env.SECRET ) {
-        return res.status(400).json({ message: 'not authorized to make admin account', adminJoinRes: 3 });
+        return res.status(400).json({ message: 'not authorized to make admin account', adminJoinRes: 2 });
     }
 
-    if (!emailRegex.test(email)) {
-        return res.status(400).json({ message: 'Invalid email format', adminJoinRes: 4 });
+    if (!emailRegex.test(checked_email)) {
+        return res.status(400).json({ message: 'Invalid email format', adminJoinRes: 3 });
     }
-
 
     try {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -42,19 +38,19 @@ router.post('/', async (req: Request, res: Response) => {
                 admin
             WHERE
                 email = ?`,
-            [email]);
+            [checked_email]);
 
         const result = results as { count: number }[];
 
         if (result[0].count > 0) {
-            return res.status(400).json({ message: 'Email is already in use', adminJoinRes: 5 });
+            return res.status(400).json({ message: 'Email is already in use', adminJoinRes: 4 });
         }
         await connection.query(`
             INSERT INTO
                 admin (email, nickname, password)
             VALUES
                 (?, ?, ?)`,
-            [email, nickname, hashedPassword]
+            [checked_email, checked_nickname, hashedPassword]
         );
 
         res.status(201).json({ message: 'Admin registered successfully' });
@@ -75,7 +71,7 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
     try {
         const connection = await pool.getConnection();
 
-        const [join_only_user] = await connection.query(`
+        const [join_only_user] = await connection.query<RowDataPacket[]>(`
             SELECT
                 user.id,
                 user.email,
@@ -109,7 +105,12 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
                 user.id, user.email, user.nickname, user.is_active, user.last_login, user.created_at;
         `);
 
-        const [regular_user] = await connection.query(`
+        for (let i = 0; i < join_only_user.length; i++) {
+            join_only_user[i].email = patternChecker(join_only_user[i].email);
+            join_only_user[i].nickname = patternChecker(join_only_user[i].nickname);
+        }
+
+        const [regular_user] = await connection.query<RowDataPacket[]>(`
             SELECT
                 user.id,
                 user.email,
@@ -170,6 +171,20 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
             ORDER BY
                 user.id;
         `);
+
+        for (let i = 0; i < regular_user.length; i++) {
+
+            regular_user[i].email = patternChecker(join_only_user[i].email);
+            regular_user[i].nickname = patternChecker(join_only_user[i].nickname);
+
+            for (let j = 0; j < regular_user[i].children.length; j++) {
+
+                regular_user[i].children[j].name = patternChecker(regular_user[i].children[j].name);
+                regular_user[i].children[j].description = patternChecker(regular_user[i].children[j].description);
+                regular_user[i].children[j].nationality = patternChecker(regular_user[i].children[j].nationality);
+
+            }
+        }
 
         const user_info_total = {"joinonly" : join_only_user, "regular" : regular_user}
 

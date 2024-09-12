@@ -1,11 +1,9 @@
 import { Router, Response } from 'express';
 import { pool } from '../db';
-import {CustomRequest, isInjection, isNotNumber, tokenExtractor} from '../middleware/middleware';
-import {FieldPacket, ResultSetHeader} from "mysql2";
+import {CustomRequest, injectionChecker, patternChecker, isNotNumber, tokenExtractor} from '../middleware/middleware';
+import {FieldPacket, ResultSetHeader, RowDataPacket} from "mysql2";
 
 const router = Router();
-
-
 
 router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res: Response) => {
 
@@ -21,10 +19,12 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
 
     const page = 10 * parseInt(req.params.page, 10);
 
-    const isAttacked:boolean = isInjection([where as string, keyword as string]);
-    const isAttacked2:boolean = isNotNumber([page])
+    const checked_where = injectionChecker(where as string);
+    const checked_keyword = injectionChecker(keyword as string);
 
-    if(isAttacked || isAttacked2){
+    const isAttacked:boolean = isNotNumber([page])
+
+    if(isAttacked){
         return res.status(400).json({ message: 'Suspected to Attacking', boardGetRes: 2 });
     }
 
@@ -33,9 +33,9 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
 
         let whereClause = '';
 
-        if (where && keyword) {
+        if (checked_where && checked_keyword) {
 
-            switch (where) {
+            switch (checked_where) {
                 case 'nickname':
                     whereClause = `WHERE user.nickname LIKE ?`;
                     break;
@@ -51,7 +51,7 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
             }
         }
 
-        if(keyword === ""){
+        if(checked_keyword === ""){
             whereClause = "";
         }
 
@@ -69,12 +69,12 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
             ON
                 board.id = reply.board_id
             ${whereClause}`
-        , [keyword === "" ? "" :`%${keyword}%`]);
+        , [checked_keyword === "" ? "" :`%${checked_keyword}%`]);
 
 
         const count =  (Math.trunc(countRows[0].count / 10) + 1);
 
-        const [rows] = await connection.query(`
+        const [rows] = await connection.query<RowDataPacket[]>(`
             SELECT
                 board.id,
                 board.user_id,
@@ -102,7 +102,15 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
                 10
             OFFSET
                 ?
-        `, whereClause === "" ? [page] : [`%${keyword}%`, page]);
+        `, whereClause === "" ? [page] : [`%${checked_keyword}%`, page]);
+
+        for (let i = 0; i < rows.length; i++) {
+            rows[i].title = patternChecker(rows[i].title);
+
+            if(rows[i].nickname !== null){
+                rows[i].nickname = patternChecker(rows[i].nickname);
+            }
+        }
 
         res.status(200).json({"data":rows, "post": count});
 
@@ -134,7 +142,7 @@ router.get('/post/:user_id/:id', tokenExtractor, async (req: CustomRequest, res:
         const connection = await pool.getConnection();
 
 
-        const [post] = await connection.query(`
+        const [post] = await connection.query<RowDataPacket[]>(`
             SELECT
                 board_user.id as user_id,
                 board_user.nickname,
@@ -175,6 +183,25 @@ router.get('/post/:user_id/:id', tokenExtractor, async (req: CustomRequest, res:
                 board.id;
         `, [id]);
 
+        if(post[0].nickname !== null){
+            post[0].nickname = patternChecker(post[0].nickname)
+        }
+        post[0].title = patternChecker(post[0].title)
+        post[0].text = patternChecker(post[0].text)
+
+        if(post[0].replies !== null){
+
+            for (let i = 0; i < post[0].replies.length; i++){
+
+                if(post[0].replies[i].reply_user_nickname !== null){
+                    post[0].replies[i].reply_user_nickname = patternChecker(post[0].replies[i].reply_user_nickname);
+                }
+                post[0].replies[i].reply_text = patternChecker(post[0].replies[i].reply_text);
+
+            }
+
+        }
+
         res.status(200).json(post);
 
         connection.release();
@@ -194,14 +221,11 @@ router.post('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
         return res.status(403).json({ message: 'No Authority', boardPostWriteRes: 1});
     }
 
-    const isAttacked:boolean = isInjection([title, text])
+    const checked_title = injectionChecker(title);
+    const checked_text = injectionChecker(text);
 
-    if(isAttacked){
-        return res.status(400).json({ message: 'Suspected to Attacking', boardPostWriteRes: 2 });
-    }
-
-    if ((title === undefined || title === "") || (text === undefined || text === "")) {
-        return res.status(400).json({ message: 'Title and Text are required', boardPostWriteRes: 3 });
+    if ((checked_title === undefined || checked_title === "") || (checked_text === undefined || checked_text === "")) {
+        return res.status(400).json({ message: 'Title and Text are required', boardPostWriteRes: 2});
     }
 
     try {
@@ -213,7 +237,7 @@ router.post('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
                 board (user_id, title, text, is_admin)
             VALUES
                 (?, ?, ?, ?)
-        `, [user_id, title, text, admin]);
+        `, [user_id, checked_title, checked_text, admin]);
 
         res.status(201).json({ message: 'User Post Registered'});
 
@@ -234,16 +258,16 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
         return res.status(403).json({ message: 'No Authority', boardReplyWriteRes: 1});
     }
 
-    const isAttacked:boolean = isInjection([text])
+    const checked_text = injectionChecker(text);
 
     const id:number = parseInt(req.params.id, 10);
-    const isAttacked2:boolean = isNotNumber([id])
+    const isAttacked:boolean = isNotNumber([id])
 
-    if(isAttacked || isAttacked2){
+    if(isAttacked){
         return res.status(400).json({ message: 'Suspected to Attacking', boardReplyWriteRes: 2 });
     }
 
-    if (text === undefined || text === "") {
+    if (checked_text === undefined || checked_text === "") {
         return res.status(400).json({ message: 'Text is required', boardReplyWriteRes: 3 });
     }
 
@@ -256,7 +280,7 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
                 reply (board_id, user_id, text, is_admin)
             VALUES
                 (?, ?, ?, ?)
-        `, [id, user_id, text, admin]);
+        `, [id, user_id, checked_text, admin]);
 
         res.status(201).json({ message: 'User Reply Registered'});
 
@@ -276,17 +300,18 @@ router.put('/post/:id', tokenExtractor, async (req: CustomRequest, res: Response
         return res.status(403).json({ message: 'No Authority', boardUpdateRes: 1});
     }
 
-    const isAttacked:boolean = isInjection([title, text])
+    const checked_title = injectionChecker(title);
+    const checked_text = injectionChecker(text);
 
     const id:number = parseInt(req.params.id, 10);
-    const isAttacked2:boolean = isNotNumber([id])
+    const isAttacked:boolean = isNotNumber([id])
 
 
-    if(isAttacked || isAttacked2){
+    if(isAttacked){
         return res.status(400).json({ message: 'Suspected to Attacking', boardUpdateRes: 2 });
     }
 
-    if ((title === undefined || title === "") || (text === undefined || text === "")) {
+    if ((checked_title === undefined || checked_title === "") || (checked_text === undefined || checked_text === "")) {
         return res.status(400).json({ message: 'Title and Text are required', boardUpdateRes: 3 });
     }
 
@@ -303,7 +328,7 @@ router.put('/post/:id', tokenExtractor, async (req: CustomRequest, res: Response
                 id = ?
             AND
                 user_id = ?
-        `, [title, text, id, user_id]);
+        `, [checked_title, checked_text, id, user_id]);
 
         const affectedBoardRows = boardUpdateResult.affectedRows;
 
@@ -330,17 +355,17 @@ router.put('/reply/:id', tokenExtractor, async (req: CustomRequest, res: Respons
         return res.status(403).json({ message: 'No Authority', boardUpdateRes: 1});
     }
 
-    const isAttacked:boolean = isInjection([text])
+    const checked_text = injectionChecker(text);
 
     const id:number = parseInt(req.params.id, 10);
-    const isAttacked2:boolean = isNotNumber([id])
+    const isAttacked:boolean = isNotNumber([id])
 
 
-    if(isAttacked || isAttacked2){
+    if(isAttacked){
         return res.status(400).json({ message: 'Suspected to Attacking', boardUpdateRes: 2 });
     }
 
-    if (text === undefined || text === "") {
+    if (checked_text === undefined || checked_text === "") {
         return res.status(400).json({ message: 'Text is required', boardUpdateRes: 3 });
     }
 
@@ -356,7 +381,7 @@ router.put('/reply/:id', tokenExtractor, async (req: CustomRequest, res: Respons
                 id = ?
             AND
                 user_id = ?
-        `, [text, id, user_id]);
+        `, [checked_text, id, user_id]);
 
         const affectedBoardRows = boardUpdateResult.affectedRows;
         if(affectedBoardRows === 1){

@@ -661,9 +661,6 @@ const Board = () => {
                         message = popupTranslations.noAuthority;
                         break;
                     case 2:
-                        message = popupTranslations.injection;
-                        break;
-                    case 3:
                         message = popupTranslations.BoardWriteRequire;
                         break;
                     default:

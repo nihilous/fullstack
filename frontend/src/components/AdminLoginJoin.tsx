@@ -116,18 +116,15 @@ const AdminLoginJoin = () => {
                 let message = ``;
                 switch (adminJoinRes) {
                     case 1:
-                        message = popupTranslations.injection;
-                        break;
-                    case 2:
                         message = popupTranslations.AdminJoinRequired;
                         break;
-                    case 3:
+                    case 2:
                         message = popupTranslations.AdminJoinWrong;
                         break;
-                    case 4:
+                    case 3:
                         message = popupTranslations.JoinInvalid;
                         break;
-                    case 5:
+                    case 4:
                         message = popupTranslations.AdminJoinAlready;
                         break;
                     default:

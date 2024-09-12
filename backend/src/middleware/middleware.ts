@@ -23,14 +23,14 @@ const tokenExtractor = async (req: CustomRequest, res: Response, next: NextFunct
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    const isAttack = isInjection([token as string]);
-
-    if (!token || isAttack) {
+    if (!token) {
         return res.sendStatus(401);
     }
 
+    const checked_token = injectionChecker(token as string);
+
     try {
-        const decodedToken = jwt.verify(token, secretKey) as JwtPayload;
+        const decodedToken = jwt.verify(checked_token, secretKey) as JwtPayload;
 
         const connection = await pool.getConnection();
 
@@ -45,7 +45,7 @@ const tokenExtractor = async (req: CustomRequest, res: Response, next: NextFunct
                 jwt_token = ?
             AND
                 id = ?
-        `, [token, decodedToken.userId]);
+        `, [checked_token, decodedToken.userId]);
 
         connection.release();
 
@@ -68,40 +68,12 @@ const tokenExtractor = async (req: CustomRequest, res: Response, next: NextFunct
     next();
 };
 
-function isInjection(inputs: string[]): boolean {
-
-    const patterns = [
-        '--',
-        ';--',
-        ';',
-        '/*', '*/',
-        '@@',
-        'char', 'nchar', 'varchar', 'nvarchar',
-        'alter', 'begin', 'cast', 'create', 'cursor', 'declare', 'delete', 'drop', 'end',
-        'exec', 'execute', 'fetch', 'insert', 'kill', 'open', 'select', 'sys', 'sysobjects',
-        'syscolumns', 'table', 'update',
-        'union', 'join', '"', "'", '='
-    ];
-
-    for (const input of inputs) {
-        const lowerCaseInput = input.toLowerCase();
-
-        for (const pattern of patterns) {
-            if (lowerCaseInput.includes(pattern)) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
 function injectionChecker(input: string): string {
 
     function antiInjection(problematic: string): string {
         switch (problematic) {
             case "--": return "&a&0";
-            case ";--": return "&a&1";
+
             case ";": return "&a&2";
             case "/\\*": return "&a&3";
             case "\\*/": return "&a&4";
@@ -141,7 +113,7 @@ function injectionChecker(input: string): string {
     }
 
     const patterns = [
-        '--', ';--', ';', '/\\*', '\\*/', '@@', 'char', 'nchar', 'varchar', 'nvarchar', 'alter', 'begin',
+        '--', ';', '/\\*', '\\*/', '@@', 'char', 'nchar', 'varchar', 'nvarchar', 'alter', 'begin',
         'cast', 'create', 'cursor', 'declare', 'delete', 'drop', 'end', 'exec', 'execute', 'fetch',
         'insert', 'kill', 'open', 'select', 'sys', 'sysobjects', 'syscolumns', 'table', 'update',
         'union', 'join', '"', "'", '='
@@ -161,7 +133,7 @@ function patternChecker(input: string): string {
     function decodePattern(encoded: string): string {
         switch (encoded) {
             case "&a&0": return "--";
-            case "&a&1": return ";--";
+
             case "&a&2": return ";";
             case "&a&3": return "/*";
             case "&a&4": return "*/";
@@ -201,7 +173,7 @@ function patternChecker(input: string): string {
     }
 
     const encodedPatterns = [
-        "&a&0", "&a&1", "&a&2", "&a&3", "&a&4", "&a&5", "&a&6", "&a&7", "&a&8", "&a&9",
+        "&a&0", "&a&2", "&a&3", "&a&4", "&a&5", "&a&6", "&a&7", "&a&8", "&a&9",
         "&b&0", "&b&1", "&b&2", "&b&3", "&b&4", "&b&5", "&b&6", "&b&7", "&b&8", "&b&9",
         "&c&0", "&c&1", "&c&2", "&c&3", "&c&4", "&c&5", "&c&6", "&c&7", "&c&8", "&c&9",
         "&d&0", "&d&1", "&d&2", "&d&3", "&d&4", "&d&5"
@@ -231,4 +203,4 @@ function isDateFormat(input: string): boolean {
     return regex.test(input);
 }
 
-export {CustomRequest, tokenExtractor, isInjection, isNotNumber, injectionChecker, patternChecker, isDateFormat};
+export {CustomRequest, tokenExtractor, isNotNumber, injectionChecker, patternChecker, isDateFormat};

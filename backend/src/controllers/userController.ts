@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { pool } from '../db';
-import {CustomRequest, isInjection, injectionChecker, patternChecker, tokenExtractor, isNotNumber, isDateFormat} from '../middleware/middleware';
+import {CustomRequest, injectionChecker, patternChecker, tokenExtractor, isNotNumber, isDateFormat} from '../middleware/middleware';
 import { RowDataPacket, ResultSetHeader, FieldPacket } from 'mysql2';
 
 const router = Router();
@@ -22,11 +22,11 @@ router.post('/', async (req: Request, res: Response) => {
     const checked_nickname = injectionChecker(nickname);
 
     if ((checked_email === undefined || email === "") || (checked_nickname === undefined || nickname === "") || (password === undefined || password === "")) {
-        return res.status(400).json({ message: 'Email, nickname and password are required', joinRes: 2 });
+        return res.status(400).json({ message: 'Email, nickname and password are required', joinRes: 1 });
     }
 
     if (!emailRegex.test(checked_email)) {
-        return res.status(400).json({ message: 'Invalid email format', joinRes: 3 });
+        return res.status(400).json({ message: 'Invalid email format', joinRes: 2 });
     }
 
     try {
@@ -48,7 +48,7 @@ router.post('/', async (req: Request, res: Response) => {
         const result = results as { count: number }[];
 
         if (result[0].count > 0) {
-            return res.status(400).json({ message: 'Email or Nickname is already in use', joinRes: 4 });
+            return res.status(400).json({ message: 'Email or Nickname is already in use', joinRes: 3 });
         }
 
         await connection.query(`
@@ -342,11 +342,8 @@ router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: R
     const token_id:number = req?.token?.userId;
     const { email, nickname } = req.body;
 
-    const isAttacked:boolean = isInjection([email, nickname])
-
-    if(isAttacked){
-        return res.status(400).json({ message: 'Suspected to Attacking', userChangeInfo: 1 });
-    }
+    const checked_email = injectionChecker(email);
+    const checked_nickname = injectionChecker(nickname);
 
     if(user_id !== token_id) {
         return res.status(403).json({ message: 'No Authority', userChangeInfo: 2 });
@@ -361,18 +358,18 @@ router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: R
         let setStatement: string[] = [];
         let setBinding: any[] = [];
 
-        if (email !== undefined && email !== "") {
+        if (checked_email !== undefined && checked_email !== "") {
             whereClause.push('email = ?');
-            whereBindings.push(email);
+            whereBindings.push(checked_email);
             setStatement.push('email = ?');
-            setBinding.push(email);
+            setBinding.push(checked_email);
         }
 
-        if (nickname !== undefined && nickname !== "") {
+        if (checked_nickname !== undefined && checked_nickname !== "") {
             whereClause.push('nickname = ?');
-            whereBindings.push(nickname);
+            whereBindings.push(checked_nickname);
             setStatement.push('nickname = ?');
-            setBinding.push(nickname);
+            setBinding.push(checked_nickname);
         }
 
         if (setStatement.length === 0) {
@@ -418,14 +415,10 @@ router.put('/new/password', async (req: Request, res: Response) => {
 
     const { email, old_password, new_password } = req.body;
 
-    const isAttacked:boolean = isInjection([email, old_password, new_password])
-
-    if(isAttacked){
-        return res.status(400).json({ message: 'Suspected to Attacking', userNewPass: 1 });
-    }
+    const checked_email = injectionChecker(email);
 
     if ((email === undefined || email === "") || (old_password === undefined || old_password === "") || (new_password === undefined || new_password === "")) {
-        return res.status(400).json({ message: 'Email, old password and new password are required', userNewPass: 2 });
+        return res.status(400).json({ message: 'Email, old password and new password are required', userNewPass: 1 });
     }
 
     try {
@@ -438,12 +431,12 @@ router.put('/new/password', async (req: Request, res: Response) => {
                     user
                 WHERE
                     email = ?
-            `, [email]);
+            `, [checked_email]);
 
         const users = results as { password: string }[];
 
         if (users.length === 0) {
-            return res.status(400).json({ message: 'Invalid email', userNewPass: 3 });
+            return res.status(400).json({ message: 'Invalid email', userNewPass: 2 });
         }
 
         const user = users[0];
@@ -451,7 +444,7 @@ router.put('/new/password', async (req: Request, res: Response) => {
         const passwordMatch = await bcrypt.compare(old_password, user.password);
 
         if (!passwordMatch) {
-            return res.status(400).json({ message: 'Invalid password', userNewPass: 4 });
+            return res.status(400).json({ message: 'Invalid password', userNewPass: 3 });
         }
 
         const hashedNewPassword = await bcrypt.hash(new_password, saltRounds);
@@ -463,7 +456,7 @@ router.put('/new/password', async (req: Request, res: Response) => {
                     password = ?
                 WHERE
                     email = ? 
-            `, [hashedNewPassword, email]);
+            `, [hashedNewPassword, checked_email]);
 
         res.status(201).json({ message: 'Password changed'});
 
@@ -484,6 +477,10 @@ router.put('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
 
     const { name, description, gender, birthdate, nationality } = req.body;
 
+    const checked_name = injectionChecker(name);
+    const checked_description = injectionChecker(description);
+    const checked_nationality = injectionChecker(nationality);
+
     let legit_child = false;
 
     for (let i = 0; i < token_user_detail_ids.length; i++){
@@ -496,7 +493,7 @@ router.put('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
         return res.status(403).json({ message: 'No Authority', childUpdateRes: 1 });
     }
 
-    const isAttacked:boolean = isInjection([name, description, birthdate, nationality])
+    const isAttacked:boolean = isDateFormat(birthdate)
     const isAttacked2:boolean = isNotNumber([gender])
 
     if(isAttacked || isAttacked2){
@@ -506,14 +503,14 @@ router.put('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
     let setStatement: string[] = [];
     let setBinding: any[] = [];
 
-    if (name !== undefined && name !== "") {
+    if (checked_name !== undefined && checked_name !== "") {
         setStatement.push('name = ?');
-        setBinding.push(name);
+        setBinding.push(checked_name);
     }
 
-    if (description !== undefined && description !== "") {
+    if (checked_description !== undefined && checked_description !== "") {
         setStatement.push('description = ?');
-        setBinding.push(description);
+        setBinding.push(checked_description);
     }
 
     if (gender !== undefined && gender !== null) {
@@ -526,9 +523,9 @@ router.put('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
         setBinding.push(birthdate);
     }
 
-    if (nationality !== undefined && nationality !== "") {
+    if (checked_nationality !== undefined && checked_nationality !== "") {
         setStatement.push('nationality = ?');
-        setBinding.push(nationality);
+        setBinding.push(checked_nationality);
     }
 
     if (setStatement.length === 0) {

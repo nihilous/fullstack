@@ -173,15 +173,12 @@ const Account = () => {
                 let message = ``;
                 switch (userNewPass) {
                     case 1:
-                        message = popupTranslations.injection;
-                        break;
-                    case 2:
                         message = popupTranslations.AccountRequired;
                         break;
-                    case 3:
+                    case 2:
                         message = popupTranslations.AccountWrongEmail;
                         break;
-                    case 4:
+                    case 3:
                         message = popupTranslations.AccountWrongPass;
                         break;
                     default:

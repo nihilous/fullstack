@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { pool } from '../db';
-import {isInjection} from "../middleware/middleware";
+import {injectionChecker} from "../middleware/middleware";
 
 const router = Router();
 
@@ -8,11 +8,7 @@ router.get('/:vaccine_national_code', async (req: Request, res: Response) => {
 
     const vaccine_national_code:string = req.params.vaccine_national_code
 
-    const isAttacked:boolean = isInjection([vaccine_national_code])
-
-    if(isAttacked){
-        return res.status(400).json({ message: 'Suspected to Attacking' });
-    }
+    const checked_vaccine_national_code = injectionChecker(vaccine_national_code)
 
     try {
         const connection = await pool.getConnection();
@@ -24,7 +20,7 @@ router.get('/:vaccine_national_code', async (req: Request, res: Response) => {
                 vaccine
             WHERE
                 vaccine_national_code = ?
-        `, [vaccine_national_code]);
+        `, [checked_vaccine_national_code]);
 
         res.status(200).json(rows);
 
