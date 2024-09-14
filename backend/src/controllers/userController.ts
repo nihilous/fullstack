@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { pool } from '../db';
-import {CustomRequest, injectionChecker, patternChecker, tokenExtractor, isNotNumber, isDateFormat} from '../middleware/middleware';
+import {CustomRequest, injectionChecker, patternChecker, tokenExtractor, isNotNumber, isDateFormat, isNotLegitCountry} from '../middleware/middleware';
 import { RowDataPacket, ResultSetHeader, FieldPacket } from 'mysql2';
 
 const router = Router();
@@ -72,16 +72,16 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
 
     const checked_name = injectionChecker(name);
     const checked_description = injectionChecker(description);
-    const checked_nationality = injectionChecker(nationality);
 
-    if ((checked_name === undefined || checked_name === "") || (checked_description === undefined || checked_description === "") || (gender === undefined || gender === null) || (birthdate === undefined || birthdate === "") || (checked_nationality === undefined || checked_nationality === "")) {
+    if ((checked_name === undefined || checked_name === "") || (checked_description === undefined || checked_description === "") || (gender === undefined || gender === null) || (birthdate === undefined || birthdate === "") || (nationality === undefined || nationality === "")) {
         return res.status(400).json({ message: 'name, description, gender, birthdate, nationality are required', childRes: 1});
     }
 
     const isAttacked:boolean = isDateFormat(birthdate);
     const isAttacked2:boolean = isNotNumber([gender]);
+    const isAttacked3:boolean = isNotLegitCountry(nationality);
 
-    if(isAttacked || isAttacked2){
+    if(isAttacked || isAttacked2 || isAttacked3){
         return res.status(400).json({ message: 'Suspected to Attacking', childRes: 2});
     }
 
@@ -100,7 +100,7 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
                 user_detail (user_id, name, description, gender, birthdate, nationality)
             VALUES
                 (?, ?, ?, ?, ?, ?)
-        `, [user_id, checked_name, checked_description, gender, birthdate, checked_nationality]);
+        `, [user_id, checked_name, checked_description, gender, birthdate, nationality]);
 
         const [results] = await connection.query<(RowDataPacket & { user_detail_ids: string })[]>(`
             SELECT
@@ -114,7 +114,6 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
         for (let i = 0; i < results.length; i++) {
             results[i].name = patternChecker(results[i].name);
             results[i].description = patternChecker(results[i].description);
-            results[i].nationality = patternChecker(results[i].nationality);
         }
 
         const childrenIds = results.map(row => row.id);
@@ -204,7 +203,6 @@ router.get('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => 
                 rows[i].nickname = patternChecker(rows[i].nickname);
                 rows[i].name = patternChecker(rows[i].name);
                 rows[i].description = patternChecker(rows[i].description);
-                rows[i].nationality = patternChecker(rows[i].nationality);
             }
 
             const response = { user_detail: true, record: {...rows} };
@@ -479,7 +477,6 @@ router.put('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
 
     const checked_name = injectionChecker(name);
     const checked_description = injectionChecker(description);
-    const checked_nationality = injectionChecker(nationality);
 
     let legit_child = false;
 
@@ -495,8 +492,9 @@ router.put('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
 
     const isAttacked:boolean = isDateFormat(birthdate)
     const isAttacked2:boolean = isNotNumber([gender])
+    const isAttacked3:boolean = isNotLegitCountry(nationality);
 
-    if(isAttacked || isAttacked2){
+    if(isAttacked || isAttacked2 || isAttacked3){
         return res.status(400).json({ message: 'Suspected to Attacking', childUpdateRes: 2});
     }
 
@@ -523,9 +521,9 @@ router.put('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
         setBinding.push(birthdate);
     }
 
-    if (checked_nationality !== undefined && checked_nationality !== "") {
+    if (nationality !== undefined && nationality !== "") {
         setStatement.push('nationality = ?');
-        setBinding.push(checked_nationality);
+        setBinding.push(nationality);
     }
 
     if (setStatement.length === 0) {

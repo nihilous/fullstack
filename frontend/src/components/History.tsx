@@ -13,10 +13,17 @@ import jwtChecker from "../util/jwtChecker";
 const History = () => {
 
     interface HistoryProperty {
-        id: number
-        vaccine_name: string
-        vaccine_round: number
-        history_date: string
+        name: string,
+        birthdate: string,
+        gender: number,
+        nationality: string,
+        description: string,
+        histories :{
+            id: number
+            vaccine_name: string
+            vaccine_round: number
+            history_date: string
+        } []
     }
 
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
@@ -30,7 +37,7 @@ const History = () => {
     const translations = HistoryTranslations[language];
     const popupTranslations = PopupMessageTranslations[language];
     const [isAuthorized, setIsAuthorized] = useState(false);
-    const [vaccinationHistory, setVaccinationHistory] = useState<HistoryProperty[]>([]);
+    const [vaccinationHistory, setVaccinationHistory] = useState<HistoryProperty>();
     const [removeChild, setRemoveChild] = useState<boolean>(false);
     const [updateHistory, setUpdateHistory] = useState<boolean>(false);
     const [updateTargetDate, setUpdateTargetDate] = useState<string>(``);
@@ -44,14 +51,6 @@ const History = () => {
     const [updateChild, setUpdateChild] = useState<boolean>(false);
     const targetHistoryRef = useRef<number | null>(null);
     const approveMessage = translations.agree_to_delete;
-
-    const clearState = () => {
-        setName('');
-        setBirthdate('');
-        setGender(null);
-        setNationality('');
-        setDescription('');
-    }
 
     userDetailIds?.map((child_id: number) => {
         if(child_id === user_detail_id && !isAuthorized){
@@ -67,7 +66,13 @@ const History = () => {
             const response = await axios.get<HistoryProperty[]>(`${apiUrl}/history/${userId}/${id}`, {
                 headers: { Authorization: `Bearer ${getToken()}` }
             });
-            setVaccinationHistory(response.data);
+
+            setVaccinationHistory(response.data[0]);
+            setName(response.data[0].name);
+            setBirthdate(response.data[0].birthdate.split('T')[0]);
+            setGender(response.data[0].gender);
+            setNationality(response.data[0].nationality);
+            setDescription(response.data[0].description);
 
         } catch (error) {
             const axiosError = error as AxiosError<{ historyRes: number }>;
@@ -108,20 +113,21 @@ const History = () => {
 
     }, []);
 
-    const modifyChildRecord = async (id:number, method:string) => {
+    const modifyChildRecord = async (id:number, method:string, oriDate:string | null) => {
 
         if(method === "update"){
-            setUpdateHistory(!updateHistory)
+            setUpdateHistory(!updateHistory);
+            oriDate && setUpdateTargetDate(oriDate);
         }else if(method === "delete"){
-            setRemoveHistory(!removeHistory)
+            setRemoveHistory(!removeHistory);
         }
 
         targetHistoryRef.current = id;
 
     };
 
-    const showingHistory = (histories: HistoryProperty[] ) => {
-        return histories.map((history) => {
+    const showingHistory = (histories: HistoryProperty) => {
+        return histories.histories.map((history) => {
 
             const formatDate = (dateString: string) => {
                 const [year, month, day] = dateString.split('T')[0].split('-');
@@ -158,10 +164,10 @@ const History = () => {
 
                         <div className={"hie_buttons"}>
                             <span>
-                                <Button variant="warning" onClick={() => modifyChildRecord(history.id, "update")}>{translations.update}</Button>
+                                <Button variant="warning" onClick={() => modifyChildRecord(history.id, "update", history.history_date.split('T')[0])}>{translations.update}</Button>
                             </span>
                             <span>
-                                <Button variant="danger" onClick={() => modifyChildRecord(history.id, "delete")}>{translations.delete}</Button>
+                                <Button variant="danger" onClick={() => modifyChildRecord(history.id, "delete", null)}>{translations.delete}</Button>
                             </span>
                         </div>
                     </div>
@@ -385,7 +391,6 @@ const History = () => {
             setRemoveChild(!removeChild);
         }else if(updateChild){
             setUpdateChild(!updateChild);
-            clearState();
         }
         setDeleteConfirm(``);
     }
@@ -435,6 +440,7 @@ const History = () => {
                 message: popupTranslations.update_child_record_success
             }));
 
+            historyDataFetch();
             closeDeleteUI();
 
         } catch (error) {
@@ -465,7 +471,7 @@ const History = () => {
                     is_error: true,
                     message: message
                 }));
-                clearState();
+
             }
         }
     };
@@ -561,8 +567,8 @@ const History = () => {
                 <p className={"history_title"}>{`${translations.title}`}</p>
             </div>
             {
-                vaccinationHistory.length !== 0 ?
-                    showingHistory(vaccinationHistory)
+                vaccinationHistory?.histories ?
+                    vaccinationHistory?.histories && showingHistory(vaccinationHistory)
                     :
                     <div className={"main_top container"}>
                         <p className={"history_title"}>{translations.no_record}</p>

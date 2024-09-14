@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { pool } from '../db';
-import {CustomRequest, isNotNumber, isDateFormat, tokenExtractor} from '../middleware/middleware';
-import { ResultSetHeader, FieldPacket } from 'mysql2';
+import {CustomRequest, isNotNumber, isDateFormat, tokenExtractor, patternChecker} from '../middleware/middleware';
+import {ResultSetHeader, FieldPacket, RowDataPacket} from 'mysql2';
 
 const router = Router();
 
@@ -90,21 +90,40 @@ router.get('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
     try {
         const connection = await pool.getConnection();
 
-        const [rows] = await connection.query(`
+        const [rows] = await connection.query<RowDataPacket[]>(`
             SELECT
-                vaccine.vaccine_name,
-                vaccine.vaccine_round,
-                history.id,
-                history.history_date
+                user_detail.name,
+                user_detail.birthdate,
+                user_detail.gender,
+                user_detail.nationality,
+                user_detail.description,
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'vaccine_name', vaccine.vaccine_name,
+                        'vaccine_round', vaccine.vaccine_round,
+                        'id', history.id,
+                        'history_date', history.history_date
+                    )
+                )
+                AS histories
             FROM
                 history
             JOIN
                 vaccine
             ON
                 history.vaccine_id = vaccine.id
+            JOIN
+                user_detail
+            ON
+                history.user_detail_id = user_detail.id
             WHERE
-                user_detail_id = ?
+                user_detail_id =  ?
         `, [user_detail_id]);
+
+        for (let i = 0; i < rows.length; i++) {
+            rows[i].name = patternChecker(rows[i].name);
+            rows[i].description = patternChecker(rows[i].description);
+        }
 
         res.status(200).json(rows);
 

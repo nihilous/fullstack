@@ -203,4 +203,20 @@ function isDateFormat(input: string): boolean {
     return !regex.test(input);
 }
 
-export {CustomRequest, tokenExtractor, isNotNumber, injectionChecker, patternChecker, isDateFormat};
+function isNotLegitCountry(national_code: string): boolean {
+    const upper_cased = national_code.toUpperCase();
+
+    switch (upper_cased) {
+        case "FIN":
+            return false;
+        case "KOR":
+            return false;
+        case "ENG":
+            return false;
+        default:
+            return true;
+    }
+
+}
+
+export {CustomRequest, tokenExtractor, isNotNumber, injectionChecker, patternChecker, isDateFormat, isNotLegitCountry};

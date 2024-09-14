@@ -181,7 +181,6 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
 
                 regular_user[i].children[j].name = patternChecker(regular_user[i].children[j].name);
                 regular_user[i].children[j].description = patternChecker(regular_user[i].children[j].description);
-                regular_user[i].children[j].nationality = patternChecker(regular_user[i].children[j].nationality);
 
             }
         }
