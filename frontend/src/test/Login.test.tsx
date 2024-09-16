@@ -67,7 +67,7 @@ describe('<LoginJoin />', () => {
         </Provider>
     );
 
-    expect(screen.getByLabelText(/purposeful fail/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/이메일/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/비밀번호/i)).toBeInTheDocument();
     expect(screen.getByText(/로그인/i)).toBeInTheDocument();
   });
