@@ -19,19 +19,8 @@ jobs:
 
       - name: Transfer code to GCP
         run: |
-          scp -r ./ GCP_USER@GCP_SERVER_IP:/var/www/fullstack
-        env:
-          GCP_USER: ${{ secrets.GCP_USER }}
-          GCP_SERVER_IP: ${{ secrets.GCP_SERVER_IP }}
+          scp -r ./ ${{ secrets.GCP_USER }}@${{ secrets.GCP_SERVER_IP }}:/var/www/fullstack
 
       - name: Deploy on GCP
         run: |
-          ssh GCP_USER@GCP_SERVER_IP "cd /var/www/fullstack && docker-compose down && docker-compose up -d --build"
-        env:
-          GCP_USER: ${{ secrets.GCP_USER }}
-          GCP_SERVER_IP: ${{ secrets.GCP_SERVER_IP }}
-          FRONTEND_PORT: ${{ secrets.FRONTEND_PORT }}
-          BACKEND_PORT: ${{ secrets.BACKEND_PORT }}
-          API_URL: ${{ secrets.API_URL }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          ssh ${{ secrets.GCP_USER }}@${{ secrets.GCP_SERVER_IP }} "cd /var/www/fullstack && docker-compose down && docker-compose up -d --build"
