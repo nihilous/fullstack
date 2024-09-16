@@ -25,6 +25,10 @@ jobs:
         working-directory: ./frontend
         run: npm test -- --watchAll=false
 
+      - name: Clean up node_modules after test
+        working-directory: ./frontend
+        run: rm -rf node_modules
+
       - name: Set up SSH key
         uses: webfactory/ssh-agent@v0.7.0
         with:
