@@ -141,7 +141,7 @@ const LoginJoin = () => {
                     :
                     <Row className="justify-content-md-center">
                         <div>
-                            github action flow deploy to gcp test 4
+                            github action flow deploy to gcp test 5
                         </div>
                         <Col md={6}>
                             {isLoginView ? (
