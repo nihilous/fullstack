@@ -19,8 +19,8 @@ jobs:
 
       - name: Transfer code to GCP
         run: |
-          scp -r ./ ${{ secrets.GCP_USER }}@${{ secrets.GCP_SERVER_IP }}:/var/www/fullstack
+          scp -r ./ ${{ secrets.GCP_USER }}@${{ secrets.GCP_IP }}:/var/www/fullstack
 
       - name: Deploy on GCP
         run: |
-          ssh ${{ secrets.GCP_USER }}@${{ secrets.GCP_SERVER_IP }} "cd /var/www/fullstack && docker-compose down && docker-compose up -d --build"
+          ssh ${{ secrets.GCP_USER }}@${{ secrets.GCP_IP }} "cd /var/www/fullstack && docker-compose down && docker-compose up -d --build"
