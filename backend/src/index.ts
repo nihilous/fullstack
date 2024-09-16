@@ -18,7 +18,7 @@ import './scheduler/scheduler'
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+const port = process.env.BACKEND_PORT ? parseInt(process.env.BACKEND_PORT, 10) : 3000;
 
 app.use(cors());
 app.use(express.json());
