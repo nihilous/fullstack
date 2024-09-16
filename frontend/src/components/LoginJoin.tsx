@@ -9,6 +9,17 @@ import { useNavigate } from 'react-router-dom';
 import { loginJoinTranslations } from '../translation/LoginJoin';
 import { PopupMessageTranslations } from '../translation/PopupMessageTranslations';
 import { Form, Button, Container, Col, Row } from 'react-bootstrap';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid2';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+
+import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
+import ForumIcon from '@mui/icons-material/Forum';
+import ContactSupportIcon from '@mui/icons-material/ContactSupport';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import logout from "../util/logout";
 
 const LoginJoin = () => {
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
@@ -26,6 +37,21 @@ const LoginJoin = () => {
     const [isCookieSet, setIsCookieSet] = useState<boolean>(Cookies.get(`token`) !== undefined);
     const translations = loginJoinTranslations[language];
     const popupTranslations = PopupMessageTranslations[language];
+
+    const Item = styled(Paper)(({ theme }) => ({
+        backgroundColor: '#fff',
+        ...theme.typography.body2,
+        padding: theme.spacing(1),
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+        ...theme.applyStyles('dark', {
+            backgroundColor: '#1A2027',
+        }),
+    }));
+
+    const Marginer = {marginBottom: `20px`};
+    const IconStyle = {width: `120px`, height: `120px`, color: `#1976d2`};
+    const FontArea = {fontSize: `26px`, fontWeight: `bold`};
 
     const handleLoginSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -137,7 +163,63 @@ const LoginJoin = () => {
 
             <Container className="LoginJoin center_ui">
                 {isCookieSet ?
-                    <></>
+                    <Container className="center_ui">
+                        <Box sx={{ width: '100%' }}>
+                            <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                                <Grid size={6} onClick={() => navigate("/main")} style={Marginer}>
+                                    <Item>
+                                        <div>
+                                            <MedicalInformationIcon style={IconStyle}/>
+                                        </div>
+                                        <div style={FontArea}>
+                                            {translations.main}
+                                        </div>
+                                    </Item>
+                                </Grid>
+                                <Grid size={6} onClick={() => navigate("/main")} style={Marginer}>
+                                    <Item>
+                                        <div>
+                                            <ForumIcon style={IconStyle}/>
+                                        </div>
+                                        <div style={FontArea}>
+                                            {translations.board}
+                                        </div>
+                                    </Item>
+                                </Grid>
+                                <Grid size={6} onClick={() => navigate("/about")} style={Marginer}>
+                                    <Item>
+                                        <div>
+                                            <ContactSupportIcon style={IconStyle}/>
+                                        </div>
+                                        <div style={FontArea}>
+                                            {translations.about}
+                                        </div>
+                                    </Item>
+                                </Grid>
+                                <Grid size={6} onClick={() => navigate("/account")} style={Marginer}>
+                                    <Item>
+                                        <div>
+                                            <AccountCircleIcon style={IconStyle}/>
+                                        </div>
+                                        <div style={FontArea}>
+                                            {translations.account}
+                                        </div>
+                                    </Item>
+                                </Grid>
+                                <Grid size={12} onClick={() => logout(navigate, dispatch)}>
+                                    <Item>
+                                        <div>
+                                            <LogoutOutlinedIcon style={IconStyle}/>
+                                        </div>
+                                        <div style={FontArea}>
+                                            {translations.logout}
+                                        </div>
+                                    </Item>
+                                </Grid>
+                            </Grid>
+                        </Box>
+
+                    </Container>
                     :
                     <Row className="justify-content-md-center">
                         <Col md={6}>

@@ -9,6 +9,11 @@ export const loginJoinTranslations = {
         admin_pass_key: `Adminin salainen avain`,
         register: `Rekisteröidy`,
         cancel: `Peruuta`,
+        main: `Etusivu`,
+        board: `Foorumi`,
+        about: `Tietoja`,
+        account: `Omat tiedot`,
+        logout: `Kirjaudu ulos`,
     },
     ENG: {
         email: `Email`,
@@ -20,6 +25,11 @@ export const loginJoinTranslations = {
         admin_pass_key: `Admin Secret Key`,
         register: `Register`,
         cancel: `Cancel`,
+        main: `Main`,
+        board: `BBS`,
+        about: `About`,
+        account: `Account`,
+        logout: `Logout`,
     },
     KOR: {
         email: `이메일`,
@@ -31,5 +41,10 @@ export const loginJoinTranslations = {
         admin_pass_key: `관리자 비밀 키`,
         register: `가입`,
         cancel: `취소`,
+        main: `현황`,
+        board: `게시판`,
+        about: `소개`,
+        account: `계정정보`,
+        logout: `접속종료`,
     }
 };

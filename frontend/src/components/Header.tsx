@@ -150,8 +150,6 @@ const Header = () => {
         <AppBar position="static">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-
-                    <VaccinesIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
                     <Typography
                         variant="h6"
                         noWrap
@@ -164,7 +162,9 @@ const Header = () => {
                             color: 'inherit',
                             textDecoration: 'none',
                         }}
+                        onClick={() => navigate('/')}
                     >
+                        <VaccinesIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
                         {translations.brand}
                     </Typography>
 
@@ -205,12 +205,9 @@ const Header = () => {
                         </Box>
                     )}
 
-
-                    <VaccinesIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
                     <Typography
                         variant="h5"
                         noWrap
-
                         sx={{
                             mr: 2,
                             display: { xs: 'flex', md: 'none' },
@@ -221,7 +218,9 @@ const Header = () => {
                             color: 'inherit',
                             textDecoration: 'none',
                         }}
+                        onClick={() => navigate('/')}
                     >
+                        <VaccinesIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
                         {translations.brand}
                     </Typography>
 
