@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { pool } from '../db';
-import {CustomRequest, isNotNumber, injectionChecker, patternChecker, tokenExtractor} from "../middleware/middleware";
+import { CustomRequest, isNotNumber, injectionChecker, patternChecker, tokenExtractor, addUpdateHostileList } from "../middleware/middleware";
 import {FieldPacket, ResultSetHeader, RowDataPacket} from "mysql2";
 const router = Router();
 const saltRounds = 10;
@@ -13,6 +13,11 @@ router.post('/', async (req: Request, res: Response) => {
 
     const checked_email = injectionChecker(email);
     const checked_nickname = injectionChecker(nickname);
+
+    if(email !== checked_email || nickname !== checked_nickname){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`email":"` + checked_email, `nickname":"`+checked_nickname, `secret":"`+adminSecret]);
+    }
 
     if ((checked_email === undefined || checked_email === "" ) || (checked_nickname === undefined || checked_nickname === "") || (password === undefined || password === "") || (adminSecret === undefined || adminSecret === "")) {
         return res.status(400).json({ message: 'Email, nickname and password and admin secret are required', adminJoinRes: 1 });
@@ -65,6 +70,8 @@ router.post('/', async (req: Request, res: Response) => {
 router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
 
     if(req?.token?.admin === false){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`admin":"` + false]);
         return res.status(403).json({ message: 'No Authority', adminUserRes: 1});
     }
 
@@ -200,6 +207,9 @@ router.delete('/post/:id', tokenExtractor, async (req: CustomRequest, res: Respo
     const is_admin:boolean = req?.token?.admin;
 
     if(is_admin === false) {
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`admin":"` + false]);
+
         return res.status(403).json({ message: 'No Authority', boardDeleteRes: 1});
     }
 
@@ -251,6 +261,9 @@ router.delete('/reply/:id', tokenExtractor, async (req: CustomRequest, res: Resp
     const is_admin:boolean = req?.token?.admin;
 
     if(is_admin === false) {
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`admin":"` + false]);
+
         return res.status(403).json({ message: 'No Authority', boardDeleteRes: 1});
     }
 

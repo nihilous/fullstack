@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
-export class CreateHostileListTable20240917183500 implements MigrationInterface {
+export class CreateHostileListTable20240917223000 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
@@ -28,6 +28,11 @@ export class CreateHostileListTable20240917183500 implements MigrationInterface 
                         name: 'is_banned',
                         type: 'boolean',
                         default: false,
+                    },
+                    {
+                        name: 'log',
+                        type: 'text',
+                        isNullable: true,
                     },
                     {
                         name: 'created_at',

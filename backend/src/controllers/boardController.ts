@@ -1,6 +1,6 @@
 import { Router, Response } from 'express';
 import { pool } from '../db';
-import {CustomRequest, injectionChecker, patternChecker, isNotNumber, tokenExtractor} from '../middleware/middleware';
+import {CustomRequest, injectionChecker, patternChecker, isNotNumber, tokenExtractor, addUpdateHostileList} from '../middleware/middleware';
 import {FieldPacket, ResultSetHeader, RowDataPacket} from "mysql2";
 
 const router = Router();
@@ -24,8 +24,13 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
 
     const isAttacked:boolean = isNotNumber([page])
 
+    if(where !== checked_where || keyword !== checked_keyword || isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString(), `where":"`+checked_where, `keyword":"`+checked_keyword]);
+    }
+
     if(isAttacked){
-        return res.status(400).json({ message: 'Suspected to Attacking', boardGetRes: 2 });
+       return res.status(400).json({ message: 'Suspected to Attacking', boardGetRes: 2 });
     }
 
     try {
@@ -135,6 +140,9 @@ router.get('/post/:user_id/:id', tokenExtractor, async (req: CustomRequest, res:
     const isAttacked:boolean = isNotNumber([id])
 
     if(isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString(), `post_id":"`+isAttacked]);
+
         return res.status(400).json({ message: 'Suspected to Attacking', boardPostGetRes: 2 });
     }
 
@@ -224,6 +232,11 @@ router.post('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
     const checked_title = injectionChecker(title);
     const checked_text = injectionChecker(text);
 
+    if(title !== checked_title || text !== checked_text){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString(), `title":"`+checked_title, `text":"`+checked_text]);
+    }
+
     if ((checked_title === undefined || checked_title === "") || (checked_text === undefined || checked_text === "")) {
         return res.status(400).json({ message: 'Title and Text are required', boardPostWriteRes: 2});
     }
@@ -262,6 +275,11 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
 
     const id:number = parseInt(req.params.id, 10);
     const isAttacked:boolean = isNotNumber([id])
+
+    if(text !== checked_text || isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString(), `reply":"`+checked_text, `post_id":"`+checked_text, ]);
+    }
 
     if(isAttacked){
         return res.status(400).json({ message: 'Suspected to Attacking', boardReplyWriteRes: 2 });
@@ -306,6 +324,10 @@ router.put('/post/:id', tokenExtractor, async (req: CustomRequest, res: Response
     const id:number = parseInt(req.params.id, 10);
     const isAttacked:boolean = isNotNumber([id])
 
+    if( title !== checked_title || text !== checked_text || isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString(), `title":"`+checked_title, `text":"`+checked_text, `post_id":"`+isAttacked]);
+    }
 
     if(isAttacked){
         return res.status(400).json({ message: 'Suspected to Attacking', boardUpdateRes: 2 });
@@ -360,6 +382,10 @@ router.put('/reply/:id', tokenExtractor, async (req: CustomRequest, res: Respons
     const id:number = parseInt(req.params.id, 10);
     const isAttacked:boolean = isNotNumber([id])
 
+    if( text !== checked_text || isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString(), `reply":"`+checked_text, `post_id":"`+isAttacked]);
+    }
 
     if(isAttacked){
         return res.status(400).json({ message: 'Suspected to Attacking', boardUpdateRes: 2 });
@@ -410,6 +436,9 @@ router.delete('/post/:user_id/:id', tokenExtractor, async (req: CustomRequest, r
     const isAttacked:boolean = isNotNumber([id])
 
     if(isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString(), `post_id":"`+isAttacked]);
+
         return res.status(400).json({ message: 'Suspected to Attacking', boardDeleteRes: 2 });
     }
 
@@ -465,6 +494,9 @@ router.delete('/reply/:user_id/:id', tokenExtractor, async (req: CustomRequest, 
     const isAttacked:boolean = isNotNumber([id])
 
     if(isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString(), `reply_id":"`+isAttacked]);
+
         return res.status(400).json({ message: 'Suspected to Attacking', boardDeleteRes: 2 });
     }
 

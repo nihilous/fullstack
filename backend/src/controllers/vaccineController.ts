@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { pool } from '../db';
-import {injectionChecker} from "../middleware/middleware";
+import {addUpdateHostileList, injectionChecker} from "../middleware/middleware";
 
 const router = Router();
 
@@ -9,6 +9,11 @@ router.get('/:vaccine_national_code', async (req: Request, res: Response) => {
     const vaccine_national_code:string = req.params.vaccine_national_code
 
     const checked_vaccine_national_code = injectionChecker(vaccine_national_code)
+
+    if(vaccine_national_code !== checked_vaccine_national_code){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`vac_code":"` + checked_vaccine_national_code]);
+    }
 
     try {
         const connection = await pool.getConnection();

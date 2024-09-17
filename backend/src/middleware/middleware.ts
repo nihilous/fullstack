@@ -52,7 +52,7 @@ const tokenExtractor = async (req: CustomRequest, res: Response, next: NextFunct
         if (results.length === 0) {
 
             const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-            await addUpdateHostileList(clientIp as string);
+            await addUpdateHostileList(clientIp as string, ["jwt_forgery"]);
 
             return res.status(403).json({ message: 'Invalid token', tokenExpired: false });
         }
@@ -223,7 +223,7 @@ function isNotLegitCountry(national_code: string): boolean {
 
 }
 
-const addUpdateHostileList = async (clientIp: string) => {
+const addUpdateHostileList = async (clientIp: string, keyWords: string[]) => {
 
     try {
 
@@ -238,24 +238,32 @@ const addUpdateHostileList = async (clientIp: string) => {
             `, [clientIp]);
 
 
+
         if (results.length === 0) {
+
+            const newLogEntry = { 1: keyWords };
 
             await connection.query(`
                 INSERT INTO
-                    hostile_list (ip_address)
-                VALUES (?)
-            `, [clientIp]);
+                    hostile_list (ip_address, log)
+                VALUES (?, ?)
+            `, [clientIp, JSON.stringify([newLogEntry])]);
 
         }else{
+
+            const currentLog = results[0].log ? JSON.parse(results[0].log) : [];
+            const newLogEntry = { [results[0].attack_count + 1] : keyWords };
+            currentLog.push(newLogEntry);
 
             await connection.query(`
                 UPDATE
                     hostile_list
                 SET
-                    attack_count = attack_count + 1
+                    attack_count = attack_count + 1,
+                    log = ?
                 WHERE
                     ip_address = ?
-            `, [clientIp]);
+            `, [JSON.stringify(currentLog), clientIp]);
         }
 
         connection.release();

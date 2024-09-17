@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { pool } from '../db';
-import {CustomRequest, isNotNumber, isDateFormat, tokenExtractor, patternChecker} from '../middleware/middleware';
+import {CustomRequest, isNotNumber, isDateFormat, tokenExtractor, patternChecker, addUpdateHostileList} from '../middleware/middleware';
 import {ResultSetHeader, FieldPacket, RowDataPacket} from 'mysql2';
 
 const router = Router();
@@ -30,6 +30,9 @@ router.post('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, r
     const isAttacked:boolean = isDateFormat(history_date)
     const isAttacked2:boolean = isNotNumber([vaccine_id])
     if(isAttacked || isAttacked2){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`"id":` + user_id.toString(), `"token":`+token_id.toString(), `"child":`+user_detail_id, `"vac_date":`+history_date as string, `"vac_id":`+vaccine_id as string])
+
         return res.status(400).json({ message: 'Suspected to Attacking', historyRegiRes: 2 });
     }
 
@@ -84,6 +87,10 @@ router.get('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
     }
 
     if(user_id !== token_id || legit_child === false){
+
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`"id":` + user_id.toString(), `"token":`+token_id.toString(), `"child":`+user_detail_id])
+
         return res.status(403).json({ message: 'No Authority', historyRes: 1 });
     }
 
@@ -159,6 +166,10 @@ router.put('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
     const isAttacked:boolean = isDateFormat(history_date)
     const isAttacked2:boolean = isNotNumber([id])
     if(isAttacked || isAttacked2){
+
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`"id":` + user_id.toString(), `"token":`+token_id.toString(), `"child":`+user_detail_id, `"vac_date":`+history_date as string, `"vac_id":`+id as string])
+
         return res.status(400).json({ message: 'Suspected to Attacking', historyUpdateRes: 2 });
     }
 
@@ -215,6 +226,9 @@ router.delete('/:id/:user_detail_id/:history_id', tokenExtractor, async (req: Cu
 
     const isAttacked:boolean = isNotNumber([id])
     if(isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString(), `child":"`+user_detail_id, `vac_id":"`+id.toString()])
+
         return res.status(400).json({ message: 'Suspected to Attacking', historyDeleteRes: 2 });
     }
 
