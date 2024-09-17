@@ -66,7 +66,6 @@ const LoginJoin = () => {
             const preWarningTime = expirationTime - 10 * 60 * 1000;
             localStorage.setItem('jwtExpiration', expirationTime.toString());
             startJwtTimers(dispatch, expirationTime, preWarningTime);
-            navigate('/main');
             window.location.reload();
 
         } catch (error) {
@@ -176,7 +175,7 @@ const LoginJoin = () => {
                                         </div>
                                     </Item>
                                 </Grid>
-                                <Grid size={6} onClick={() => navigate("/main")} style={Marginer}>
+                                <Grid size={6} onClick={() => navigate("/board")} style={Marginer}>
                                     <Item>
                                         <div>
                                             <ForumIcon style={IconStyle}/>

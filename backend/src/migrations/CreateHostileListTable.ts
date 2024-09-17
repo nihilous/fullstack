@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
-export class CreateAdminTable20240917180000 implements MigrationInterface {
+export class CreateHostileListTable20240917183500 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: 'admin',
+                name: 'hostile_list',
                 columns: [
                     {
                         name: 'id',
@@ -14,33 +14,20 @@ export class CreateAdminTable20240917180000 implements MigrationInterface {
                         generationStrategy: 'increment',
                     },
                     {
-                        name: 'email',
-                        type: 'varchar',
-                        isUnique: true,
-                    },
-                    {
-                        name: 'nickname',
-                        type: 'varchar',
-                    },
-                    {
-                        name: 'password',
-                        type: 'varchar',
-                    },
-                    {
-                        name: 'jwt_token',
-                        type: 'text',
-                        isNullable: true,
-                    },
-                    {
-                        name: 'jwt_expires_at',
-                        type: 'timestamp',
-                        isNullable: true,
-                    },
-                    {
                         name: 'ip_address',
                         type: 'varchar',
                         length: '45',
                         isNullable: true,
+                    },
+                    {
+                        name: 'attack_count',
+                        type: 'int',
+                        default: 1,
+                    },
+                    {
+                        name: 'is_banned',
+                        type: 'boolean',
+                        default: false,
                     },
                     {
                         name: 'created_at',
@@ -57,15 +44,15 @@ export class CreateAdminTable20240917180000 implements MigrationInterface {
             })
         );
 
-        await queryRunner.createIndex('admin', new TableIndex({
-            name: 'IDX_ADMIN_EMAIL',
-            columnNames: ['email'],
+        await queryRunner.createIndex('hostile_list', new TableIndex({
+            name: 'IDX_HOSTILE_LIST',
+            columnNames: ['ip_address'],
             isUnique: true,
         }));
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropIndex('admin', 'IDX_ADMIN_EMAIL');
-        await queryRunner.dropTable('admin');
+        await queryRunner.dropIndex('hostile_list', 'IDX_HOSTILE_LIST');
+        await queryRunner.dropTable('hostile_list');
     }
 }

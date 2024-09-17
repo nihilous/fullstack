@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { pool } from '../db';
-import {CustomRequest, injectionChecker, patternChecker, tokenExtractor, isNotNumber, isDateFormat, isNotLegitCountry} from '../middleware/middleware';
+import {CustomRequest, injectionChecker, patternChecker, tokenExtractor, isNotNumber, isDateFormat, isNotLegitCountry, addUpdateHostileList} from '../middleware/middleware';
 import { RowDataPacket, ResultSetHeader, FieldPacket } from 'mysql2';
 
 const router = Router();
@@ -20,6 +20,11 @@ router.post('/', async (req: Request, res: Response) => {
 
     const checked_email = injectionChecker(email);
     const checked_nickname = injectionChecker(nickname);
+
+    if(checked_email !== email || checked_nickname !== nickname){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string);
+    }
 
     if ((checked_email === undefined || email === "") || (checked_nickname === undefined || nickname === "") || (password === undefined || password === "")) {
         return res.status(400).json({ message: 'Email, nickname and password are required', joinRes: 1 });
@@ -69,7 +74,7 @@ router.post('/', async (req: Request, res: Response) => {
 
 router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
     const { name, description, gender, birthdate, nationality } = req.body;
-
+    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     const checked_name = injectionChecker(name);
     const checked_description = injectionChecker(description);
 
@@ -80,6 +85,10 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
     const isAttacked:boolean = isDateFormat(birthdate);
     const isAttacked2:boolean = isNotNumber([gender]);
     const isAttacked3:boolean = isNotLegitCountry(nationality);
+
+    if(checked_name !== name || checked_description !== description || isAttacked || isAttacked2 || isAttacked3){
+        addUpdateHostileList(clientIp as string);
+    }
 
     if(isAttacked || isAttacked2 || isAttacked3){
         return res.status(400).json({ message: 'Suspected to Attacking', childRes: 2});
@@ -343,6 +352,11 @@ router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: R
     const checked_email = injectionChecker(email);
     const checked_nickname = injectionChecker(nickname);
 
+    if(checked_email !== email || checked_nickname !== nickname){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string);
+    }
+
     if(user_id !== token_id) {
         return res.status(403).json({ message: 'No Authority', userChangeInfo: 2 });
     }
@@ -414,6 +428,11 @@ router.put('/new/password', async (req: Request, res: Response) => {
     const { email, old_password, new_password } = req.body;
 
     const checked_email = injectionChecker(email);
+
+    if(checked_email !== email){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string);
+    }
 
     if ((email === undefined || email === "") || (old_password === undefined || old_password === "") || (new_password === undefined || new_password === "")) {
         return res.status(400).json({ message: 'Email, old password and new password are required', userNewPass: 1 });
@@ -493,6 +512,11 @@ router.put('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
     const isAttacked:boolean = isDateFormat(birthdate)
     const isAttacked2:boolean = isNotNumber([gender])
     const isAttacked3:boolean = isNotLegitCountry(nationality);
+
+    if(checked_name !== name || checked_description !== description || isAttacked || isAttacked2 || isAttacked3){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string);
+    }
 
     if(isAttacked || isAttacked2 || isAttacked3){
         return res.status(400).json({ message: 'Suspected to Attacking', childUpdateRes: 2});

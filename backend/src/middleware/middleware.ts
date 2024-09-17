@@ -50,6 +50,10 @@ const tokenExtractor = async (req: CustomRequest, res: Response, next: NextFunct
         connection.release();
 
         if (results.length === 0) {
+
+            const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+            await addUpdateHostileList(clientIp as string);
+
             return res.status(403).json({ message: 'Invalid token', tokenExpired: false });
         }
 
@@ -219,4 +223,46 @@ function isNotLegitCountry(national_code: string): boolean {
 
 }
 
-export {CustomRequest, tokenExtractor, isNotNumber, injectionChecker, patternChecker, isDateFormat, isNotLegitCountry};
+const addUpdateHostileList = async (clientIp: string) => {
+
+    try {
+
+        const connection = await pool.getConnection();
+        const [results]: [RowDataPacket[], any] = await connection.query(`
+            SELECT
+                *
+            FROM
+                hostile_list
+            WHERE
+                ip_address = ?
+            `, [clientIp]);
+
+
+        if (results.length === 0) {
+
+            await connection.query(`
+                INSERT INTO
+                    hostile_list (ip_address)
+                VALUES (?)
+            `, [clientIp]);
+
+        }else{
+
+            await connection.query(`
+                UPDATE
+                    hostile_list
+                SET
+                    attack_count = attack_count + 1
+                WHERE
+                    ip_address = ?
+            `, [clientIp]);
+        }
+
+        connection.release();
+    } catch (error) {
+        console.log("addUpdateHostileList ip : ",clientIp, " error : ", error);
+    }
+
+};
+
+export {CustomRequest, tokenExtractor, isNotNumber, injectionChecker, patternChecker, isDateFormat, isNotLegitCountry, addUpdateHostileList};

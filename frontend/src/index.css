@@ -298,10 +298,6 @@ code {
 .account_category{
   margin: 0 auto;
   margin-bottom: 40px;
-  display: table;
-}
-.account_category select{
-  width: 250px;
 }
 
 .account_cp_wrap label{
@@ -430,6 +426,8 @@ code {
 .post .post_elem span:nth-child(1){
   width: 15%;
   text-align: center;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 
 .post .post_elem span:nth-child(2){
@@ -548,6 +546,8 @@ code {
 
 .pm_top .pmt_writer div:nth-child(2){
   text-align: center;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 .pm_top .pmt_title div:nth-child(2){
   text-align: left;
@@ -816,6 +816,14 @@ code {
   .account_title{
     font-size: 3rem;
   }
+
+  .account_category{
+    display: table;
+  }
+
+  .account_category select{
+    width: 250px;
+  }
   .account_cp_wrap{
     display: flex;
   }
@@ -1069,6 +1077,14 @@ code {
   .account_title{
     font-size: 2.6rem;
   }
+
+  .account_category{
+    display: table;
+  }
+
+  .account_category select{
+    width: 250px;
+  }
   .account_cp_wrap{
     display: flex;
   }
@@ -1321,6 +1337,9 @@ code {
   .account_title{
     font-size: 2rem;
   }
+  .account_category select{
+    width: 250px;
+  }
   .ac_control{
     max-width: 400px;
   }
@@ -1370,17 +1389,20 @@ code {
   .post .post_header span:nth-child(1){
     width: 15%;
     text-align: center;
+    font-size: 16px;
   }
 
   .post .post_header span:nth-child(2){
     width: 65%;
     padding-left: 5%;
     text-align: center;
+    font-size: 16px;
   }
 
   .post .post_header span:nth-child(3){
     width: 20%;
     text-align: center;
+    font-size: 16px;
   }
 
   .post .post_elem span{

@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { pool } from '../db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import {CustomRequest, injectionChecker, tokenExtractor} from "../middleware/middleware";
+import {CustomRequest, injectionChecker, tokenExtractor, addUpdateHostileList} from "../middleware/middleware";
 import {FieldPacket, ResultSetHeader, RowDataPacket} from "mysql2";
 
 const router = Router();
@@ -21,13 +21,20 @@ interface User {
 
 const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin', isAdmin: boolean = false) => {
     const { email, password } = req.body;
+    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
     const checked_email = injectionChecker(email);
+
+    if(email !== checked_email){
+        await addUpdateHostileList(clientIp as string);
+    }
 
     if ((checked_email === undefined || checked_email === "")|| (password === undefined || password === "")) {
         return res.status(400).json({ message: 'Email and password are required', loginRes: 1 });
     }
 
     try {
+
 
         if(table === 'user'){
             const connection = await pool.getConnection();
@@ -87,7 +94,6 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
                     id = ?
             `, setBinding);
 
-
             const tokenPayload = {
                 userId: user.id,
                 admin: isAdmin,
@@ -103,10 +109,11 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
                     user
                 SET
                     jwt_token = ?,
-                    jwt_expires_at = ?
+                    jwt_expires_at = ?,
+                    ip_address = ?
                 WHERE
                     id = ?
-            `, [token, formattedExpiration, user.id]);
+            `, [token, formattedExpiration, clientIp, user.id]);
 
             const affectedUserRows = TokenUpdateResult.affectedRows;
 
@@ -154,10 +161,11 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
                     admin
                 SET
                     jwt_token = ?,
-                    jwt_expires_at = ?
+                    jwt_expires_at = ?,
+                    ip_address = ?
                 WHERE
                     id = ?
-            `, [token, formattedExpiration, user.id]);
+            `, [token, formattedExpiration, clientIp, user.id]);
 
             const affectedAdminRows = TokenUpdateResult.affectedRows;
 

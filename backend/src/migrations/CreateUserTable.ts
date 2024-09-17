@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
-export class CreateUserTable20240910123000 implements MigrationInterface {
+export class CreateUserTable20240917180000 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
@@ -44,6 +44,12 @@ export class CreateUserTable20240910123000 implements MigrationInterface {
                     {
                         name: 'jwt_expires_at',
                         type: 'timestamp',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'ip_address',
+                        type: 'varchar',
+                        length: '45',
                         isNullable: true,
                     },
                     {
