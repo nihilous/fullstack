@@ -26,7 +26,7 @@ const handleLogin = async (req: Request, res: Response, table: 'user' | 'admin',
     const checked_email = injectionChecker(email);
 
     if(email !== checked_email){
-        await addUpdateHostileList(clientIp as string, [`email":"`+checked_email]);
+        await addUpdateHostileList(clientIp as string, {"email" : checked_email});
     }
 
     if ((checked_email === undefined || checked_email === "")|| (password === undefined || password === "")) {
@@ -198,7 +198,7 @@ router.get('/jwt/:id',tokenExtractor, async (req: CustomRequest, res: Response) 
 
     if(user_id !== token_id) {
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString(), `admin":"`+admin])
+        addUpdateHostileList(clientIp as string, [`id":"` + user_id, `token":"`+token_id, `admin":"`+admin])
 
         return res.status(403).json({ message: 'No Authority', jwtRenewRes: 1});
     }

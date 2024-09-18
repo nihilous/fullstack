@@ -39,7 +39,7 @@ router.get('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
 
     if(user_id !== token_id || legit_child === false){
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString(), `child":"`+user_detail_id]);
+        addUpdateHostileList(clientIp as string, {"id" : user_id, "token" : token_id, "child" : user_detail_id});
 
         return res.status(403).json({ message: 'No Authority', noticeRes: 1 });
     }

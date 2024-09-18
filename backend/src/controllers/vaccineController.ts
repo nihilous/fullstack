@@ -12,7 +12,7 @@ router.get('/:vaccine_national_code', async (req: Request, res: Response) => {
 
     if(vaccine_national_code !== checked_vaccine_national_code){
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        addUpdateHostileList(clientIp as string, [`vac_code":"` + checked_vaccine_national_code]);
+        addUpdateHostileList(clientIp as string, {"vac_code" : checked_vaccine_national_code});
     }
 
     try {

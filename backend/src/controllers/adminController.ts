@@ -16,7 +16,7 @@ router.post('/', async (req: Request, res: Response) => {
 
     if(email !== checked_email || nickname !== checked_nickname){
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        addUpdateHostileList(clientIp as string, [`email":"` + checked_email, `nickname":"`+checked_nickname, `secret":"`+adminSecret]);
+        addUpdateHostileList(clientIp as string, {"email" : checked_email, "nickname" : checked_nickname, "secret" : adminSecret});
     }
 
     if ((checked_email === undefined || checked_email === "" ) || (checked_nickname === undefined || checked_nickname === "") || (password === undefined || password === "") || (adminSecret === undefined || adminSecret === "")) {
@@ -71,7 +71,7 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
 
     if(req?.token?.admin === false){
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        addUpdateHostileList(clientIp as string, [`admin":"` + false]);
+        addUpdateHostileList(clientIp as string, {"admin" : false });
         return res.status(403).json({ message: 'No Authority', adminUserRes: 1});
     }
 
@@ -181,8 +181,8 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
 
         for (let i = 0; i < regular_user.length; i++) {
 
-            regular_user[i].email = patternChecker(join_only_user[i].email);
-            regular_user[i].nickname = patternChecker(join_only_user[i].nickname);
+            regular_user[i].email = patternChecker(regular_user[i].email);
+            regular_user[i].nickname = patternChecker(regular_user[i].nickname);
 
             for (let j = 0; j < regular_user[i].children.length; j++) {
 
@@ -198,7 +198,38 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
 
         connection.release();
     } catch (error) {
-        console.error('Error response get user/', error);
+        console.error('Error response get admin/', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.get('/hostile', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    if(req?.token?.admin === false){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"admin" : false});
+        return res.status(403).json({ message: 'No Authority', adminUserRes: 1});
+    }
+
+    try {
+        const connection = await pool.getConnection();
+
+        const [hostile_users] = await connection.query<RowDataPacket[]>(`
+            SELECT
+                *
+            FROM
+                hostile_list
+        `);
+
+        for (let i = 0; i < hostile_users.length; i++){
+            hostile_users[i].log = patternChecker(hostile_users[i].log);
+        }
+
+        res.status(200).json(hostile_users);
+
+        connection.release();
+    } catch (error) {
+        console.error('Error response get admin/hostile', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
@@ -208,7 +239,7 @@ router.delete('/post/:id', tokenExtractor, async (req: CustomRequest, res: Respo
 
     if(is_admin === false) {
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        addUpdateHostileList(clientIp as string, [`admin":"` + false]);
+        addUpdateHostileList(clientIp as string, {"admin" : false});
 
         return res.status(403).json({ message: 'No Authority', boardDeleteRes: 1});
     }
@@ -262,7 +293,7 @@ router.delete('/reply/:id', tokenExtractor, async (req: CustomRequest, res: Resp
 
     if(is_admin === false) {
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        addUpdateHostileList(clientIp as string, [`admin":"` + false]);
+        addUpdateHostileList(clientIp as string, {"admin" : false});
 
         return res.status(403).json({ message: 'No Authority', boardDeleteRes: 1});
     }

@@ -52,7 +52,7 @@ const tokenExtractor = async (req: CustomRequest, res: Response, next: NextFunct
         if (results.length === 0) {
 
             const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-            await addUpdateHostileList(clientIp as string, ["jwt_forgery"]);
+            await addUpdateHostileList(clientIp as string, {"type":"jwt_forgery"});
 
             return res.status(403).json({ message: 'Invalid token', tokenExpired: false });
         }
@@ -203,11 +203,20 @@ function isNotNumber(inputs: any[]): boolean {
 }
 
 function isDateFormat(input: string): boolean {
+
+    if(typeof input !== 'string') {
+        return false;
+    }
+
     const regex = /^\d{4}-\d{2}-\d{2}$/;
     return !regex.test(input);
 }
 
 function isNotLegitCountry(national_code: string): boolean {
+    if(typeof national_code !== 'string') {
+        return true;
+    }
+
     const upper_cased = national_code.toUpperCase();
 
     switch (upper_cased) {
@@ -223,7 +232,7 @@ function isNotLegitCountry(national_code: string): boolean {
 
 }
 
-const addUpdateHostileList = async (clientIp: string, keyWords: string[]) => {
+const addUpdateHostileList = async (clientIp: string, keyWords: object) => {
 
     try {
 
@@ -241,18 +250,18 @@ const addUpdateHostileList = async (clientIp: string, keyWords: string[]) => {
 
         if (results.length === 0) {
 
-            const newLogEntry = { 1: keyWords };
+            const newLogEntry = [JSON.stringify(keyWords)];
 
             await connection.query(`
                 INSERT INTO
                     hostile_list (ip_address, log)
                 VALUES (?, ?)
-            `, [clientIp, JSON.stringify([newLogEntry])]);
+            `, [clientIp, JSON.stringify(newLogEntry)]);
 
         }else{
 
             const currentLog = results[0].log ? JSON.parse(results[0].log) : [];
-            const newLogEntry = { [results[0].attack_count + 1] : keyWords };
+            const newLogEntry = JSON.stringify(keyWords);
             currentLog.push(newLogEntry);
 
             await connection.query(`

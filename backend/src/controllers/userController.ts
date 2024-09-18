@@ -24,7 +24,7 @@ router.post('/', async (req: Request, res: Response) => {
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
     if(checked_email !== email || checked_nickname !== nickname){
-        addUpdateHostileList(clientIp as string,[`email":"`+checked_email, `nickname":"`+checked_nickname]);
+        addUpdateHostileList(clientIp as string, {"email" : checked_email, "nickname" : checked_nickname});
     }
 
     if ((checked_email === undefined || email === "") || (checked_nickname === undefined || nickname === "") || (password === undefined || password === "")) {
@@ -88,7 +88,7 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
     const isAttacked3:boolean = isNotLegitCountry(nationality);
 
     if(checked_name !== name || checked_description !== description || isAttacked || isAttacked2 || isAttacked3){
-        addUpdateHostileList(clientIp as string, [`name":"`+checked_name, `desc":"`+checked_description, `birthdate":"`+isAttacked, `gender":"`+isAttacked2, `nationality":"`+isAttacked3]);
+        addUpdateHostileList(clientIp as string, {"name" : checked_name, "desc" : checked_description, "birthdate" : injectionChecker(`${birthdate}`), "gender" : injectionChecker(`${gender}`), "nationality" : injectionChecker(`${nationality}`)});
     }
 
     if(isAttacked || isAttacked2 || isAttacked3){
@@ -172,7 +172,7 @@ router.get('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => 
 
     if(user_id !== token_id) {
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString()])
+        addUpdateHostileList(clientIp as string, {"id" : user_id, "token" : token_id})
 
         return res.status(403).json({ message: 'No Authority', UserRes: 1 });
     }
@@ -256,7 +256,7 @@ router.delete('/:id', tokenExtractor, async (req: CustomRequest, res: Response) 
 
     if(isAttacked){
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString()])
+        addUpdateHostileList(clientIp as string, {"id" : user_id, "token" : token_id})
 
         return res.status(400).json({ message: 'Suspected to Attacking', userDeleteRes: 1 });
     }
@@ -305,7 +305,7 @@ router.delete('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest,
 
     if(isAttacked){
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString(), `child":"`+user_detail_id])
+        addUpdateHostileList(clientIp as string, {"id" : user_id, "token" : token_id, "child" : user_detail_id})
 
         return res.status(400).json({ message: 'Suspected to Attacking', childDeleteRes: 1 });
     }
@@ -364,7 +364,7 @@ router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: R
 
     if(checked_email !== email || checked_nickname !== nickname){
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString(), `email":"`+checked_email, `nickname":"`+checked_nickname]);
+        addUpdateHostileList(clientIp as string, {"id" : user_id, "token" : token_id, "email" : checked_email, "nickname" : checked_nickname});
     }
 
     if(user_id !== token_id) {
@@ -441,7 +441,7 @@ router.put('/new/password', async (req: Request, res: Response) => {
 
     if(checked_email !== email){
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        addUpdateHostileList(clientIp as string, [`email":"`+checked_email]);
+        addUpdateHostileList(clientIp as string, {"email" : checked_email});
     }
 
     if ((email === undefined || email === "") || (old_password === undefined || old_password === "") || (new_password === undefined || new_password === "")) {
@@ -525,7 +525,7 @@ router.put('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
 
     if(checked_name !== name || checked_description !== description || isAttacked || isAttacked2 || isAttacked3){
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        addUpdateHostileList(clientIp as string, [`id":"` + user_id.toString(), `token":"`+token_id.toString(), `child":"`+user_detail_id.toString(), `name":"`+checked_name, `desc":"`+checked_description, `birthdate":"`+isAttacked, `gender":"`+isAttacked2, `nationality":"`+isAttacked3]);
+        addUpdateHostileList(clientIp as string, {"id" : user_id, "token" : token_id, "child" : user_detail_id, "name" : checked_name, "desc" : checked_description, "birthdate" : injectionChecker(`${birthdate}`), "gender" : injectionChecker(`${gender}`), "nationality" : injectionChecker(`${nationality}`)});
     }
 
     if(isAttacked || isAttacked2 || isAttacked3){

@@ -14,6 +14,7 @@ import Notice from './components/Notice';
 import Account from './components/Account';
 import AdminLoginJoin from "./components/AdminLoginJoin";
 import AdminMain from "./components/AdminMain";
+import AdminHostile from "./components/AdminHostile";
 import Board from "./components/Board";
 import About from "./components/About";
 const App = () => {
@@ -45,6 +46,7 @@ const App = () => {
                 <Route path="/account" element={<Account />} />
                 <Route path="/admin/login" element={<AdminLoginJoin />} />
                 <Route path="/admin/main" element={<AdminMain />} />
+                <Route path="/admin/hostile" element={<AdminHostile />} />
                 <Route path="/board" element={<Board />} />
                 <Route path="/board/:page" element={<Board />} />
                 <Route path="/about" element={<About />} />
