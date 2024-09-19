@@ -203,33 +203,180 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
     }
 });
 
-router.get('/hostile', tokenExtractor, async (req: CustomRequest, res: Response) => {
+router.get('/hostile/:page', tokenExtractor, async (req: CustomRequest, res: Response) => {
 
     if(req?.token?.admin === false){
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
         addUpdateHostileList(clientIp as string, {"admin" : false});
-        return res.status(403).json({ message: 'No Authority', adminUserRes: 1});
+        return res.status(403).json({ message: 'No Authority', adminHostileRes: 1});
+    }
+
+    const where: string | undefined = typeof req.query.where === 'string' ? req.query.where : undefined;
+    const keyword: string | undefined = typeof req.query.keyword === 'string' ? req.query.keyword : undefined;
+
+    const page = 10 * parseInt(req.params.page, 10);
+
+    const checked_where = injectionChecker(where as string);
+    const checked_keyword = injectionChecker(keyword as string);
+
+    const isAttacked:boolean = isNotNumber([page])
+
+    if(where !== checked_where || keyword !== checked_keyword || isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"where" : checked_where, "keyword" : checked_keyword, "page": injectionChecker(`${page}`)} );
     }
 
     try {
+
         const connection = await pool.getConnection();
+
+        let whereClause = '';
+
+        if (checked_where && checked_keyword) {
+
+            switch (where) {
+                case 'ip_address':
+                    whereClause = `WHERE hostile_list.ip_address LIKE ?`;
+                    break;
+                case 'log':
+                    whereClause = `WHERE hostile_list.log LIKE ?`;
+                    break;
+                case 'created_at':
+                    whereClause = `WHERE hostile_list.created_at LIKE ?`;
+                    break;
+                case 'updated_at':
+                    whereClause = `WHERE hostile_list.updated_at LIKE ?`;
+                    break;
+            }
+        }
+
+        if(checked_keyword === ""){
+            whereClause = "";
+        }
+
+        const [countRows]: any = await connection.query(`
+            SELECT
+                count(*) as count
+            FROM
+                hostile_list
+            ${whereClause}`
+            , [checked_keyword === "" ? "" :`%${checked_keyword}%`]);
+
+        const count =  (Math.trunc(countRows[0].count / 10) + 1);
+
 
         const [hostile_users] = await connection.query<RowDataPacket[]>(`
             SELECT
                 *
             FROM
                 hostile_list
-        `);
+            ${whereClause}
+            ORDER BY
+                hostile_list.id
+            DESC
+            LIMIT
+                10
+            OFFSET
+                ?
+        `, whereClause === "" ? [page] : [`%${checked_keyword}%`, page]);
 
         for (let i = 0; i < hostile_users.length; i++){
             hostile_users[i].log = patternChecker(hostile_users[i].log);
         }
 
-        res.status(200).json(hostile_users);
+        res.status(200).json({"data":hostile_users, "suspects": count});
 
         connection.release();
     } catch (error) {
-        console.error('Error response get admin/hostile', error);
+        console.error('Error response get admin/hostile/:page', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.put('/hostile/whitelist', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    if(req?.token?.admin === false){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"admin" : false});
+        return res.status(403).json({ message: 'No Authority', adminUpdateRes: 1});
+    }
+
+    const { id } = req.body;
+    const isAttacked:boolean = isNotNumber([id]);
+
+    if(isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, { "id" : injectionChecker(`${id}`)});
+
+        return res.status(400).json({ message: 'Suspected to Attacking', adminUpdateRes: 2 });
+    }
+
+    try {
+
+        const connection = await pool.getConnection();
+
+        const [hostile_ip]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+            UPDATE 
+                hostile_list
+            SET
+                is_whitelist = !is_whitelist
+            WHERE
+                id = ?
+        `, [id]);
+
+        if(hostile_ip.affectedRows === 1){
+            res.status(201).json({ message: 'is_whitelist updated'});
+        }else{
+            return res.status(400).json({ message: 'No valid fields to update', adminUpdateRes: 3 });
+        }
+
+        connection.release();
+    } catch (error) {
+        console.error('Error response put admin/hostile/whitelist', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.put('/hostile/ban', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    if(req?.token?.admin === false){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"admin" : false});
+        return res.status(403).json({ message: 'No Authority', adminUpdateRes: 1});
+    }
+
+    const { id } = req.body;
+    const isAttacked:boolean = isNotNumber([id]);
+
+    if(isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, { "id" : injectionChecker(`${id}`)});
+
+        return res.status(400).json({ message: 'Suspected to Attacking', adminUpdateRes: 2 });
+    }
+
+    try {
+
+        const connection = await pool.getConnection();
+
+        const [hostile_ip]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+            UPDATE 
+                hostile_list
+            SET
+                is_banned = !is_banned
+            WHERE
+                id = ?
+        `, [id]);
+
+        if(hostile_ip.affectedRows === 1){
+            res.status(201).json({ message: 'is_banned updated'});
+        }else{
+            return res.status(400).json({ message: 'No valid fields to update', adminUpdateRes: 3 });
+        }
+
+        connection.release();
+    } catch (error) {
+        console.error('Error response put admin/hostile/ban', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });

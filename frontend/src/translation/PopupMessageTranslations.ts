@@ -46,6 +46,7 @@ export const PopupMessageTranslations = {
         JWT_Invalid: `Todennus ei ole kelvollinen`,
         JWT_Expired: `Todennus on vanhentunut, Kirjaudu uudelleen`,
         TokenSaveFailure: `Todennuksen tallentaminen epäonnistui`,
+        AdminHostileZeroUpdate: `Ei tietueita päivitetty`,
     },
     ENG: {
         injection: `Suspected to Attacking.`,
@@ -94,6 +95,7 @@ export const PopupMessageTranslations = {
         JWT_Invalid: `Authentication is invalid`,
         JWT_Expired: `Authentication is expired, Please login again`,
         TokenSaveFailure: `Failed to save authentication`,
+        AdminHostileZeroUpdate: `No record updated`,
     },
     KOR: {
         injection: `네트워크 공격이 의심됩니다.`,
@@ -142,5 +144,6 @@ export const PopupMessageTranslations = {
         JWT_Invalid: `유효하지 않은 인증 입니다.`,
         JWT_Expired: `인증이 만료되었습니다. 다시 접속해주세요.`,
         TokenSaveFailure: `인증 저장에 실패하였습니다.`,
+        AdminHostileZeroUpdate: `변경된 레코드가 없습니다.`,
     }
 };

@@ -260,11 +260,13 @@ const addUpdateHostileList = async (clientIp: string, keyWords: object) => {
 
         }else{
 
-            const currentLog = results[0].log ? JSON.parse(results[0].log) : [];
-            const newLogEntry = JSON.stringify(keyWords);
-            currentLog.push(newLogEntry);
+            if(!results[0].is_whitelist || results[0].is_banned){
 
-            await connection.query(`
+                const currentLog = results[0].log ? JSON.parse(results[0].log) : [];
+                const newLogEntry = JSON.stringify(keyWords);
+                currentLog.push(newLogEntry);
+
+                await connection.query(`
                 UPDATE
                     hostile_list
                 SET
@@ -273,6 +275,8 @@ const addUpdateHostileList = async (clientIp: string, keyWords: object) => {
                 WHERE
                     ip_address = ?
             `, [JSON.stringify(currentLog), clientIp]);
+
+            }
         }
 
         connection.release();

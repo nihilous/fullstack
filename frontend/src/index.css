@@ -380,6 +380,61 @@ code {
   min-width: 160px;
 }
 /*common Admin Main page end*/
+/*common Admin Hostile page start*/
+.hostile_elem{
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.hostile_elem .info_div {
+  display: flex;
+  align-content: center;
+}
+
+.hostile_elem .info_div span:nth-child(1){
+  text-align: left;
+  width: 30%;
+}
+
+.hostile_elem .info_div span:nth-child(2){
+  text-align: left;
+  width: 70%;
+}
+
+.log_elem{
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.log_elem:nth-child(1n){
+  background-color: #b2b6b1;
+}
+
+.log_elem:nth-child(2n){
+  background-color: #182122;
+}
+
+.log_elem:nth-child(2n) *{
+  color: white;
+}
+
+.log_div{
+  display: flex;
+  align-content: center;
+}
+
+.log_div span:nth-child(1){
+  text-align: left;
+  width: 30%;
+}
+.log_div span:nth-child(2){
+  text-align: left;
+  width: 70%;
+}
+
+
+/*common Admin Hostile page end*/
 /*common board start*/
 
 .post:nth-child(2){

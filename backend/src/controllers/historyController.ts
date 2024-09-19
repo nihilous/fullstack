@@ -1,14 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { pool } from '../db';
-import {
-    CustomRequest,
-    isNotNumber,
-    isDateFormat,
-    tokenExtractor,
-    patternChecker,
-    addUpdateHostileList,
-    injectionChecker
-} from '../middleware/middleware';
+import { CustomRequest, isNotNumber, isDateFormat, tokenExtractor, patternChecker, addUpdateHostileList, injectionChecker } from '../middleware/middleware';
 import {ResultSetHeader, FieldPacket, RowDataPacket} from 'mysql2';
 
 const router = Router();
