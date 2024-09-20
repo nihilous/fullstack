@@ -146,14 +146,38 @@ const Notice = () => {
                         <div className={"nie_info"}>
                             <div className={"nie_title"}>{`${translations.after_birth}`}</div>
                             <div className={"nie_info after_birth"}>
-                                <span>{`${notice.vaccine_minimum_recommend_date} ${notice.vaccine_minimum_period_type === "M" ? translations.month : translations.year}`}</span>
+                                <span>{`${notice.vaccine_minimum_period_type === "M" ?
+                                    parseInt(notice.vaccine_minimum_recommend_date) > 12 ?
+                                        Math.trunc((parseInt(notice.vaccine_minimum_recommend_date) / 12)).toString() + " " + translations.year + " " + (parseInt(notice.vaccine_minimum_recommend_date) % 12).toString()
+                                        :
+                                        notice.vaccine_minimum_recommend_date
+                                    :
+                                    notice.vaccine_minimum_recommend_date}
+                                    
+                                    ${notice.vaccine_minimum_period_type === "M" ?
+                                        translations.month
+                                    :
+                                        translations.year}`}
+                                </span>
                                 {notice.vaccine_is_periodical as boolean ?
                                     <>
-                                        <span>-</span>
-                                        <span>{`${notice.vaccine_maximum_recommend_date} ${notice.vaccine_maximum_period_type === "M" ? translations.month : translations.year}`}</span>
+                                        <span>&nbsp;~&nbsp;</span>
+                                        <span>{`${notice.vaccine_maximum_period_type === "M" ? 
+                                            parseInt(notice.vaccine_maximum_recommend_date) > 12 ? 
+                                                Math.trunc((parseInt(notice.vaccine_maximum_recommend_date) / 12)).toString() + " " + translations.year + " " + (parseInt(notice.vaccine_maximum_recommend_date) % 12).toString()
+                                                :
+                                                notice.vaccine_maximum_recommend_date
+                                            :
+                                            notice.vaccine_maximum_recommend_date}
+                                                
+                                                ${notice.vaccine_maximum_period_type === "M" ?
+                                                translations.month
+                                                :
+                                                translations.year}`}
+                                        </span>
                                     </>
                                     :
-                                    <></>
+                                    null
                                 }
                             </div>
                         </div>
