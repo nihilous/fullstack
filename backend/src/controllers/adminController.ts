@@ -214,17 +214,25 @@ router.get('/hostile/:page', tokenExtractor, async (req: CustomRequest, res: Res
     const where: string | undefined = typeof req.query.where === 'string' ? req.query.where : undefined;
     const keyword: string | undefined = typeof req.query.keyword === 'string' ? req.query.keyword : undefined;
 
+    const ban: string | undefined = typeof req.query.ban === 'string' ? req.query.ban : undefined;
+    const whitelist: string | undefined = typeof req.query.whitelist === 'string' ? req.query.whitelist : undefined;
+
     const page = 10 * parseInt(req.params.page, 10);
 
     const checked_where = injectionChecker(where as string);
     const checked_keyword = injectionChecker(keyword as string);
+    const checked_ban = injectionChecker(ban as string);
+    const checked_whitelist = injectionChecker(whitelist as string);
 
     const isAttacked:boolean = isNotNumber([page])
 
-    if(where !== checked_where || keyword !== checked_keyword || isAttacked){
+    if(where !== checked_where || keyword !== checked_keyword || ban !== checked_ban || whitelist !== checked_whitelist || isAttacked){
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        addUpdateHostileList(clientIp as string, {"where" : checked_where, "keyword" : checked_keyword, "page": injectionChecker(`${page}`)} );
+        addUpdateHostileList(clientIp as string, {"where" : checked_where, "keyword" : checked_keyword, "page": injectionChecker(`${page}`), "ban" : checked_ban, "whitelist": checked_whitelist});
     }
+
+    const boolean_ban: boolean = checked_ban === "true";
+    const boolean_whitelist: boolean = checked_whitelist === "true";
 
     try {
 
@@ -236,22 +244,22 @@ router.get('/hostile/:page', tokenExtractor, async (req: CustomRequest, res: Res
 
             switch (where) {
                 case 'ip_address':
-                    whereClause = `WHERE hostile_list.ip_address LIKE ?`;
+                    whereClause = `WHERE hostile_list.ip_address LIKE ? AND is_banned = ? AND is_whitelist = ?`;
                     break;
                 case 'log':
-                    whereClause = `WHERE hostile_list.log LIKE ?`;
+                    whereClause = `WHERE hostile_list.log LIKE ? AND is_banned = ? AND is_whitelist = ?`;
                     break;
                 case 'created_at':
-                    whereClause = `WHERE hostile_list.created_at LIKE ?`;
+                    whereClause = `WHERE hostile_list.created_at LIKE ? AND is_banned = ? AND is_whitelist = ?`;
                     break;
                 case 'updated_at':
-                    whereClause = `WHERE hostile_list.updated_at LIKE ?`;
+                    whereClause = `WHERE hostile_list.updated_at LIKE ? AND is_banned = ? AND is_whitelist = ?`;
                     break;
             }
         }
 
         if(checked_keyword === ""){
-            whereClause = "";
+            whereClause = "WHERE is_banned = ? AND is_whitelist = ?";
         }
 
         const [countRows]: any = await connection.query(`
@@ -260,9 +268,9 @@ router.get('/hostile/:page', tokenExtractor, async (req: CustomRequest, res: Res
             FROM
                 hostile_list
             ${whereClause}`
-            , [checked_keyword === "" ? "" :`%${checked_keyword}%`]);
+            , checked_keyword === "" ? [boolean_ban, boolean_whitelist] : [`%${checked_keyword}%`, boolean_ban, boolean_whitelist]);
 
-        const count =  (Math.trunc(countRows[0].count / 10) + 1);
+        const count =  countRows[0].count % 10 === 0 ? Math.trunc(countRows[0].count / 10) : (Math.trunc(countRows[0].count / 10) + 1);
 
 
         const [hostile_users] = await connection.query<RowDataPacket[]>(`
@@ -278,7 +286,7 @@ router.get('/hostile/:page', tokenExtractor, async (req: CustomRequest, res: Res
                 10
             OFFSET
                 ?
-        `, whereClause === "" ? [page] : [`%${checked_keyword}%`, page]);
+        `, checked_keyword === "" ? [boolean_ban, boolean_whitelist, page] : [`%${checked_keyword}%`, boolean_ban, boolean_whitelist, page]);
 
         for (let i = 0; i < hostile_users.length; i++){
             hostile_users[i].log = patternChecker(hostile_users[i].log);

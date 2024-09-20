@@ -76,8 +76,7 @@ router.get('/bbs/:user_id/:page', tokenExtractor, async (req: CustomRequest, res
             ${whereClause}`
         , [checked_keyword === "" ? "" :`%${checked_keyword}%`]);
 
-
-        const count =  (Math.trunc(countRows[0].count / 10) + 1);
+        const count =  countRows[0].count % 10 === 0 ? Math.trunc(countRows[0].count / 10) : (Math.trunc(countRows[0].count / 10) + 1);
 
         const [rows] = await connection.query<RowDataPacket[]>(`
             SELECT

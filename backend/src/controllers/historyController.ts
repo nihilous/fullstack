@@ -124,15 +124,23 @@ router.get('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
             ON
                 history.user_detail_id = user_detail.id
             WHERE
-                user_detail_id =  ?
+                user_detail.id = ?
+            GROUP BY
+                user_detail.id
         `, [user_detail_id]);
 
-        for (let i = 0; i < rows.length; i++) {
-            rows[i].name = patternChecker(rows[i].name);
-            rows[i].description = patternChecker(rows[i].description);
+        if(rows.length > 0){
+            for (let i = 0; i < rows.length; i++) {
+                rows[i].name = patternChecker(rows[i].name);
+                rows[i].description = patternChecker(rows[i].description);
+            }
+
+            res.status(200).json(rows);
+        }else{
+            res.status(409).json({ message: 'No Affected Row', historyRes: 2 });
         }
 
-        res.status(200).json(rows);
+
 
         connection.release();
     } catch (error) {

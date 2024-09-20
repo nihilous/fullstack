@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import axios, {AxiosError} from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import { RootState } from '../store';
@@ -26,6 +26,8 @@ const AdminHostile = () => {
     const totalNavi = useRef<number>(0);
     const [where, setWhere] = useState<string>(`log`);
     const [keyword, setKeyword] = useState<string>(``);
+    const [whitelist, setWhitelist] = useState<boolean>(false);
+    const [ban, setBan] = useState<boolean>(false);
 
     interface HostileUserInformation {
         id: number;
@@ -41,7 +43,7 @@ const AdminHostile = () => {
     const informations = useRef<HostileUserInformation [] | null>(null);
     const [filteredUser, setFilteredUser] = useState<HostileUserInformation [] | null>(null);
 
-    const hostileUserDataFetch = async (page:number) => {
+    const hostileUserDataFetch = useCallback(async (page:number) => {
 
         try {
 
@@ -50,6 +52,8 @@ const AdminHostile = () => {
                 params: {
                     where: where,
                     keyword: keyword,
+                    ban: ban,
+                    whitelist: whitelist
                 }
             });
 
@@ -57,6 +61,10 @@ const AdminHostile = () => {
             if(page === 0)
             {
                 setNaviNum(page);
+            }
+
+            if(page + 1 > totalNavi.current){
+                setNaviNum(0);
             }
 
             informations.current = response.data.data;
@@ -84,7 +92,7 @@ const AdminHostile = () => {
                 }));
             }
         }
-    };
+    },[where, keyword, ban, whitelist]);
 
     useEffect(() => {
 
@@ -97,11 +105,7 @@ const AdminHostile = () => {
             hostileUserDataFetch(naviNum);
         }
 
-    }, [naviNum]);
-
-    useEffect(() => {
-
-    }, [informations]);
+    }, [naviNum, hostileUserDataFetch]);
 
     const formatDate = (dateString: string, language: string) => {
 
@@ -213,13 +217,13 @@ const AdminHostile = () => {
                     </div>
                     <div className={`info_div`}>
                         <span>
-                            <Button onClick={() => whiteOrBanUpdate(data.id, "whitelist")}>
-                                white list
+                            <Button onClick={() => whiteOrBanUpdate(data.id, "ban")}>
+                                ban
                             </Button>
                         </span>
                         <span>
-                            <Button onClick={() => whiteOrBanUpdate(data.id, "ban")}>
-                                ban
+                            <Button onClick={() => whiteOrBanUpdate(data.id, "whitelist")}>
+                                whitelist
                             </Button>
                         </span>
                     </div>
@@ -308,14 +312,29 @@ const AdminHostile = () => {
                                placeholder={"입력"}></input>
                     </div>
                 </div>
-                <div className={"board_input_buttons"}>
+                <div className={"hostile_input_buttons"}>
                     <div>
                         <Button variant="primary" type="submit" className="mt-3" onClick={() => hostileUserDataFetch(0)}>
                             {"찾기"}
                         </Button>
                     </div>
-                    <div>
-
+                    <div className={"hostile_check_wrap"}>
+                        <span>
+                            <Form.Check
+                                type="checkbox"
+                                label={`ban`}
+                                checked={ban}
+                                onChange={(e) => setBan(e.target.checked)}
+                            />
+                        </span>
+                        <span>
+                            <Form.Check
+                                type="checkbox"
+                                label={`whitelist`}
+                                checked={whitelist}
+                                onChange={(e) => setWhitelist(e.target.checked)}
+                            />
+                        </span>
                     </div>
                 </div>
             </div>

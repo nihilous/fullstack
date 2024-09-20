@@ -392,6 +392,10 @@ code {
   align-content: center;
 }
 
+.info_div:nth-child(8){
+  margin-top: 20px;
+}
+
 .hostile_elem .info_div span:nth-child(1){
   text-align: left;
   width: 30%;
@@ -433,6 +437,30 @@ code {
   width: 70%;
 }
 
+.hostile_input_buttons{
+  display: flex;
+}
+
+.hostile_input_buttons div{
+  width: 50%;
+
+}
+
+.hostile_input_buttons div button{
+  margin-top: 0 !important;
+}
+
+.hostile_check_wrap{
+  display: flex;
+}
+
+.hostile_check_wrap span{
+  align-content: center;
+}
+
+.hostile_check_wrap span:nth-child(1){
+  margin-right: 20px;
+}
 
 /*common Admin Hostile page end*/
 /*common board start*/
@@ -1184,6 +1212,11 @@ code {
     text-align: center;
   }
   /*tablet Admin Main page end*/
+  /*tablet Admin Hostile page start*/
+  .hostile_input_buttons{
+    margin-top: 20px;
+  }
+  /*tablet Admin Hostile page end*/
   /*tablet board start*/
   .post div span{
     font-size: 20px;
@@ -1436,6 +1469,11 @@ code {
     text-align: center;
   }
   /*mobile Admin Main page end*/
+  /*mobile Admin Hostile page start*/
+  .hostile_input_buttons{
+    margin-top: 20px;
+  }
+  /*mobile Admin Hostile page end*/
   /*mobile board start*/
   .post div span{
     font-size: 20px;

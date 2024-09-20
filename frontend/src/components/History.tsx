@@ -83,6 +83,9 @@ const History = () => {
                     case 1:
                         message = popupTranslations.noAuthority;
                         break;
+                    case 2:
+                        message = popupTranslations.HistoryNotExist;
+                        break;
                     default:
                         const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
                         message = checkRes.message;
