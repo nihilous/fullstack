@@ -109,11 +109,9 @@ const RegisterChild = () => {
             }, {headers: { Authorization: `Bearer ${getToken()}` }});
 
             Cookies.set('token', response.data.token);
-            const decoded_info = decodeToken(response.data.token);
 
-
-            if (decoded_info?.record) {
-                setChild(decoded_info.record);
+            if (response.data.record) {
+                setChild(response.data.record);
             }
             dispatch(setNoticePopUp({
                 on: true,

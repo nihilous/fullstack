@@ -5,7 +5,6 @@ interface DecodedToken {
     userId: number;
     admin: boolean;
     userDetailIds: number[] | null;
-    record: [] | null;
 }
 
 const getToken = (): string | undefined => {

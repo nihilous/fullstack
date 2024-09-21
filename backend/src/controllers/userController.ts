@@ -131,8 +131,7 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
         const tokenPayload = {
             userId: user_id,
             admin: req.token?.admin || false,
-            userDetailIds: childrenIds,
-            record: results
+            userDetailIds: childrenIds
         };
         const newToken = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
 
@@ -152,7 +151,7 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
         const affectedUserRows = TokenUpdateResult.affectedRows;
 
         if(affectedUserRows === 1){
-            res.status(201).json({ message: 'User detail successfully added', token: newToken });
+            res.status(201).json({ message: 'User detail successfully added', record: results, token: newToken });
         }else{
             return res.status(400).json({ message: 'Token save fail', childRes: 4 });
         }

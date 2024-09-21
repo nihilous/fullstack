@@ -80,7 +80,6 @@ const Header = () => {
                 message: popupTranslations.JWT_Renew
             }));
 
-
         } catch (error) {
 
             const axiosError = error as AxiosError<{ jwtRenewRes: number }>;

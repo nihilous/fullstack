@@ -220,8 +220,7 @@ router.get('/jwt/:id',tokenExtractor, async (req: CustomRequest, res: Response) 
         const tokenPayload = {
             userId: user_id,
             admin: admin,
-            userDetailIds: childrenIds,
-            record: results
+            userDetailIds: childrenIds
         };
         const newToken = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
         const expiration = new Date(Date.now() + 60 * 60 * 1000);

@@ -259,8 +259,10 @@ const addUpdateHostileList = async (clientIp: string, keyWords: object) => {
             `, [clientIp, JSON.stringify(newLogEntry)]);
 
         }else{
+            const is_whitelist: boolean = Boolean(results[0].is_whitelist);
+            const is_banned: boolean = Boolean(results[0].is_banned);
 
-            if(!results[0].is_whitelist || results[0].is_banned){
+            if(!is_whitelist && !is_banned){
 
                 const currentLog = results[0].log ? JSON.parse(results[0].log) : [];
                 const newLogEntry = JSON.stringify(keyWords);
