@@ -9,17 +9,17 @@ interface NoticePopUp {
 
 interface AppState {
     apiUrl: string;
-    language: 'FIN' | 'ENG' | 'KOR';
+    language: 'FIN' | 'SWE' | 'ENG' | 'KOR';
     notice_popup: {on:boolean, is_error:boolean | null, message: string};
     jwtExpirationTimer: number | NodeJS.Timeout | null;
 }
 
 const apiUrl = process.env.REACT_APP_MODE === 'DEV' ? process.env.REACT_APP_DEV_API_URL || '' : process.env.REACT_APP_API_URL || '';
 
-const getInitialLanguage = (): 'FIN' | 'ENG' | 'KOR' => {
+const getInitialLanguage = (): 'FIN' | 'SWE' | 'ENG' | 'KOR' => {
     const savedLanguage = Cookies.get('language');
-    if (savedLanguage && ['FIN', 'ENG', 'KOR'].includes(savedLanguage)) {
-        return savedLanguage as 'FIN' | 'ENG' | 'KOR';
+    if (savedLanguage && ['FIN', 'SWE', 'ENG', 'KOR'].includes(savedLanguage)) {
+        return savedLanguage as 'FIN' |'SWE' | 'ENG' | 'KOR';
     }
     return 'ENG';
 };
@@ -40,7 +40,7 @@ const appSlice = createSlice({
         setApiUrl(state, action: PayloadAction<string>) {
             state.apiUrl = action.payload;
         },
-        setLanguage(state, action: PayloadAction<'FIN' | 'ENG' | 'KOR'>) {
+        setLanguage(state, action: PayloadAction<'FIN' | 'SWE' | 'ENG' | 'KOR'>) {
             state.language = action.payload;
             Cookies.set('language', action.payload, { expires: 365 });
         },

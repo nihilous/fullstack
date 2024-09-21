@@ -1,5 +1,3 @@
-import React from "react";
-
 export const BoardTranslations = {
     FIN: {
         no: `Numero`,
@@ -20,6 +18,26 @@ export const BoardTranslations = {
         save: `Tallenna`,
         admin: `Ylläpitäjä`,
         quit: `Poistunut jäsen`,
+    },
+    SWE: {
+        no: `Nr`,
+        nickname: `Namn`,
+        title: `Titel`,
+        datetime: `Tid`,
+        next: `Nästa`,
+        prev: `Föregående`,
+        find: `Sök`,
+        cancel: `Avbryt`,
+        write: `Skriv`,
+        select: `Välj`,
+        text: `Text`,
+        reply: `Svara`,
+        search_inst: `Sökord`,
+        delete: `Ta bort`,
+        edit: `Redigera`,
+        save: `Spara`,
+        admin: `Admin`,
+        quit: `Avslutat medlemskap`,
     },
     ENG: {
         no: `No`,

@@ -398,12 +398,10 @@ code {
 
 .hostile_elem .info_div span:nth-child(1){
   text-align: left;
-  width: 30%;
 }
 
 .hostile_elem .info_div span:nth-child(2){
   text-align: left;
-  width: 70%;
 }
 
 .log_elem{
@@ -430,20 +428,21 @@ code {
 
 .log_div span:nth-child(1){
   text-align: left;
-  width: 30%;
 }
 .log_div span:nth-child(2){
   text-align: left;
-  width: 70%;
 }
 
 .hostile_input_buttons{
   display: flex;
 }
 
-.hostile_input_buttons div{
-  width: 50%;
+.hostile_button_wrap{
+  width: 30%;
+}
 
+.hostile_check_wrap{
+  width: 70%;
 }
 
 .hostile_input_buttons div button{
@@ -950,6 +949,26 @@ code {
     text-align: center;
   }
   /*pc Admin Main page end*/
+  /*pc Admin Hostile page start*/
+  .hostile_elem .info_div span:nth-child(1){
+    width: 30%;
+  }
+
+  .hostile_elem .info_div span:nth-child(2){
+    width: 70%;
+  }
+
+  .log_div span:nth-child(1){
+    width: 30%;
+  }
+  .log_div span:nth-child(2){
+    width: 70%;
+  }
+
+  .hostile_input_buttons{
+    width: 30%;
+  }
+  /*pc Admin Hostile page end*/
   /*pc board start*/
   .post div span{
     font-size: 20px;
@@ -1213,6 +1232,19 @@ code {
   }
   /*tablet Admin Main page end*/
   /*tablet Admin Hostile page start*/
+  .hostile_elem .info_div span:nth-child(1){
+    width: 40%;
+  }
+
+  .hostile_elem .info_div span:nth-child(2){
+    width: 60%;
+  }
+  .log_div span:nth-child(1){
+    width: 40%;
+  }
+  .log_div span:nth-child(2){
+    width: 60%;
+  }
   .hostile_input_buttons{
     margin-top: 20px;
   }
@@ -1470,6 +1502,19 @@ code {
   }
   /*mobile Admin Main page end*/
   /*mobile Admin Hostile page start*/
+  .hostile_elem .info_div span:nth-child(1){
+    width: 50%;
+  }
+
+  .hostile_elem .info_div span:nth-child(2){
+    width: 50%;
+  }
+  .log_div span:nth-child(1){
+    width: 50%;
+  }
+  .log_div span:nth-child(2){
+    width: 50%;
+  }
   .hostile_input_buttons{
     margin-top: 20px;
   }

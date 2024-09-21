@@ -14,6 +14,20 @@ export const NoticeTranslations = {
         cancel: `Peruuta`,
 
     },
+    SWE: {
+        notice_title: `Vaccinationsrekommendation`,
+        child_birthdate: `Födelsedatum`,
+        name: `Vaccinets namn`,
+        round: `Omgång`,
+        after_birth: `Efter födseln`,
+        month: `Månad`,
+        year: `År`,
+        scheduled_to: `Planerat datum`,
+        vaccination_date: `Vaccinationsdatum`,
+        register: `Registrera`,
+        save: `Spara`,
+        cancel: `Avbryt`,
+    },
     ENG: {
         notice_title: `Vaccination Recommendation`,
         child_birthdate: `Birthdate`,

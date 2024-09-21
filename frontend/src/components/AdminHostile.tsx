@@ -3,7 +3,7 @@ import axios, {AxiosError} from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import { RootState } from '../store';
 import { useNavigate } from 'react-router-dom';
-import { AdminMainTranslations } from '../translation/AdminMain';
+import { AdminHostileTranslations } from '../translation/AdminHostile';
 import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
 import { getToken, getDecodedToken } from "../util/jwtDecoder";
 import {Button, Container, Form} from "react-bootstrap";
@@ -19,7 +19,7 @@ const AdminHostile = () => {
     const userId = getDecodedToken()?.userId;
     const admin = getDecodedToken()?.admin;
 
-    const translations = AdminMainTranslations[language];
+    const translations = AdminHostileTranslations[language];
     const popupTranslations = PopupMessageTranslations[language];
 
     const [naviNum, setNaviNum] = useState<number>(0);
@@ -188,42 +188,42 @@ const AdminHostile = () => {
             return (
                 <div key={data.id} className={`hostile_elem`}>
                     <div className={`info_div`}>
-                        <span>index</span>
+                        <span>{translations.index}</span>
                         <span>{data.id}</span>
                     </div>
                     <div className={`info_div`}>
-                        <span>ip</span>
+                        <span>{translations.ip_address}</span>
                         <span>{data.ip_address}</span>
                     </div>
                     <div className={`info_div`}>
-                        <span>attack count</span>
+                        <span>{translations.attack_count}</span>
                         <span>{data.attack_count}</span>
                     </div>
                     <div className={`info_div`}>
-                        <span>banned</span>
+                        <span>{translations.is_banned}</span>
                         <span>{data.is_banned ? "true" : "false"}</span>
                     </div>
                     <div className={`info_div`}>
-                        <span>whitelist</span>
+                        <span>{translations.is_whitelist}</span>
                         <span>{data.is_whitelist ? "true" : "false"}</span>
                     </div>
                     <div className={`info_div`}>
-                        <span>update</span>
+                        <span>{translations.updated_at}</span>
                         <span>{formatDate(data.updated_at, language)}</span>
                     </div>
                     <div className={`info_div`}>
-                        <span>create</span>
+                        <span>{translations.created_at}</span>
                         <span>{formatDate(data.created_at, language)}</span>
                     </div>
                     <div className={`info_div`}>
                         <span>
                             <Button onClick={() => whiteOrBanUpdate(data.id, "ban")}>
-                                ban
+                                {data.is_banned ? translations.un_ban : translations.ban}
                             </Button>
                         </span>
                         <span>
                             <Button onClick={() => whiteOrBanUpdate(data.id, "whitelist")}>
-                                whitelist
+                                {data.is_whitelist ? translations.un_whitelist : translations.whitelist}
                             </Button>
                         </span>
                     </div>
@@ -234,13 +234,11 @@ const AdminHostile = () => {
                             return (
                                 <div key={logIndex} className={`log_elem`}>
                                     <div className={`log_div`}>
-
-                                        <span>{`key`}</span>
-                                        <span>{`value`}</span>
+                                        <span>{translations.key}</span>
+                                        <span>{translations.value}</span>
                                     </div>
                                     {Object.entries(parsedLogEntry).map(([key, value], entryIndex) => (
                                         <div className={`log_div`} key={entryIndex}>
-
                                             <span>{key}</span>
                                             <span>{`${(value)}`}</span>
                                         </div>
@@ -265,7 +263,7 @@ const AdminHostile = () => {
             <Container className={"main_top"}>
                 <div className={"mt_elem"}>
                     <p className={"main_greeting"}>
-                        {translations.admin_main}
+                        {translations.admin_hostile}
                     </p>
                 </div>
             </Container>
@@ -301,28 +299,28 @@ const AdminHostile = () => {
                 <div className={"board_input_search"}>
                     <div>
                         <Form.Select value={where} onChange={(e) => setWhere(e.target.value)}>
-                            <option value="log">{"log"}</option>
-                            <option value="ip_address">{"ip_address"}</option>
-                            <option value="created_at">{"created_at"}</option>
-                            <option value="updated_at">{"updated_at"}</option>
+                            <option value="log">{translations.log}</option>
+                            <option value="ip_address">{translations.ip_address}</option>
+                            <option value="updated_at">{translations.updated_at}</option>
+                            <option value="created_at">{translations.created_at}</option>
                         </Form.Select>
                     </div>
                     <div>
-                        <input type={"text"} value={keyword} onChange={(e) => setKeyword(e.target.value)}
-                               placeholder={"입력"}></input>
+                    <input type={"text"} value={keyword} onChange={(e) => setKeyword(e.target.value)}
+                               placeholder={translations.input}></input>
                     </div>
                 </div>
                 <div className={"hostile_input_buttons"}>
-                    <div>
+                    <div className={"hostile_button_wrap"}>
                         <Button variant="primary" type="submit" className="mt-3" onClick={() => hostileUserDataFetch(0)}>
-                            {"찾기"}
+                            {translations.search}
                         </Button>
                     </div>
                     <div className={"hostile_check_wrap"}>
                         <span>
                             <Form.Check
                                 type="checkbox"
-                                label={`ban`}
+                                label={translations.banned}
                                 checked={ban}
                                 onChange={(e) => setBan(e.target.checked)}
                             />
@@ -330,7 +328,7 @@ const AdminHostile = () => {
                         <span>
                             <Form.Check
                                 type="checkbox"
-                                label={`whitelist`}
+                                label={translations.whitelist}
                                 checked={whitelist}
                                 onChange={(e) => setWhitelist(e.target.checked)}
                             />

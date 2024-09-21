@@ -11,7 +11,7 @@ const Footer = () => {
     const translations = FooterTranslations[language];
 
     const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        dispatch(setLanguage(event.target.value as 'FIN' | 'ENG' | 'KOR'));
+        dispatch(setLanguage(event.target.value as 'FIN' | 'SWE' | 'ENG' | 'KOR'));
     };
 
     return (
@@ -27,6 +27,7 @@ const Footer = () => {
                             className="footer_language"
                         >
                             <option value="FIN">Suomi</option>
+                            <option value="SWE">Svenska</option>
                             <option value="ENG">English</option>
                             <option value="KOR">한국어</option>
                         </Form.Select>

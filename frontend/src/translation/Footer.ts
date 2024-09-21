@@ -3,6 +3,9 @@ export const FooterTranslations = {
         language: `Kieli`,
 
     },
+    SWE: {
+        language: `Språk`,
+    },
     ENG: {
         language: `Language`,
 

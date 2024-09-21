@@ -2,6 +2,7 @@ export const HeaderTranslations = {
     FIN: {
         brand: `Rokotuskirja`,
         main: `Etusivu`,
+        hostile: `Hyökkäysepäily`,
         register: `Täytä lapsen tiedot`,
         account: `Omat tiedot`,
         logout: `Kirjaudu ulos`,
@@ -10,9 +11,22 @@ export const HeaderTranslations = {
         about: `Tietoja`,
         jwt: `Kirjautumisen jatkaminen`,
     },
+    SWE: {
+        brand: `Vaccinationslogg`,
+        main: `Huvudsida`,
+        hostile: `Fientlig misstänkt`,
+        register: `Registrera barninformation`,
+        account: `Konto`,
+        logout: `Logga ut`,
+        board: `Forum`,
+        settings: `Inställningar`,
+        about: `Om`,
+        jwt: `Fortsätt inloggning`,
+    },
     ENG: {
         brand: `Vaccination Log`,
         main: `Main`,
+        hostile: `Hostile Suspect`,
         register: `Register Child Information`,
         account: `Account`,
         logout: `Logout`,
@@ -25,6 +39,7 @@ export const HeaderTranslations = {
     KOR: {
         brand: `백신접종기록`,
         main: `현황`,
+        hostile: `공격의심`,
         register: `자녀 정보 등록`,
         account: `계정정보`,
         logout: `접속종료`,

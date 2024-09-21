@@ -1,5 +1,3 @@
-import React from "react";
-
 export const AboutTranslations = {
     FIN: {
         title: `Tietoja`,
@@ -22,6 +20,28 @@ export const AboutTranslations = {
         account_modify_desc: `Napsauta oikean yläkulman asetuskuvaketta ja valitse <a href="/account">Omat tiedot</a>. Voit vaihtaa sähköpostia, käyttäjänimeä tai salasanaa tai deaktivoida tilin.`,
         delete_account_title: `Haluan poistaa tilini, kuinka teen sen?`,
         delete_account_desc: `Valitse <a href="/account">Omat tiedot</a> ja deaktivoi tilisi. <b>6 kuukauden</b> kuluttua kaikki tiedot poistetaan. Jos kirjaudut uudelleen sisään ennen kuuden kuukauden täyttymistä, tilisi aktivoituu automaattisesti uudelleen.`,
+    },
+    SWE: {
+        title: `Om`,
+        description: `Instruktioner för att använda webbtjänsten`,
+        source_title: `Källor för vaccinationsriktlinjer`,
+        source_desc: `Som referenskällor för vaccinationsriktlinjer för barn och ungdomar från 0 till 16 år användes följande: <br/><br/>  Finland <a href="https://rokote.fi/lapset/lasten-rokotusohjelma/">https://rokote.fi/lapset/lasten-rokotusohjelma/</a> <br/><br/>  Korea <a href="https://www.immunize.org/wp-content/uploads/catg.d/p4019-09.pdf">https://www.immunize.org/wp-content/uploads/catg.d/p4019-09.pdf</a> <br/><br/>  USA <a href="https://www.cdc.gov/vaccines/hcp/imz-schedules/child-adolescent-age.html">https://www.cdc.gov/vaccines/hcp/imz-schedules/child-adolescent-age.html</a>.`,
+        commercial_title: `Är vaccinationsloggen en kommersiell tjänst?`,
+        commercial_desc: `Nej, det är en <b>ideell</b> tjänst. Ingen av de uppgifter som användarna tillhandahåller kommer att användas för kommersiella eller <b>icke-kommersiella</b> ändamål. Tjänsten är enbart för användarnas personliga bruk.`,
+        personal_info_title: `Är mina personuppgifter säkra?`,
+        personal_info_desc: `Lösenorden är krypterade på ett sätt som inte ens administratörerna kan dekryptera. Vi har vidtagit alla möjliga <b>säkerhetsåtgärder</b> för att skydda uppgifterna, och de kommer inte att läckas av administratörerna.`,
+        guide_title: `Hur använder jag vaccinationsloggen?`,
+        guide_desc: `Du måste <a href="/register_child">registrera ditt barn</a> och ange korrekt <b>nationalitet</b> för att få vaccinationsrekommendationer baserade på landet, samt ett exakt <b>födelsedatum</b> för att få rätt <b>vaccinationsschema</b>. Du kan kontrollera <b>schemat</b> på <a href="/main">huvudsidan</a> och spara vaccineringsdatumet. Du kan se <b>vaccinationshistoriken</b> på <a href="/main">huvudsidan</a> <b>efter vaccination</b>.`,
+        bbs_title: `Finns det några regler på forumet?`,
+        bbs_desc: `Var vänlig upprätthåll vanliga <b>moraliska standarder</b> och undvik att utföra <b>injektionsattacker</b> på databasen.`,
+        logout_title: `Hur loggar jag ut?`,
+        logout_desc: `Klicka på inställningsknappen uppe till höger och välj logga ut, eller så blir du <b>automatiskt utloggad</b> efter <b>en timme</b>.`,
+        modify_data_title: `Jag angav fel information för mitt barn. Hur kan jag ändra det?`,
+        modify_data_desc: `Från <a href="/main">huvudsidan</a>, klicka på <b>vaccinationshistorik</b>, välj sedan <b>uppdatera barninformation</b>. Om du vill ta bort informationen, klicka på <b>ta bort barninformation</b>, vilket även tar bort barnets <b>vaccinationshistorik</b>.`,
+        account_modify_title: `Jag vill ändra mina kontouppgifter, hur gör jag det?`,
+        account_modify_desc: `Klicka på inställningsknappen uppe till höger och välj <a href="/account">Konto</a>. Du kan ändra din e-postadress, användarnamn eller lösenord, eller inaktivera kontot.`,
+        delete_account_title: `Jag vill ta bort mitt konto, hur gör jag det?`,
+        delete_account_desc: `I avsnittet <a href="/account">Konto</a>, inaktivera kontot. Efter <b>6 månader</b> kommer all information att <b>raderas</b>. Om du loggar in igen innan de sex månaderna har gått, återaktiveras kontot automatiskt.`,
     },
     ENG: {
         title: `About`,
