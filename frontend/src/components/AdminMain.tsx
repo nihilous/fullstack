@@ -49,6 +49,7 @@ const AdminMain = () => {
             gender: number;
             birthdate: string;
             nationality: number;
+            name_original: string;
         }[];
     }
 
@@ -216,20 +217,6 @@ const AdminMain = () => {
             return `${year} ${month} ${day}`;
         };
 
-        const formatNationality = (nationalityCode: number) => {
-            switch (nationalityCode) {
-                case 1:
-                    return translations.finland;
-                case 2:
-                    return translations.korea;
-                case 3:
-                    return translations.usa;
-                default:
-                    return nationalityCode;
-            }
-        };
-
-
         return (
             <>
                 <div className={"admin_main_category"}>
@@ -312,7 +299,7 @@ const AdminMain = () => {
                                             </div>
                                             <div>
                                                 <span>{translations.child_nationality}</span>
-                                                <span>{formatNationality(child.nationality as number)}</span>
+                                                <span>{child.name_original}</span>
                                             </div>
                                             <div>
                                                 <span>{translations.child_description}</span>

@@ -199,13 +199,18 @@ router.get('/:id', tokenExtractor, async (req: CustomRequest, res: Response) => 
                     user_detail.description,
                     user_detail.gender,
                     user_detail.birthdate,
-                    user_detail.nationality
+                    user_detail.nationality,
+                    country.name_original
                 FROM
                     user
                 JOIN
                     user_detail
                 ON
                     user.id = user_detail.user_id
+                JOIN
+                    country
+                ON
+                    user_detail.nationality = country.id
                 WHERE
                     user.id = ?
                     `, [user_id]);

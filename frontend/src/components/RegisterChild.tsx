@@ -26,6 +26,7 @@ const RegisterChild = () => {
         nationality: number | null;
         description: string | null;
         nickname: string | null;
+        name_original: string | null;
     }
 
     const [name, setName] = useState<string>(``);
@@ -161,17 +162,6 @@ const RegisterChild = () => {
                 return { year, month, day };
             };
 
-            const formatNationality = (nationalityCode: number) => {
-                switch (nationalityCode){
-                    case 1:
-                        return translations.finland;
-                    case 2:
-                        return translations.korea;
-                    case 3:
-                        return translations.usa;
-                }
-            };
-
             const yyyy_mm_dd = formatDate(child.birthdate as string);
             return (
 
@@ -195,7 +185,7 @@ const RegisterChild = () => {
                         </div>
                         <div className={"mie_info"}>
                             <span>{`${translations.nationality}`}</span>
-                            <span>{`${formatNationality(child.nationality as number)}`}</span>
+                            <span>{`${child.name_original}`}</span>
 
                         </div>
                         <div className={"mie_info"}>

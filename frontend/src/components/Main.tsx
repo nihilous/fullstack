@@ -29,6 +29,7 @@ const Main = () => {
         birthdate: string | null;
         nationality: number | null;
         nickname: string;
+        name_original: string;
     }
 
     interface UserDetailWithDetails {
@@ -155,19 +156,6 @@ const Main = () => {
                 return { year, month, day };
             };
 
-            const formatNationality = (nationalityCode: number) => {
-                switch (nationalityCode) {
-                    case 1:
-                        return translations.finland;
-                    case 2:
-                        return translations.korea;
-                    case 3:
-                        return translations.usa;
-                    default:
-                        return nationalityCode;
-                }
-            };
-
             const yyyy_mm_dd = formatDate(child.birthdate as string);
             return (
                 <div key={child.id} className="child-info main_info_elem">
@@ -189,7 +177,7 @@ const Main = () => {
                         </div>
                         <div className={"mie_info"}>
                             <span>{`${translations.child_nationality}`}</span>
-                            <span>{`${formatNationality(child.nationality as number)}`}</span>
+                            <span>{`${child.name_original}`}</span>
                         </div>
                         <div className={"mie_info"}>
                             <span>{`${translations.child_description}`}</span>

@@ -135,11 +135,16 @@ router.get('/', tokenExtractor, async (req: CustomRequest, res: Response) => {
                                     'description', user_detail.description,
                                     'gender', user_detail.gender,
                                     'birthdate', user_detail.birthdate,
-                                    'nationality', user_detail.nationality
+                                    'nationality', user_detail.nationality,
+                                    'name_original', country.name_original
                                 )
                             )
                         FROM
                             user_detail
+                        JOIN
+                            country
+                        ON
+                            user_detail.nationality = country.id
                         WHERE
                             user_detail.user_id = user.id
                     ),
@@ -297,6 +302,48 @@ router.get('/hostile/:page', tokenExtractor, async (req: CustomRequest, res: Res
         connection.release();
     } catch (error) {
         console.error('Error response get admin/hostile/:page', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.get('/manage', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    if(req?.token?.admin === false){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"admin" : false});
+        return res.status(403).json({ message: 'No Authority', adminManageRes: 1});
+    }
+
+    try {
+
+        const connection = await pool.getConnection();
+
+        const [countries]: any = await connection.query(`
+            SELECT
+                *
+            FROM
+                country
+        `)
+
+        const [vaccine_names] = await connection.query(`
+            SELECT
+                ROW_NUMBER() OVER (ORDER BY vaccine_name) AS id,
+                vaccine_name
+            FROM
+                vaccine
+            WHERE
+                vaccine_national_code = 3
+            GROUP BY
+                vaccine_name
+            ORDER BY
+                vaccine_name
+        `);
+
+        res.status(200).json({"countries":countries, "vaccines": vaccine_names});
+
+        connection.release();
+    } catch (error) {
+        console.error('Error response get admin/manage', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
