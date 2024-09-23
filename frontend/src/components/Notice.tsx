@@ -62,7 +62,7 @@ const Notice = () => {
         }));
 
         setTimeout(() => {
-            logout(navigate, dispatch);
+            logout(navigate, dispatch, false);
         }, 3000);
 
     }
@@ -325,7 +325,7 @@ const Notice = () => {
             }
 
             if (axiosError.response?.status === 403) {
-                logout(navigate, dispatch);
+                logout(navigate, dispatch, false);
             }
         }
     }

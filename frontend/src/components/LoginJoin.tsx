@@ -205,7 +205,7 @@ const LoginJoin = () => {
                                         </div>
                                     </Item>
                                 </Grid>
-                                <Grid size={12} onClick={() => logout(navigate, dispatch)}>
+                                <Grid size={12} onClick={() => logout(navigate, dispatch, false)}>
                                     <Item>
                                         <div>
                                             <LogoutOutlinedIcon style={IconStyle}/>

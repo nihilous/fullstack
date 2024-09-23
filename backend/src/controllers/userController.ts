@@ -367,7 +367,7 @@ router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: R
     }
 
     if(user_id !== token_id) {
-        return res.status(403).json({ message: 'No Authority', userChangeInfo: 2 });
+        return res.status(403).json({ message: 'No Authority', changeInfo: 2 });
     }
 
     try {
@@ -394,20 +394,24 @@ router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: R
         }
 
         if (setStatement.length === 0) {
-            return res.status(400).json({ message: 'No valid fields to update', userChangeInfo: 3 });
+            return res.status(400).json({ message: 'No valid fields to update', changeInfo: 3 });
         }
 
         if (whereClause.length > 0) {
             const [existingUsers] = await connection.query(`
-                SELECT COUNT(*) AS count 
-                FROM user 
-                WHERE (${whereClause.join(' OR ')}) 
-                  AND id != ?`,
+                SELECT
+                    COUNT(*) AS count 
+                FROM
+                    user 
+                WHERE
+                    (${whereClause.join(' OR ')}) 
+                AND
+                    id != ?`,
                 [...whereBindings, token_id]
             );
 
             if ((existingUsers as any)[0].count > 0) {
-                return res.status(400).json({ message: 'Email or Nickname is already in use', userChangeInfo: 4 });
+                return res.status(400).json({ message: 'Email or Nickname is already in use', changeInfo: 4 });
             }
         }
 
@@ -444,7 +448,7 @@ router.put('/new/password', async (req: Request, res: Response) => {
     }
 
     if ((email === undefined || email === "") || (old_password === undefined || old_password === "") || (new_password === undefined || new_password === "")) {
-        return res.status(400).json({ message: 'Email, old password and new password are required', userNewPass: 1 });
+        return res.status(400).json({ message: 'Email, old password and new password are required', changePass: 2 });
     }
 
     try {
@@ -462,7 +466,7 @@ router.put('/new/password', async (req: Request, res: Response) => {
         const users = results as { password: string }[];
 
         if (users.length === 0) {
-            return res.status(400).json({ message: 'Invalid email', userNewPass: 2 });
+            return res.status(400).json({ message: 'Invalid email', changePass: 3 });
         }
 
         const user = users[0];
@@ -470,7 +474,7 @@ router.put('/new/password', async (req: Request, res: Response) => {
         const passwordMatch = await bcrypt.compare(old_password, user.password);
 
         if (!passwordMatch) {
-            return res.status(400).json({ message: 'Invalid password', userNewPass: 3 });
+            return res.status(400).json({ message: 'Invalid password', changePass: 4 });
         }
 
         const hashedNewPassword = await bcrypt.hash(new_password, saltRounds);

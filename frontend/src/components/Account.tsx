@@ -19,6 +19,7 @@ const Account = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const userId = getDecodedToken()?.userId;
+    const isAdmin = getDecodedToken()?.admin;
     const translations = AccountTranslations[language];
     const popupTranslations = PopupMessageTranslations[language];
 
@@ -29,8 +30,10 @@ const Account = () => {
     const [changePassEmail, setChangePassEmail] = useState<string>(``);
     const [changePassOldPass, setChangePassOldPass] = useState<string>(``);
     const [changePassNewPass, setChangePassNewPass] = useState<string>(``);
+    const [adminSecret, setAdminSecret] = useState<string>(``);
     const [watchOldPass, setWatchOldPass] = useState<boolean>(false);
     const [watchNewPass, setWatchNewPass] = useState<boolean>(false);
+    const [watchAdminSecret, setWatchAdminSecret] = useState<boolean>(false);
     const [approveDeactivation, setApproveDeactivation] = useState<boolean>(false);
 
     const clearState = () => {
@@ -39,6 +42,7 @@ const Account = () => {
         setChangePassEmail(``);
         setChangePassOldPass(``);
         setChangePassNewPass(``);
+        setAdminSecret('');
         setApproveDeactivation(false);
     }
 
@@ -46,12 +50,19 @@ const Account = () => {
         event.preventDefault();
         try {
 
-            const reqData = {
-                email: changeInfoEmail,
-                nickname : changeInfoNickname
-            };
+            const reqData = !isAdmin?
+                {
+                    email: changeInfoEmail,
+                    nickname : changeInfoNickname
+                }
+                :
+                {
+                    email: changeInfoEmail,
+                    nickname : changeInfoNickname,
+                    adminSecret: adminSecret
+                };
 
-            const response = await axios.put(`${apiUrl}/user/change/info/${userId}`, reqData, {headers: { Authorization: `Bearer ${getToken()}` }});
+            const response = await axios.put(`${apiUrl}/${isAdmin? "admin" : "user"}/change/info/${userId}`, reqData, {headers: { Authorization: `Bearer ${getToken()}` }});
 
             if (response.status === 201) {
 
@@ -67,14 +78,14 @@ const Account = () => {
 
         } catch (error) {
 
-            const axiosError = error as AxiosError<{ userChangeInfo: number }>;
+            const axiosError = error as AxiosError<{ changeInfo: number }>;
             if (axiosError.response) {
 
-                const userChangeInfo = axiosError.response.data.userChangeInfo;
+                const changeInfo = axiosError.response.data.changeInfo;
                 let message = ``;
-                switch (userChangeInfo) {
+                switch (changeInfo) {
                     case 1:
-                        message = popupTranslations.injection;
+                        message = popupTranslations.AdminSecretWrong;
                         break;
                     case 2:
                         message = popupTranslations.noAuthority;
@@ -128,6 +139,34 @@ const Account = () => {
                         />
                     </Form.Group>
 
+                    {
+                        isAdmin ?
+                            <Form.Group controlId="changePassAdminSecret" className="mt-3">
+                                <Form.Label className={"ac_label"}>{translations.admin_pass_key}</Form.Label>
+                                <div className={"account_cp_wrap"}>
+                                    <Form.Control
+                                        className={"ac_control"}
+                                        type={watchAdminSecret ? "text" : "password"}
+                                        placeholder={translations.admin_pass_key}
+                                        value={adminSecret}
+                                        onChange={(e) => setAdminSecret(e.target.value)}
+                                    />
+
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            checked={watchAdminSecret}
+                                            onChange={(e) => setWatchAdminSecret(e.target.checked)}
+                                        />
+                                        {translations.watch_new_pass}
+                                    </label>
+                                </div>
+                            </Form.Group>
+                            :
+                            null
+
+                    }
+
                     <Button variant="primary" type="submit" className="mt-3">
                         {translations.change}
                     </Button>
@@ -145,12 +184,21 @@ const Account = () => {
         event.preventDefault();
         try {
 
-            const response = await axios.put(`${apiUrl}/user/new/password`, {
-                email:changePassEmail,
-                old_password:changePassOldPass,
-                new_password:changePassNewPass
+            const reqData = !isAdmin ?
+                {
+                    email:changePassEmail,
+                    old_password:changePassOldPass,
+                    new_password:changePassNewPass
+                }
+                :
+                {
+                    email:changePassEmail,
+                    old_password:changePassOldPass,
+                    new_password:changePassNewPass,
+                    adminSecret: adminSecret
+                };
 
-            }, {headers: { Authorization: `Bearer ${getToken()}` }});
+            const response = await axios.put(`${apiUrl}/${isAdmin? "admin" : "user"}/new/password`,reqData , {headers: { Authorization: `Bearer ${getToken()}` }});
 
             if (response.status === 201) {
 
@@ -166,19 +214,22 @@ const Account = () => {
 
         } catch (error) {
 
-            const axiosError = error as AxiosError<{ userNewPass: number }>;
+            const axiosError = error as AxiosError<{ changePass: number }>;
             if (axiosError.response) {
 
-                const userNewPass = axiosError.response.data.userNewPass;
+                const changePass = axiosError.response.data.changePass;
                 let message = ``;
-                switch (userNewPass) {
+                switch (changePass) {
                     case 1:
-                        message = popupTranslations.AccountRequired;
+                        message = popupTranslations.AdminSecretWrong;
                         break;
                     case 2:
-                        message = popupTranslations.AccountWrongEmail;
+                        message = popupTranslations.AccountRequired;
                         break;
                     case 3:
+                        message = popupTranslations.AccountWrongEmail;
+                        break;
+                    case 4:
                         message = popupTranslations.AccountWrongPass;
                         break;
                     default:
@@ -258,6 +309,34 @@ const Account = () => {
                         </div>
                     </Form.Group>
 
+                    {
+                        isAdmin ?
+                            <Form.Group controlId="changePassAdminSecret" className="mt-3">
+                                <Form.Label className={"ac_label"}>{translations.admin_pass_key}</Form.Label>
+                                <div className={"account_cp_wrap"}>
+                                    <Form.Control
+                                        className={"ac_control"}
+                                        type={watchAdminSecret ? "text" : "password"}
+                                        placeholder={translations.admin_pass_key}
+                                        value={adminSecret}
+                                        onChange={(e) => setAdminSecret(e.target.value)}
+                                    />
+
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            checked={watchAdminSecret}
+                                            onChange={(e) => setWatchAdminSecret(e.target.checked)}
+                                        />
+                                        {translations.watch_new_pass}
+                                    </label>
+                                </div>
+                            </Form.Group>
+                            :
+                            null
+
+                    }
+
                     <Button variant="primary" type="submit" className="mt-3">
                         {translations.change}
                     </Button>
@@ -288,7 +367,7 @@ const Account = () => {
                 clearState();
 
                 setTimeout(() => {
-                    logout(navigate, dispatch)
+                    logout(navigate, dispatch, false)
                 }, 3000)
 
 
@@ -390,7 +469,14 @@ const Account = () => {
                     >
                         <option value="1">{translations.changeEmailNickname}</option>
                         <option value="2">{translations.changePassword}</option>
-                        <option value="3">{translations.deactivate_account}</option>
+                        {
+                            !isAdmin ?
+                                <option value="3">{translations.deactivate_account}</option>
+                                :
+                                null
+                        }
+
+
                     </Form.Select>
                 </Form>
             </div>

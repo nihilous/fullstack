@@ -59,7 +59,7 @@ const Header = () => {
     };
 
     const handleLogout = () => {
-        logout(navigate, dispatch);
+        logout(navigate, dispatch, isAdmin as boolean);
     };
 
     const handleCookieRenew = async () => {
@@ -138,13 +138,19 @@ const Header = () => {
         { name: translations.about, path: `/about` }
     ];
 
-    const settings = [
-        { name: translations.account, path: `/account` },
-        { name: translations.register, path: `/register_child` },
-        `JWT`,
-        `Logout`
-
-    ];
+    const settings = isAdmin ?
+        [
+            { name: translations.account, path: `/account` },
+            `JWT`,
+            `Logout`
+        ]
+        :
+        [
+            { name: translations.account, path: `/account` },
+            { name: translations.register, path: `/register_child` },
+            `JWT`,
+            `Logout`
+        ];
 
     return (
         <AppBar position="static">

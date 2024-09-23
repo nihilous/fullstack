@@ -52,15 +52,12 @@ const AdminLoginJoin = () => {
                 let message = ``;
                 switch (joinRes) {
                     case 1:
-                        message = popupTranslations.injection;
-                        break;
-                    case 2:
                         message = popupTranslations.LoginRequired;
                         break;
-                    case 3:
+                    case 2:
                         message = popupTranslations.LoginInvalid;
                         break;
-                    case 4:
+                    case 3:
                         message = popupTranslations.TokenSaveFailure;
                         break;
                     default:

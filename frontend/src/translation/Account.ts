@@ -16,6 +16,7 @@ export const AccountTranslations = {
         change: `Vaihda`,
         deactivate: `Poista käytöstä`,
         cancel: `Peruuta`,
+        admin_pass_key: `Adminin salainen avain`,
     },
     SWE: {
         account_title: `Kontoinformation`,
@@ -34,6 +35,7 @@ export const AccountTranslations = {
         change: `Ändra`,
         deactivate: `Inaktivera`,
         cancel: `Avbryt`,
+        admin_pass_key: `Administratörens hemliga nyckel`,
     },
     ENG: {
         account_title: `Account Information`,
@@ -52,6 +54,7 @@ export const AccountTranslations = {
         change: `Change`,
         deactivate: `Deactivate`,
         cancel: `Cancel`,
+        admin_pass_key: `Admin Secret Key`,
     },
     KOR: {
         account_title: `계정정보`,
@@ -70,5 +73,6 @@ export const AccountTranslations = {
         change: `변경`,
         deactivate: `비활성화`,
         cancel: `취소`,
+        admin_pass_key: `관리자 비밀 키`,
     }
 };

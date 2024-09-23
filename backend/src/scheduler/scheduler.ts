@@ -80,11 +80,49 @@ const delete_deactivated_user = async () => {
 
     }
 
-    console.log('Running scheduled task at:', new Date());
+    console.log('Running delete_deactivated_user scheduled task at:', new Date());
 
 };
+
+const delete_stacked_log = async () => {
+
+    try {
+
+        const connection = await pool.getConnection();
+
+        await connection.query(`
+            UPDATE
+                hostile_list
+            SET
+                log = ''
+            WHERE
+                (is_banned = TRUE
+                OR
+                is_whitelist = TRUE)
+            AND
+                log IS NOT NULL
+            AND
+                log <> ''
+        `);
+
+        connection.release();
+    } catch (error) {
+
+        console.error('Error Scheduling', error);
+
+    }
+
+    console.log('Running delete_stacked_log scheduled task at:', new Date());
+
+}
 
 cron.schedule('0 0 * * *', delete_deactivated_user, {
     scheduled: true,
     timezone: 'Europe/Helsinki'
 });
+
+cron.schedule('5 0 * * *', delete_stacked_log, {
+    scheduled: true,
+    timezone: 'Europe/Helsinki'
+});
+

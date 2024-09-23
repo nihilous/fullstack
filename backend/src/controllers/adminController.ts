@@ -389,6 +389,162 @@ router.put('/hostile/ban', tokenExtractor, async (req: CustomRequest, res: Respo
     }
 });
 
+router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    const user_id:number = parseInt(req.params.id, 10);
+    const token_id:number = req?.token?.userId;
+    const { email, nickname, adminSecret } = req.body;
+
+    const checked_email = injectionChecker(email);
+    const checked_nickname = injectionChecker(nickname);
+    const checked_admin_secret = injectionChecker(adminSecret);
+
+    if(checked_email !== email || checked_nickname !== nickname || checked_admin_secret !== adminSecret){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"id" : user_id, "token" : token_id, "email" : checked_email, "nickname" : checked_nickname, "adminSecret " : adminSecret });
+    }
+
+    if( adminSecret !== process.env.SECRET ) {
+        return res.status(400).json({ message: 'not authorized to modify admin account', changeInfo: 1 });
+    }
+
+    if(user_id !== token_id) {
+        return res.status(403).json({ message: 'No Authority', changeInfo: 2 });
+    }
+
+    try {
+        const connection = await pool.getConnection();
+
+        let whereClause: string[] = [];
+        let whereBindings: any[] = [];
+
+        let setStatement: string[] = [];
+        let setBinding: any[] = [];
+
+        if (checked_email !== undefined && checked_email !== "") {
+            whereClause.push('email = ?');
+            whereBindings.push(checked_email);
+            setStatement.push('email = ?');
+            setBinding.push(checked_email);
+        }
+
+        if (checked_nickname !== undefined && checked_nickname !== "") {
+            whereClause.push('nickname = ?');
+            whereBindings.push(checked_nickname);
+            setStatement.push('nickname = ?');
+            setBinding.push(checked_nickname);
+        }
+
+        if (setStatement.length === 0) {
+            return res.status(400).json({ message: 'No valid fields to update', changeInfo: 3 });
+        }
+
+        if (whereClause.length > 0) {
+            const [existingUsers] = await connection.query(`
+                SELECT
+                    COUNT(*) AS count 
+                FROM
+                    admin 
+                WHERE
+                    (${whereClause.join(' OR ')}) 
+                AND
+                    id != ?`,
+                [...whereBindings, token_id]
+            );
+
+            if ((existingUsers as any)[0].count > 0) {
+                return res.status(400).json({ message: 'Email or Nickname is already in use', changeInfo: 4 });
+            }
+        }
+
+        setBinding.push(token_id);
+
+        await connection.query(`
+            UPDATE 
+                admin
+            SET
+                ${setStatement.join(', ')}
+            WHERE
+                id = ?
+        `, setBinding);
+
+        res.status(201).json({ message: 'User info changed'});
+
+        connection.release();
+    } catch (error) {
+        console.error('Error response put /user/change/info/:id', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+
+});
+
+router.put('/new/password', async (req: Request, res: Response) => {
+
+    const { email, old_password, new_password, adminSecret } = req.body;
+
+    const checked_email = injectionChecker(email);
+    const checked_admin_secret = injectionChecker(adminSecret);
+
+    if(checked_email !== email || checked_admin_secret !== adminSecret){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"email" : checked_email, "adminSecret " : adminSecret});
+    }
+
+    if( adminSecret !== process.env.SECRET ) {
+        return res.status(400).json({ message: 'not authorized to modify admin password', changePass: 1 });
+    }
+
+    if ((email === undefined || email === "") || (old_password === undefined || old_password === "") || (new_password === undefined || new_password === "") || (adminSecret === undefined || adminSecret === "")) {
+        return res.status(400).json({ message: 'Email, old password and new password, admin secret are required', changePass: 2 });
+    }
+
+    try {
+        const connection = await pool.getConnection();
+
+        const [results] = await connection.query(`
+                SELECT
+                    password
+                FROM
+                    admin
+                WHERE
+                    email = ?
+            `, [checked_email]);
+
+        const users = results as { password: string }[];
+
+        if (users.length === 0) {
+            return res.status(400).json({ message: 'Invalid email', changePass: 3 });
+        }
+
+        const user = users[0];
+
+        const passwordMatch = await bcrypt.compare(old_password, user.password);
+
+        if (!passwordMatch) {
+            return res.status(400).json({ message: 'Invalid password', changePass: 4 });
+        }
+
+        const hashedNewPassword = await bcrypt.hash(new_password, saltRounds);
+
+        await connection.query(`
+                UPDATE 
+                    admin
+                SET
+                    password = ?
+                WHERE
+                    email = ? 
+            `, [hashedNewPassword, checked_email]);
+
+        res.status(201).json({ message: 'Password changed'});
+
+        connection.release();
+    } catch (error) {
+        console.error('Error response put /user/new/password', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+
+});
+
 router.delete('/post/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
     const is_admin:boolean = req?.token?.admin;
 
