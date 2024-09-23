@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
-export class CreateHistoryTable20240923173000 implements MigrationInterface {
+export class CreateCountryTable20240923173000 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: 'history',
+                name: 'country',
                 columns: [
                     {
                         name: 'id',
@@ -14,29 +14,29 @@ export class CreateHistoryTable20240923173000 implements MigrationInterface {
                         generationStrategy: 'increment',
                     },
                     {
-                        name: 'user_detail_id',
-                        type: 'int',
+                        name: 'national_code',
+                        type: 'varchar',
                     },
                     {
-                        name: 'vaccine_id',
-                        type: 'int',
+                        name: 'name_english',
+                        type: 'varchar',
                     },
                     {
-                        name: 'history_date',
-                        type: 'date',
-                    }
+                        name: 'name_original',
+                        type: 'varchar',
+                    },
                 ],
             })
         );
 
-        await queryRunner.createIndex('history', new TableIndex({
-            name: 'IDX_HISTORY_USER_DETAIL_ID',
-            columnNames: ['user_detail_id'],
+        await queryRunner.createIndex('country', new TableIndex({
+            name: 'IDX_COUNTRY_ID',
+            columnNames: ['id'],
         }));
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropIndex('history', 'IDX_HISTORY_USER_DETAIL_ID');
-        await queryRunner.dropTable('history');
+        await queryRunner.dropIndex('country', 'IDX_COUNTRY_ID');
+        await queryRunner.dropTable('country');
     }
 }

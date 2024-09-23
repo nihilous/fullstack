@@ -212,26 +212,6 @@ function isDateFormat(input: string): boolean {
     return !regex.test(input);
 }
 
-function isNotLegitCountry(national_code: string): boolean {
-    if(typeof national_code !== 'string') {
-        return true;
-    }
-
-    const upper_cased = national_code.toUpperCase();
-
-    switch (upper_cased) {
-        case "FIN":
-            return false;
-        case "KOR":
-            return false;
-        case "ENG":
-            return false;
-        default:
-            return true;
-    }
-
-}
-
 const addUpdateHostileList = async (clientIp: string, keyWords: object) => {
 
     try {
@@ -288,4 +268,4 @@ const addUpdateHostileList = async (clientIp: string, keyWords: object) => {
 
 };
 
-export {CustomRequest, tokenExtractor, isNotNumber, injectionChecker, patternChecker, isDateFormat, isNotLegitCountry, addUpdateHostileList};
+export {CustomRequest, tokenExtractor, isNotNumber, injectionChecker, patternChecker, isDateFormat, addUpdateHostileList};

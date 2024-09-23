@@ -13,6 +13,7 @@ import boardRouter from './controllers/boardController';
 import runMigrations from './runMigration';
 import { checkDatabaseConnection } from './db';
 import { seedVaccines } from './seeds/VaccineSeed';
+import { seedCountries } from './seeds/CountrySeed';
 import './scheduler/scheduler'
 
 dotenv.config();
@@ -44,6 +45,7 @@ async function startServer() {
         await runMigrations();
 
         await seedVaccines();
+        await seedCountries();
 
         app.listen(port, '0.0.0.0', () => {
             console.log(`Server is running at http://0.0.0.0:${port}`);

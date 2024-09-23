@@ -6,7 +6,7 @@ export class Vaccine {
     id!: number;
 
     @Column()
-    vaccine_national_code!: string;
+    vaccine_national_code!: number;
 
     @Column()
     vaccine_name!: string;

@@ -23,7 +23,7 @@ const RegisterChild = () => {
         name: string | null;
         birthdate: string | null;
         gender: number | null;
-        nationality: string | null;
+        nationality: number | null;
         description: string | null;
         nickname: string | null;
     }
@@ -31,7 +31,7 @@ const RegisterChild = () => {
     const [name, setName] = useState<string>(``);
     const [birthdate, setBirthdate] = useState<string>(``);
     const [gender, setGender] = useState<number | null>(null);
-    const [nationality, setNationality] = useState<string>(``);
+    const [nationality, setNationality] = useState<number | null>(null);
     const [description, setDescription] = useState<string>(``);
     const [child, setChild] = useState<UserDetailProperty[]>([]);
     const translations = RegisterChildTranslations[language];
@@ -41,7 +41,7 @@ const RegisterChild = () => {
         setName('');
         setBirthdate('');
         setGender(null);
-        setNationality('');
+        setNationality(null);
         setDescription('');
     }
 
@@ -161,13 +161,13 @@ const RegisterChild = () => {
                 return { year, month, day };
             };
 
-            const formatNationality = (nationalityString: string) => {
-                switch (nationalityString){
-                    case "FIN":
+            const formatNationality = (nationalityCode: number) => {
+                switch (nationalityCode){
+                    case 1:
                         return translations.finland;
-                    case "KOR":
+                    case 2:
                         return translations.korea;
-                    case "ENG":
+                    case 3:
                         return translations.usa;
                 }
             };
@@ -195,7 +195,7 @@ const RegisterChild = () => {
                         </div>
                         <div className={"mie_info"}>
                             <span>{`${translations.nationality}`}</span>
-                            <span>{`${formatNationality(child.nationality as string)}`}</span>
+                            <span>{`${formatNationality(child.nationality as number)}`}</span>
 
                         </div>
                         <div className={"mie_info"}>
@@ -249,7 +249,7 @@ const RegisterChild = () => {
                                 <Form.Label>{translations.gender}</Form.Label>
                                 <Form.Select
                                     value={gender ?? ""}
-                                    onChange={(e) => setGender(parseInt(e.target.value, 10))}
+                                    onChange={(e) => setGender(e.target.value !== "" ? parseInt(e.target.value, 10) : null)}
                                 >
                                     <option value="">{translations.select_gender}</option>
                                     <option value={0}>{translations.boy}</option>
@@ -262,12 +262,12 @@ const RegisterChild = () => {
                                 <Form.Label>{translations.nationality}</Form.Label>
                                 <Form.Select
                                     value={nationality ?? ""}
-                                    onChange={(e) => setNationality(e.target.value)}
+                                    onChange={(e) => setNationality(e.target.value !== "" ? parseInt(e.target.value, 10) : null)}
                                 >
                                     <option value="">{translations.select_nationality}</option>
-                                    <option value="FIN">{translations.finland}</option>
-                                    <option value="KOR">{translations.korea}</option>
-                                    <option value="ENG">{translations.usa}</option>
+                                    <option value={1}>{translations.finland}</option>
+                                    <option value={2}>{translations.korea}</option>
+                                    <option value={3}>{translations.usa}</option>
                                 </Form.Select>
                             </Form.Group>
 

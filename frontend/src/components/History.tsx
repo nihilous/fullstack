@@ -16,7 +16,7 @@ const History = () => {
         name: string,
         birthdate: string,
         gender: number,
-        nationality: string,
+        nationality: number,
         description: string,
         histories :{
             id: number
@@ -46,7 +46,7 @@ const History = () => {
     const [name, setName] = useState<string>(``);
     const [birthdate, setBirthdate] = useState<string>(``);
     const [gender, setGender] = useState<number | null>(null);
-    const [nationality, setNationality] = useState<string>(``);
+    const [nationality, setNationality] = useState<number | null>(null);
     const [description, setDescription] = useState<string>(``);
     const [updateChild, setUpdateChild] = useState<boolean>(false);
     const targetHistoryRef = useRef<number | null>(null);
@@ -511,7 +511,7 @@ const History = () => {
                                     <Form.Label>{translations.gender}</Form.Label>
                                     <Form.Select
                                         value={gender ?? ""}
-                                        onChange={(e) => setGender(parseInt(e.target.value, 10))}
+                                        onChange={(e) => setGender(e.target.value !== "" ? parseInt(e.target.value, 10) : null)}
                                     >
                                         <option value="">{translations.select_gender}</option>
                                         <option value={0}>{translations.boy}</option>
@@ -523,12 +523,12 @@ const History = () => {
                                     <Form.Label>{translations.nationality}</Form.Label>
                                     <Form.Select
                                         value={nationality ?? ""}
-                                        onChange={(e) => setNationality(e.target.value)}
+                                        onChange={(e) => setNationality(e.target.value !== "" ? parseInt(e.target.value, 10) : null)}
                                     >
                                         <option value="">{translations.select_nationality}</option>
-                                        <option value="FIN">{translations.finland}</option>
-                                        <option value="KOR">{translations.korea}</option>
-                                        <option value="ENG">{translations.usa}</option>
+                                        <option value={1}>{translations.finland}</option>
+                                        <option value={2}>{translations.korea}</option>
+                                        <option value={3}>{translations.usa}</option>
                                     </Form.Select>
                                 </Form.Group>
 

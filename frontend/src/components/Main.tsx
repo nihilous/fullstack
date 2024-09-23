@@ -27,7 +27,7 @@ const Main = () => {
         description: string | null;
         gender: number | null;
         birthdate: string | null;
-        nationality: string | null;
+        nationality: number | null;
         nickname: string;
     }
 
@@ -51,7 +51,7 @@ const Main = () => {
 
     const [userDetail, setUserDetail] = useState<UserDetailResponse | null>(null);
     const [filter, setFilter] = useState<string>(``);
-    const [filterNationality, setFilterNationality] = useState<string | null>(null);
+    const [filterNationality, setFilterNationality] = useState<number | null>(null);
     const [filterGender, setFilterGender] = useState<number | null>(null);
     const [filteredUser, setFilteredUser] = useState<UserDetailProperty[]>([]);
 
@@ -117,7 +117,7 @@ const Main = () => {
                     : true;
 
                 const matchesNationality = filterNationality
-                    ? value.nationality?.toLowerCase() === filterNationality.toLowerCase()
+                    ? value.nationality === filterNationality
                     : true;
 
                 const matchesGender = filterGender !== null
@@ -137,7 +137,7 @@ const Main = () => {
 
 
     const handleFilterNationality = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setFilterNationality(event.target.value || null);
+        setFilterNationality(parseInt(event.target.value, 10) || null);
     };
 
     const handleFilterGender = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -155,16 +155,16 @@ const Main = () => {
                 return { year, month, day };
             };
 
-            const formatNationality = (nationalityString: string) => {
-                switch (nationalityString) {
-                    case "FIN":
+            const formatNationality = (nationalityCode: number) => {
+                switch (nationalityCode) {
+                    case 1:
                         return translations.finland;
-                    case "KOR":
+                    case 2:
                         return translations.korea;
-                    case "USA":
-                        return translations.korea;
+                    case 3:
+                        return translations.usa;
                     default:
-                        return nationalityString;
+                        return nationalityCode;
                 }
             };
 
@@ -189,7 +189,7 @@ const Main = () => {
                         </div>
                         <div className={"mie_info"}>
                             <span>{`${translations.child_nationality}`}</span>
-                            <span>{`${formatNationality(child.nationality as string)}`}</span>
+                            <span>{`${formatNationality(child.nationality as number)}`}</span>
                         </div>
                         <div className={"mie_info"}>
                             <span>{`${translations.child_description}`}</span>
@@ -232,9 +232,9 @@ const Main = () => {
                     <div className={"select_wrap"}>
                         <select onChange={handleFilterNationality}>
                             <option value="">{translations.child_nationality}</option>
-                            <option value="FIN">{translations.finland}</option>
-                            <option value="KOR">{translations.korea}</option>
-                            <option value="ENG">{translations.usa}</option>
+                            <option value={1}>{translations.finland}</option>
+                            <option value={2}>{translations.korea}</option>
+                            <option value={3}>{translations.usa}</option>
                         </select>
                         <select onChange={handleFilterGender}>
                             <option value="">{translations.child_gender}</option>

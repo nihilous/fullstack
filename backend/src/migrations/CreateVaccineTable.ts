@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
-export class CreateVaccineTable20240806173026 implements MigrationInterface {
+export class CreateVaccineTable20240806173000 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
@@ -15,7 +15,7 @@ export class CreateVaccineTable20240806173026 implements MigrationInterface {
                     },
                     {
                         name: 'vaccine_national_code',
-                        type: 'varchar',
+                        type: 'int',
                     },
                     {
                         name: 'vaccine_name',

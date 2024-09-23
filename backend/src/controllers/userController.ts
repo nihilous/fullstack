@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { pool } from '../db';
-import {CustomRequest, injectionChecker, patternChecker, tokenExtractor, isNotNumber, isDateFormat, isNotLegitCountry, addUpdateHostileList} from '../middleware/middleware';
+import {CustomRequest, injectionChecker, patternChecker, tokenExtractor, isNotNumber, isDateFormat, addUpdateHostileList} from '../middleware/middleware';
 import { RowDataPacket, ResultSetHeader, FieldPacket } from 'mysql2';
 
 const router = Router();
@@ -79,19 +79,18 @@ router.post('/:id', tokenExtractor, async (req: CustomRequest, res: Response) =>
     const checked_name = injectionChecker(name);
     const checked_description = injectionChecker(description);
 
-    if ((checked_name === undefined || checked_name === "") || (checked_description === undefined || checked_description === "") || (gender === undefined || gender === null) || (birthdate === undefined || birthdate === "") || (nationality === undefined || nationality === "")) {
+    if ((checked_name === undefined || checked_name === "") || (checked_description === undefined || checked_description === "") || (gender === undefined || gender === null) || (birthdate === undefined || birthdate === "") || (nationality === undefined || nationality === null)) {
         return res.status(400).json({ message: 'name, description, gender, birthdate, nationality are required', childRes: 1});
     }
 
     const isAttacked:boolean = isDateFormat(birthdate);
-    const isAttacked2:boolean = isNotNumber([gender]);
-    const isAttacked3:boolean = isNotLegitCountry(nationality);
+    const isAttacked2:boolean = isNotNumber([gender, nationality]);
 
-    if(checked_name !== name || checked_description !== description || isAttacked || isAttacked2 || isAttacked3){
+    if(checked_name !== name || checked_description !== description || isAttacked || isAttacked2){
         addUpdateHostileList(clientIp as string, {"name" : checked_name, "desc" : checked_description, "birthdate" : injectionChecker(`${birthdate}`), "gender" : injectionChecker(`${gender}`), "nationality" : injectionChecker(`${nationality}`)});
     }
 
-    if(isAttacked || isAttacked2 || isAttacked3){
+    if(isAttacked || isAttacked2){
         return res.status(400).json({ message: 'Suspected to Attacking', childRes: 2});
     }
 
@@ -523,15 +522,14 @@ router.put('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
     }
 
     const isAttacked:boolean = isDateFormat(birthdate)
-    const isAttacked2:boolean = isNotNumber([gender])
-    const isAttacked3:boolean = isNotLegitCountry(nationality);
+    const isAttacked2:boolean = isNotNumber([gender, nationality])
 
-    if(checked_name !== name || checked_description !== description || isAttacked || isAttacked2 || isAttacked3){
+    if(checked_name !== name || checked_description !== description || isAttacked || isAttacked2){
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
         addUpdateHostileList(clientIp as string, {"id" : user_id, "token" : token_id, "child" : user_detail_id, "name" : checked_name, "desc" : checked_description, "birthdate" : injectionChecker(`${birthdate}`), "gender" : injectionChecker(`${gender}`), "nationality" : injectionChecker(`${nationality}`)});
     }
 
-    if(isAttacked || isAttacked2 || isAttacked3){
+    if(isAttacked || isAttacked2){
         return res.status(400).json({ message: 'Suspected to Attacking', childUpdateRes: 2});
     }
 
@@ -558,7 +556,7 @@ router.put('/:id/:user_detail_id', tokenExtractor, async (req: CustomRequest, re
         setBinding.push(birthdate);
     }
 
-    if (nationality !== undefined && nationality !== "") {
+    if (nationality !== undefined && nationality !== null) {
         setStatement.push('nationality = ?');
         setBinding.push(nationality);
     }
