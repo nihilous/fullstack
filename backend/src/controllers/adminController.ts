@@ -91,8 +91,8 @@ router.post('/manage/add/country', tokenExtractor, async (req: CustomRequest, re
         return res.status(400).json({ message: 'Suspected to Attacking', adminAddCountry: 2 });
     }
 
-    if ( id === undefined || id === null || (checked_code === undefined || checked_code === "" ) || (checked_eng === undefined || checked_eng === "") || (checked_ori === undefined || checked_ori === "")) {
-        return res.status(400).json({ message: 'Code, nickname and password and admin secret are required', adminAddCountry: 3 });
+    if ((id === undefined || id === null) || (checked_code === undefined || checked_code === "" ) || (checked_eng === undefined || checked_eng === "") || (checked_ori === undefined || checked_ori === "")) {
+        return res.status(400).json({ message: 'id, national code, english name, original name are required', adminAddCountry: 3 });
     }
 
     try {
@@ -136,6 +136,102 @@ router.post('/manage/add/country', tokenExtractor, async (req: CustomRequest, re
         connection.release();
     } catch (error) {
         console.error('Error registering temp country /admin/manage/add/country:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.post('/manage/add/vaccine', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    if(req?.token?.admin === false){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"admin" : false });
+        return res.status(403).json({ message: 'No Authority', adminAddVaccine: 1});
+    }
+
+    const {
+        vaccine_national_code,
+        vaccine_name,
+        vaccine_is_periodical,
+        vaccine_minimum_period_type,
+        vaccine_minimum_recommend_date,
+        vaccine_maximum_period_type,
+        vaccine_maximum_recommend_date,
+        vaccine_round,
+        vaccine_description
+    } = req.body;
+
+    const is_periodical = Boolean(vaccine_is_periodical);
+    const isAttacked = is_periodical ?
+        isNotNumber([vaccine_national_code, vaccine_minimum_recommend_date, vaccine_maximum_recommend_date, vaccine_round])
+        :
+        isNotNumber([vaccine_national_code, vaccine_minimum_recommend_date, vaccine_round]);
+
+    const checked_name = injectionChecker(vaccine_name);
+    const checked_min_type = injectionChecker(vaccine_minimum_period_type);
+    const checked_max_type = is_periodical ? injectionChecker(vaccine_maximum_period_type) : null;
+    const checked_desc = injectionChecker(vaccine_description);
+
+    if(vaccine_name !== checked_name || vaccine_minimum_period_type !== checked_min_type || vaccine_maximum_period_type !== checked_max_type || vaccine_description !== checked_desc || isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(
+            clientIp as string,
+            {
+                "code" : injectionChecker(`${vaccine_national_code}`),
+                "name" : checked_name,
+                "period" : injectionChecker(`${is_periodical}`),
+                "min_type" : checked_min_type,
+                "min" : injectionChecker(`${vaccine_minimum_recommend_date}`),
+                "max_type" : checked_max_type,
+                "max" : injectionChecker(`${vaccine_maximum_recommend_date}`),
+                "round" : injectionChecker(`${vaccine_round}`),
+                "desc" : checked_desc,
+            }
+        );
+    }
+
+    if(isAttacked){
+        return res.status(400).json({ message: 'Suspected to Attacking', adminAddVaccine: 2 });
+    }
+
+    if ((vaccine_national_code === undefined || vaccine_national_code === null) || (checked_name === undefined || checked_name === "" ) || (is_periodical === undefined) || (checked_min_type === undefined || checked_min_type === "") || (vaccine_minimum_recommend_date === undefined || vaccine_minimum_recommend_date === null) || (is_periodical && checked_max_type === undefined || is_periodical && checked_max_type === "") || (is_periodical && vaccine_maximum_recommend_date === undefined || is_periodical && vaccine_maximum_recommend_date === null) || (vaccine_round === undefined || vaccine_round === null) || (checked_desc === undefined || checked_desc === "")) {
+        return res.status(400).json({ message: 'code, name, periodical, min/max type & recommend date, round, desc required', adminAddVaccine: 3 });
+    }
+
+    try {
+
+        const connection = await pool.getConnection();
+
+        await connection.query(`
+            INSERT INTO
+                temp_vaccine (
+                    vaccine_national_code,
+                    vaccine_name,
+                    vaccine_is_periodical,
+                    vaccine_minimum_period_type,
+                    vaccine_minimum_recommend_date,
+                    vaccine_maximum_period_type,
+                    vaccine_maximum_recommend_date,
+                    vaccine_round,
+                    vaccine_description
+                )
+            VALUES
+                (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `,[
+            vaccine_national_code,
+            checked_name,
+            is_periodical,
+            checked_min_type,
+            vaccine_minimum_recommend_date,
+            checked_max_type,
+            vaccine_maximum_recommend_date,
+            vaccine_round,
+            checked_desc]);
+
+        res.status(201).json({ message: 'Temp vaccine registered successfully' });
+
+        connection.release();
+    } catch (error) {
+        console.error('Error registering temp country /admin/manage/add/vaccine:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
@@ -395,11 +491,18 @@ router.get('/manage', tokenExtractor, async (req: CustomRequest, res: Response) 
 
         const connection = await pool.getConnection();
 
-        const [countries]: any = await connection.query(`
+        const [existing_countries]: any = await connection.query(`
             SELECT
                 *
             FROM
                 country
+        `)
+
+        const [temporal_countries]: any = await connection.query(`
+            SELECT
+                *
+            FROM
+                temp_country
         `)
 
         const [vaccine_names] = await connection.query(`
@@ -416,7 +519,16 @@ router.get('/manage', tokenExtractor, async (req: CustomRequest, res: Response) 
                 vaccine_name
         `);
 
-        res.status(200).json({"existing_countries":countries, "vaccines": vaccine_names});
+        const [temporal_vaccine] = await connection.query(`
+            SELECT
+                *
+            FROM
+                temp_vaccine
+            ORDER BY
+                vaccine_national_code ASC
+        `);
+
+        res.status(200).json({"existing_countries":existing_countries, "temporal_countries":temporal_countries, "existing_vaccines": vaccine_names, "temporal_vaccines": temporal_vaccine});
 
         connection.release();
     } catch (error) {
@@ -669,6 +781,89 @@ router.put('/new/password', async (req: Request, res: Response) => {
 
 });
 
+router.put('/manage/update/country', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    if(req?.token?.admin === false){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"admin" : false });
+        return res.status(403).json({ message: 'No Authority', adminUpdateCountry: 1});
+    }
+
+    const { ori_id, new_id, code, eng, ori } = req.body;
+
+    const isAttacked = isNotNumber([ori_id, new_id]);
+    const checked_code = injectionChecker(code);
+    const checked_eng = injectionChecker(eng);
+    const checked_ori = injectionChecker(ori);
+    const is_id_remain = ori_id === new_id;
+
+    if(code !== checked_code || eng !== checked_eng || ori !== checked_ori || isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"ori_id" : injectionChecker(`${ori_id}`), "new_id" : injectionChecker(`${new_id}`), "code" : checked_code, "eng" : checked_eng, "ori" : checked_ori});
+    }
+
+    if(isAttacked){
+        return res.status(400).json({ message: 'Suspected to Attacking', adminUpdateCountry: 2 });
+    }
+
+    if ((checked_code === undefined || checked_code === "" ) || (checked_eng === undefined || checked_eng === "") || (checked_ori === undefined || checked_ori === "")) {
+        return res.status(400).json({ message: 'national code, english name, original name are required', adminUpdateCountry: 3 });
+    }
+
+    try {
+
+        const connection = await pool.getConnection();
+
+        const [results_existing] = await connection.query(`
+            SELECT
+                COUNT(*) AS count
+            FROM
+                country
+            WHERE
+                id = ?`,
+            [new_id]);
+
+        const [results_temp] = await connection.query(`
+            SELECT
+                COUNT(*) AS count
+            FROM
+                temp_country
+            WHERE
+                id = ?`,
+            [new_id]);
+
+        const result_1 = results_existing as { count: number }[];
+        const result_2 = results_temp as { count: number }[];
+
+        if (result_1[0].count > 0 || (!is_id_remain && result_2[0].count > 0)) {
+            return res.status(400).json({ message: 'Id is already in use', adminUpdateCountry: 4 });
+        }
+
+        const [updated_temp_country]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+            UPDATE 
+                temp_country
+            SET
+                id = ?,
+                national_code = ?,
+                name_english = ?,
+                name_original = ?
+            WHERE
+                id = ?
+        `, [new_id, checked_code, checked_eng, checked_ori, ori_id]);
+
+        if(updated_temp_country.affectedRows === 1){
+            res.status(201).json({ message: 'Temp country updated successfully'});
+        }else{
+            return res.status(400).json({ message: 'No valid fields to update', adminUpdateCountry: 5 });
+        }
+
+        connection.release();
+    } catch (error) {
+        console.error('Error registering temp country /admin/manage/add/country:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 router.delete('/post/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
     const is_admin:boolean = req?.token?.admin;
 
@@ -764,6 +959,49 @@ router.delete('/reply/:id', tokenExtractor, async (req: CustomRequest, res: Resp
         connection.release();
     } catch (error) {
         console.error('Error delete /board/reply/:user_id/:id', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.delete('/manage/delete/country/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    if(req?.token?.admin === false){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"admin" : false });
+        return res.status(403).json({ message: 'No Authority', adminDeleteCountry: 1});
+    }
+
+    const id = parseInt(req.params.id, 10);
+
+    const isAttacked = isNotNumber([id]);
+
+    if(isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"id" : injectionChecker(`${id}`)});
+        return res.status(400).json({ message: 'Suspected to Attacking', adminDeleteCountry: 2 });
+    }
+
+    try {
+
+        const connection = await pool.getConnection();
+
+        const [deleted_temp_country]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+            DELETE
+            FROM 
+                temp_country
+            WHERE
+                id = ?
+        `, [id]);
+
+        if(deleted_temp_country.affectedRows === 1){
+            res.status(201).json({ message: 'Temp country deleted successfully'});
+        }else{
+            return res.status(400).json({ message: 'No valid fields to delete', adminDeleteCountry: 3 });
+        }
+
+        connection.release();
+    } catch (error) {
+        console.error('Error registering temp country /admin/manage/add/country:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });

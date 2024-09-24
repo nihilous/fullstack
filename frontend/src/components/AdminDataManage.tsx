@@ -34,9 +34,24 @@ const AdminDataManage = () => {
         vaccine_name: string;
     }
 
+    interface Vaccines {
+        id: number;
+        vaccine_national_code: number;
+        vaccine_name: string;
+        vaccine_is_periodical: boolean;
+        vaccine_minimum_period_type: string;
+        vaccine_minimum_recommend_date: number;
+        vaccine_maximum_period_type: string | null;
+        vaccine_maximum_recommend_date: number | null;
+        vaccine_round: number;
+        vaccine_description: string;
+    }
+
     interface CountryVaccineDataResponse {
         existing_countries: Country[];
-        vaccines: VaccineName[];
+        temporal_countries: Country[];
+        existing_vaccines: VaccineName[];
+        temporal_vaccines: Vaccines[];
     }
 
     const infos = useRef<CountryVaccineDataResponse | null>(null);
@@ -65,41 +80,45 @@ const AdminDataManage = () => {
     const [addNationalEng, setAddNationalEng] = useState<string>(``);
     const [addNationalOri, setAddNationalOri] = useState<string>(``);
 
-    useEffect(() => {
-        const mainDataFetch = async () => {
+    const [deleteNational, setDeleteNational] = useState<boolean>(false);
+    const [deleteNationalId, setDeleteNationalId] = useState<number | null>(null);
 
-            try {
+    const mainDataFetch = async () => {
 
-                const response = await axios.get<CountryVaccineDataResponse>(`${apiUrl}/admin/manage`, {
-                    headers: { Authorization: `Bearer ${getToken()}` }
-                });
+        try {
 
-                infos.current = response.data;
-                setFilteredInfos(response.data);
+            const response = await axios.get<CountryVaccineDataResponse>(`${apiUrl}/admin/manage`, {
+                headers: { Authorization: `Bearer ${getToken()}` }
+            });
 
-            } catch (error) {
-                const axiosError = error as AxiosError<{ adminManageRes: number }>;
-                if (axiosError.response) {
-                    const adminManageRes = axiosError.response.data.adminManageRes;
-                    let message = ``;
-                    switch (adminManageRes) {
-                        case 1:
-                            message = popupTranslations.noAuthority;
-                            break;
-                        default:
-                            const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
-                            message = checkRes.message;
-                            break;
-                    }
+            infos.current = response.data;
+            setFilteredInfos(response.data);
 
-                    dispatch(setNoticePopUp({
-                        on: true,
-                        is_error: true,
-                        message: message
-                    }));
+        } catch (error) {
+            const axiosError = error as AxiosError<{ adminManageRes: number }>;
+            if (axiosError.response) {
+                const adminManageRes = axiosError.response.data.adminManageRes;
+                let message = ``;
+                switch (adminManageRes) {
+                    case 1:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    default:
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
+                        break;
                 }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
             }
-        };
+        }
+    };
+
+    useEffect(() => {
 
         if(userId === undefined){
             navigagte("/");
@@ -142,7 +161,6 @@ const AdminDataManage = () => {
             }
         }
 
-
         return (
             options
         )
@@ -154,9 +172,55 @@ const AdminDataManage = () => {
         setEditNational(true);
     }
 
-    const saveModifiedCountry = (id: number) => {
-        setEditNationalNum(id);
-        setEditNational(false);
+    const saveModifiedCountry = async (id: number) => {
+
+        try {
+
+            const params = {
+                ori_id: id, new_id: editNationalId, code :editNationalCode, eng: editNationalEng, ori: editNationalOri
+            }
+            const response = await axios.put<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/update/country`,params ,{
+                headers: { Authorization: `Bearer ${getToken()}` }
+            });
+
+            await mainDataFetch();
+            setEditNational(false);
+
+        } catch (error) {
+            const axiosError = error as AxiosError<{ adminUpdateCountry: number }>;
+            if (axiosError.response) {
+                const adminUpdateCountry = axiosError.response.data.adminUpdateCountry;
+                let message = ``;
+                switch (adminUpdateCountry) {
+                    case 1:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    case 2:
+                        message = popupTranslations.injection;
+                        break;
+                    case 3:
+                        message = "param required"
+                        break;
+                    case 4:
+                        message = "id exists";
+                        break;
+                    case 5:
+                        message = "no record to update";
+                        break;
+                    default:
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
+                        break;
+                }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
+        }
+
     }
 
     const cancelModifiedCountry = (id: number) => {
@@ -179,8 +243,7 @@ const AdminDataManage = () => {
                 headers: { Authorization: `Bearer ${getToken()}` }
             });
 
-            console.log(response.data);
-
+            await mainDataFetch();
             setAddNational(false)
 
         } catch (error) {
@@ -217,12 +280,161 @@ const AdminDataManage = () => {
 
     }
 
+    const deleteCountry = (id: number) => {
+        setDeleteNationalId(id);
+        setDeleteNational(!deleteNational)
+    }
+
+    const saveDeleteCountry = async (id: number) => {
+
+        try {
+
+            const response = await axios.delete<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/delete/country/${id}` ,{
+                headers: { Authorization: `Bearer ${getToken()}` }
+            });
+
+            await mainDataFetch();
+
+            setDeleteNationalId(null);
+            setDeleteNational(!deleteNational)
+
+        } catch (error) {
+            const axiosError = error as AxiosError<{ adminAddCountry: number }>;
+            if (axiosError.response) {
+                const adminAddCountry = axiosError.response.data.adminAddCountry;
+                let message = ``;
+                switch (adminAddCountry) {
+                    case 1:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    case 2:
+                        message = popupTranslations.injection;
+                        break;
+                    case 3:
+                        message = "no record to delete";
+                        break;
+                    default:
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
+                        break;
+                }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
+        }
+
+    }
+
+    const deleteCountryUI = () => {
+        return(
+            <div className={"popup_form"}>
+                <Container>
+
+                    <div style={{display: "flex", alignContent: "center"}}>
+                        <div style={{width:'50%', textAlign: 'center'}}>
+                            <Button variant="primary" type="submit" className="mt-3" onClick={() => saveDeleteCountry(deleteNationalId as number)}>
+                                {`country delete`}
+                            </Button>
+                        </div>
+                        <div style={{width: '50%', textAlign: 'center'}}>
+                            <Button variant="secondary" className="mt-3 ms-2" onClick={() => setDeleteNational(!deleteNational)}>
+                                {`cancel`}
+                            </Button>
+                        </div>
+
+
+                    </div>
+
+
+
+                </Container>
+            </div>
+        )
+    };
+
     const cancelAddCountry = () => {
         setAddNational(false)
     }
 
-    const addVaccineData = () => {
+    const addVaccineData = async () => {
 
+        try {
+            const is_periodical = Boolean(vaccinePeriodical);
+
+            const params = is_periodical ?
+                {
+                    vaccine_national_code: vaccineNationalCode,
+                    vaccine_name: vaccineName,
+                    vaccine_is_periodical: vaccinePeriodical,
+                    vaccine_minimum_period_type: vaccineMinPeriodType,
+                    vaccine_minimum_recommend_date: vaccineMinPeriod,
+                    vaccine_maximum_period_type: vaccineMaxPeriodType,
+                    vaccine_maximum_recommend_date: vaccineMaxPeriod,
+                    vaccine_round: vaccineRound,
+                    vaccine_description: vaccineDescription,
+                }
+                :
+                {
+                    vaccine_national_code: vaccineNationalCode,
+                    vaccine_name: vaccineName,
+                    vaccine_is_periodical: vaccinePeriodical,
+                    vaccine_minimum_period_type: vaccineMinPeriodType,
+                    vaccine_minimum_recommend_date: vaccineMinPeriod,
+                    vaccine_maximum_period_type: null,
+                    vaccine_maximum_recommend_date: null,
+                    vaccine_round: vaccineRound,
+                    vaccine_description: vaccineDescription,
+                }
+
+            const response = await axios.post<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/add/vaccine`,params ,{
+                headers: { Authorization: `Bearer ${getToken()}` }
+            });
+
+            await mainDataFetch();
+
+            setVaccineNationalCode(null);
+            setVaccineName("");
+            setVaccinePeriodical(2);
+            setVaccineMinPeriodType("");
+            setVaccineMinPeriod(null);
+            setVaccineMaxPeriodType("");
+            setVaccineMaxPeriod(null);
+            setVaccineRound(null);
+            setVaccineDescription("");
+
+
+        } catch (error) {
+            const axiosError = error as AxiosError<{ adminAddVaccine: number }>;
+            if (axiosError.response) {
+                const adminAddVaccine = axiosError.response.data.adminAddVaccine;
+                let message = ``;
+                switch (adminAddVaccine) {
+                    case 1:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    case 2:
+                        message = popupTranslations.injection;
+                        break;
+                    case 3:
+                        message = "param required"
+                        break;
+                    default:
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
+                        break;
+                }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
+        }
     }
 
     const countryVaccineInformation = (info: CountryVaccineDataResponse) => {
@@ -233,7 +445,7 @@ const AdminDataManage = () => {
 
                 </div>
                 <div>
-                    <div style={{display:"flex",alignContent:"center"}}>
+                    <div style={{display: "flex", alignContent: "center"}}>
                         <div>
                             id
                         </div>
@@ -251,21 +463,42 @@ const AdminDataManage = () => {
 
                     <div style={{marginTop: "40px"}}>
                         {info.existing_countries.map(country => (
+
+
+                            <div key={country.id} style={{display: "flex", alignContent: "center"}}>
+                                <div>
+                                    {country.id}
+                                </div>
+                                <div>
+                                    {country.national_code}
+                                </div>
+                                <div>
+                                    {country.name_english}
+                                </div>
+                                <div>
+                                    {country.name_original}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div style={{marginTop: "40px"}}>
+                        {info.temporal_countries.map(country => (
                             country.id === editNationalNum && editNational ?
                                 <div key={country.id} style={{display: "flex", alignContent: "center"}}>
                                     <div>
                                         <Form.Control
                                             type="text"
                                             placeholder={`${country.id}`}
-                                            value={country.id}
-                                            onChange={(e) => setEditNationalId(parseInt(e.target.value, 10))}
+                                            value={editNationalId !== null ? editNationalId : ""}
+                                            onChange={(e) => e.target.value !== "" ? setEditNationalId(parseInt(e.target.value, 10)) : setEditNationalId(null)}
                                         />
                                     </div>
                                     <div>
                                         <Form.Control
                                             type="text"
                                             placeholder={`${country.national_code}`}
-                                            value={country.national_code}
+                                            value={editNationalCode !== "" ? editNationalCode : ""}
                                             onChange={(e) => setEditNationalCode(e.target.value)}
                                         />
                                     </div>
@@ -273,7 +506,7 @@ const AdminDataManage = () => {
                                         <Form.Control
                                             type="text"
                                             placeholder={`${country.name_english}`}
-                                            value={country.name_english}
+                                            value={editNationalEng !== "" ? editNationalEng : ""}
                                             onChange={(e) => setEditNationalEng(e.target.value)}
                                         />
                                     </div>
@@ -281,7 +514,7 @@ const AdminDataManage = () => {
                                         <Form.Control
                                             type="text"
                                             placeholder={`${country.name_original}`}
-                                            value={country.name_original}
+                                            value={editNationalOri !== "" ? editNationalOri : ""}
                                             onChange={(e) => setEditNationalOri(e.target.value)}
                                         />
                                     </div>
@@ -311,13 +544,66 @@ const AdminDataManage = () => {
                                         <Button onClick={() => editCountry(country.id)}>Edit</Button>
                                     </div>
                                     <div>
-                                        <Button>Delete</Button>
+                                        <Button onClick={() => deleteCountry(country.id)}>Delete</Button>
                                     </div>
                                 </div>
                         ))}
                     </div>
+                    <div style={{marginTop: "40px"}}>
+                        {info.temporal_vaccines.map(vaccine => (
+
+
+                            <div key={vaccine.id} style={{display: "flex", alignContent: "center"}}>
+                                <div>
+                                    {vaccine.id}
+                                </div>
+                                <div>
+                                    {vaccine.vaccine_national_code}
+                                </div>
+                                <div>
+                                    {vaccine.vaccine_name}
+                                </div>
+                                <div>
+                                    {vaccine.vaccine_is_periodical}
+                                </div>
+                                <div>
+                                    {vaccine.vaccine_minimum_period_type}
+                                </div>
+                                <div>
+                                    {vaccine.vaccine_minimum_recommend_date}
+                                </div>
+                                {
+                                    vaccine.vaccine_is_periodical ?
+                                        <>
+                                            <div>
+                                                {vaccine.vaccine_maximum_period_type}
+                                            </div>
+                                            <div>
+                                                {vaccine.vaccine_maximum_recommend_date}
+                                            </div>
+                                        </>
+                                        :
+                                        null
+                                }
+
+                                <div>
+                                    {vaccine.vaccine_round}
+                                </div>
+                                <div>
+                                    {vaccine.vaccine_description}
+                                </div>
+
+                                <div>
+                                    <Button>Edit</Button>
+                                </div>
+                                <div>
+                                    <Button>Delete</Button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                     <div>
-                        <div style={{display: "flex", alignContent: "center", marginTop: "40px"}}>
+                    <div style={{display: "flex", alignContent: "center", marginTop: "40px"}}>
                             {addNational ?
                                 <>
                                     <div>
@@ -371,7 +657,7 @@ const AdminDataManage = () => {
 
                 <div style={{alignContent: "center", marginTop: "40px"}}>
                     <div>
-                    <Form.Select
+                        <Form.Select
                             onChange={(e) => setVaccineNationalCode(e.target.value !== null ? parseInt(e.target.value, 10) : 0)}
                             value={vaccineNationalCode !== null ? vaccineNationalCode as number : ""}
                             size="sm"
@@ -379,6 +665,9 @@ const AdminDataManage = () => {
                         >
                             <option value="">Select Vaccine National Code</option>
                             {info.existing_countries.map(country => (
+                                <option key={country.id} value={country.id}>{country.name_original}</option>
+                            ))}
+                            {info.temporal_countries.map(country => (
                                 <option key={country.id} value={country.id}>{country.name_original}</option>
                             ))}
 
@@ -392,7 +681,7 @@ const AdminDataManage = () => {
                             className="footer_language"
                         >
                             <option value="">Select Vaccine</option>
-                            {info.vaccines.map(vaccine => (
+                            {info.existing_vaccines.map(vaccine => (
                                 <option key={vaccine.id} value={vaccine.vaccine_name}>{vaccine.vaccine_name}</option>
                             ))}
                         </Form.Select>
@@ -422,7 +711,7 @@ const AdminDataManage = () => {
                         </Form.Select>
                     </div>
                     <div>
-                    <Form.Select
+                        <Form.Select
                             onChange={(e) => setVaccineMinPeriod(parseInt(e.target.value, 10))}
                             value={vaccineMinPeriod !== null ? vaccineMinPeriod.toString() : ""}
                             size="sm"
@@ -522,7 +811,12 @@ const AdminDataManage = () => {
 
             </Container>
             {filteredInfos && countryVaccineInformation(filteredInfos)}
-
+            {
+                deleteNational ?
+                    deleteCountryUI()
+                    :
+                    null
+            }
 
         </Container>
     );
