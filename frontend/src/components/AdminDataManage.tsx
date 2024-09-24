@@ -35,7 +35,7 @@ const AdminDataManage = () => {
     }
 
     interface CountryVaccineDataResponse {
-        countries: Country[];
+        existing_countries: Country[];
         vaccines: VaccineName[];
     }
 
@@ -44,13 +44,26 @@ const AdminDataManage = () => {
 
     const [vaccineName, setVaccineName] = useState<string | null>(``);
     const [vaccineNationalCode, setVaccineNationalCode] = useState<number | null>(null);
-    const [vaccinePeriodical, setVaccinePeriodical] = useState<boolean>(false);
+    const [vaccinePeriodical, setVaccinePeriodical] = useState<number>(2);
     const [vaccineMinPeriodType, setVaccineMinPeriodType] = useState<string>(``);
     const [vaccineMinPeriod, setVaccineMinPeriod] = useState<number | null>(null);
     const [vaccineMaxPeriodType, setVaccineMaxPeriodType] = useState<string>(``);
     const [vaccineMaxPeriod, setVaccineMaxPeriod] = useState<number | null>(null);
     const [vaccineRound, setVaccineRound] = useState<number | null>(null);
     const [vaccineDescription, setVaccineDescription] = useState<string>(``);
+
+    const [editNational, setEditNational] = useState<boolean>(false);
+    const [editNationalNum, setEditNationalNum] = useState<number | null>(null);
+    const [editNationalId, setEditNationalId] = useState<number | null>(null);
+    const [editNationalCode, setEditNationalCode] = useState<string>(``);
+    const [editNationalEng, setEditNationalEng] = useState<string>(``);
+    const [editNationalOri, setEditNationalOri] = useState<string>(``);
+
+    const [addNational, setAddNational] = useState<boolean>(false);
+    const [addNationalId, setAddNationalId] = useState<number | null>(null);
+    const [addNationalCode, setAddNationalCode] = useState<string>(``);
+    const [addNationalEng, setAddNationalEng] = useState<string>(``);
+    const [addNationalOri, setAddNationalOri] = useState<string>(``);
 
     useEffect(() => {
         const mainDataFetch = async () => {
@@ -136,6 +149,82 @@ const AdminDataManage = () => {
 
     }
 
+    const editCountry = (id: number) => {
+        setEditNationalNum(id);
+        setEditNational(true);
+    }
+
+    const saveModifiedCountry = (id: number) => {
+        setEditNationalNum(id);
+        setEditNational(false);
+    }
+
+    const cancelModifiedCountry = (id: number) => {
+        setEditNationalNum(null);
+        setEditNational(false);
+    }
+
+    const addCountry = () => {
+        setAddNational(true)
+    }
+
+    const saveAddCountry = async () => {
+
+        try {
+
+            const params = {
+                id: addNationalId, code :addNationalCode, eng: addNationalEng, ori: addNationalOri
+            }
+            const response = await axios.post<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/add/country`,params ,{
+                headers: { Authorization: `Bearer ${getToken()}` }
+            });
+
+            console.log(response.data);
+
+            setAddNational(false)
+
+        } catch (error) {
+            const axiosError = error as AxiosError<{ adminAddCountry: number }>;
+            if (axiosError.response) {
+                const adminAddCountry = axiosError.response.data.adminAddCountry;
+                let message = ``;
+                switch (adminAddCountry) {
+                    case 1:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    case 2:
+                        message = popupTranslations.injection;
+                        break;
+                    case 3:
+                        message = "param required"
+                        break;
+                    case 4:
+                        message = "id exists";
+                        break;
+                    default:
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
+                        break;
+                }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
+        }
+
+    }
+
+    const cancelAddCountry = () => {
+        setAddNational(false)
+    }
+
+    const addVaccineData = () => {
+
+    }
+
     const countryVaccineInformation = (info: CountryVaccineDataResponse) => {
 
         return (
@@ -144,35 +233,152 @@ const AdminDataManage = () => {
 
                 </div>
                 <div>
-                    {info.countries.map(country => (
-                        <div key={country.id}>
-                            <div>
-                                {country.id}
-                            </div>
-                            <div>
-                                {country.national_code}
-                            </div>
-                            <div>
-                                {country.name_english}
-                            </div>
-                            <div>
-                                {country.name_original}
-                            </div>
+                    <div style={{display:"flex",alignContent:"center"}}>
+                        <div>
+                            id
+                        </div>
+                        <div>
+                            national code
+                        </div>
+                        <div>
+                            english name
+                        </div>
+                        <div>
+                            original name
+                        </div>
+
+                    </div>
+
+                    <div style={{marginTop: "40px"}}>
+                        {info.existing_countries.map(country => (
+                            country.id === editNationalNum && editNational ?
+                                <div key={country.id} style={{display: "flex", alignContent: "center"}}>
+                                    <div>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder={`${country.id}`}
+                                            value={country.id}
+                                            onChange={(e) => setEditNationalId(parseInt(e.target.value, 10))}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder={`${country.national_code}`}
+                                            value={country.national_code}
+                                            onChange={(e) => setEditNationalCode(e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder={`${country.name_english}`}
+                                            value={country.name_english}
+                                            onChange={(e) => setEditNationalEng(e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder={`${country.name_original}`}
+                                            value={country.name_original}
+                                            onChange={(e) => setEditNationalOri(e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Button onClick={() => saveModifiedCountry(country.id)}>Save</Button>
+                                    </div>
+                                    <div>
+                                        <Button onClick={() => cancelModifiedCountry(country.id)}>Cancel</Button>
+                                    </div>
+                                </div>
+                                :
+
+                                <div key={country.id} style={{display: "flex", alignContent: "center"}}>
+                                    <div>
+                                        {country.id}
+                                    </div>
+                                    <div>
+                                        {country.national_code}
+                                    </div>
+                                    <div>
+                                        {country.name_english}
+                                    </div>
+                                    <div>
+                                        {country.name_original}
+                                    </div>
+                                    <div>
+                                        <Button onClick={() => editCountry(country.id)}>Edit</Button>
+                                    </div>
+                                    <div>
+                                        <Button>Delete</Button>
+                                    </div>
+                                </div>
+                        ))}
+                    </div>
+                    <div>
+                        <div style={{display: "flex", alignContent: "center", marginTop: "40px"}}>
+                            {addNational ?
+                                <>
+                                    <div>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder={`national id`}
+                                            value={addNationalId !== null ? addNationalId : ""}
+                                            onChange={(e) => e.target.value !== "" ? setAddNationalId(parseInt(e.target.value, 10)) : setAddNationalId(null)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder={`national code`}
+                                            value={addNationalCode}
+                                            onChange={(e) => setAddNationalCode(e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder={`english name`}
+                                            value={addNationalEng}
+                                            onChange={(e) => setAddNationalEng(e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder={`original name`}
+                                            value={addNationalOri}
+                                            onChange={(e) => setAddNationalOri(e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Button onClick={() => saveAddCountry()}>Save</Button>
+                                    </div>
+                                    <div>
+                                        <Button onClick={() => cancelAddCountry()}>Cancel</Button>
+                                    </div>
+                                </>
+                                :
+                                <div>
+                                    <Button onClick={() => addCountry()}>Add Country</Button>
+                                </div>
+                            }
 
                         </div>
-                    ))}
+                    </div>
                 </div>
 
-                <div>
+                <div style={{alignContent: "center", marginTop: "40px"}}>
                     <div>
-                        <Form.Select
-                            onChange={(e) => setVaccineNationalCode(parseInt(e.target.value, 10))}
-                            value=""
+                    <Form.Select
+                            onChange={(e) => setVaccineNationalCode(e.target.value !== null ? parseInt(e.target.value, 10) : 0)}
+                            value={vaccineNationalCode !== null ? vaccineNationalCode as number : ""}
                             size="sm"
                             className="footer_language"
                         >
                             <option value="">Select Vaccine National Code</option>
-                            {info.countries.map(country => (
+                            {info.existing_countries.map(country => (
                                 <option key={country.id} value={country.id}>{country.name_original}</option>
                             ))}
 
@@ -181,7 +387,7 @@ const AdminDataManage = () => {
                     <div>
                         <Form.Select
                             onChange={(e) => setVaccineName(e.target.value)}
-                            value=""
+                            value={vaccineName !== "" ? vaccineName as string : ""}
                             size="sm"
                             className="footer_language"
                         >
@@ -192,19 +398,21 @@ const AdminDataManage = () => {
                         </Form.Select>
                     </div>
                     <div>
-                        <span>
-                            <Form.Check
-                                type="checkbox"
-                                label={"is_prediodical"}
-                                checked={vaccinePeriodical}
-                                onChange={(e) => setVaccinePeriodical(e.target.checked)}
-                            />
-                        </span>
+                        <Form.Select
+                            onChange={(e) => setVaccinePeriodical(parseInt(e.target.value))}
+                            value={vaccinePeriodical ? "periodical" : "none periodical"}
+                            size="sm"
+                            className="footer_language"
+                        >
+                            <option value={2}>Is Periodical</option>
+                            <option value={1}>periodical</option>
+                            <option value={0}>none periodical</option>
+                        </Form.Select>
                     </div>
                     <div>
                         <Form.Select
                             onChange={(e) => setVaccineMinPeriodType(e.target.value)}
-                            value=""
+                            value={vaccineMinPeriodType !== "" ? vaccineMinPeriodType as string : ""}
                             size="sm"
                             className="footer_language"
                         >
@@ -214,13 +422,13 @@ const AdminDataManage = () => {
                         </Form.Select>
                     </div>
                     <div>
-                        <Form.Select
+                    <Form.Select
                             onChange={(e) => setVaccineMinPeriod(parseInt(e.target.value, 10))}
-                            value=""
+                            value={vaccineMinPeriod !== null ? vaccineMinPeriod.toString() : ""}
                             size="sm"
                             className="footer_language"
                         >
-                            <option value="">Select Minimum Period</option>
+                            <option value={0}>Select Minimum Period</option>
                             {
                                 vaccineMinPeriodType && periodOptions(true, vaccineMinPeriodType)
                             }
@@ -233,7 +441,7 @@ const AdminDataManage = () => {
                             <div>
                                 <Form.Select
                                     onChange={(e) => setVaccineMaxPeriodType(e.target.value)}
-                                    value=""
+                                    value={vaccineMaxPeriodType !== "" ? vaccineMaxPeriodType as string : ""}
                                     size="sm"
                                     className="footer_language"
                                 >
@@ -245,11 +453,11 @@ const AdminDataManage = () => {
                             <div>
                                 <Form.Select
                                     onChange={(e) => setVaccineMaxPeriod(parseInt(e.target.value, 10))}
-                                    value=""
+                                    value={vaccineMaxPeriod !== null ? vaccineMaxPeriod.toString() : ""}
                                     size="sm"
                                     className="footer_language"
                                 >
-                                    <option value="">Select Maximum Period</option>
+                                    <option value={0}>Select Maximum Period</option>
                                     {
                                         vaccineMaxPeriodType && periodOptions(true, vaccineMaxPeriodType)
                                     }
@@ -263,7 +471,7 @@ const AdminDataManage = () => {
                     <div>
                         <Form.Select
                             onChange={(e) => setVaccineRound(parseInt(e.target.value, 10))}
-                            value=""
+                            value={vaccineRound !== null ? vaccineRound.toString() : ""}
                             size="sm"
                             className="footer_language"
                         >
@@ -282,6 +490,17 @@ const AdminDataManage = () => {
                             onChange={(e) => setVaccineDescription(e.target.value)}
                         />
                     </div>
+                </div>
+
+                <div>
+                    {`${vaccineNationalCode !== null ? vaccineNationalCode : ""} ${vaccineName} ${vaccinePeriodical !== 2 ? vaccinePeriodical === 1 ? "주기적" : "비주기적" : ""} ${vaccineMinPeriodType} ${vaccineMinPeriod !== null && vaccineMinPeriod !== 0 ? vaccineMinPeriod : ""} ${vaccinePeriodical === 1 ? vaccineMaxPeriodType : ""} ${vaccinePeriodical === 1 ? vaccineMaxPeriod !== null && vaccineMaxPeriod !== 0 ? vaccineMaxPeriod : "" : ""} ${vaccineRound !== null ? vaccineRound : ""} ${vaccineDescription}`}
+                </div>
+                <div>
+                    { vaccineNationalCode !== null && vaccineName !== "" && vaccinePeriodical !== 2 && vaccineMinPeriodType !== "" && vaccineMinPeriod !== null  && vaccineMinPeriod !== 0 && (vaccinePeriodical === 1 ? vaccineMaxPeriodType !== "" && vaccineMaxPeriod !== null && vaccineMaxPeriod !== 0 : true) && vaccineRound !== null && vaccineDescription !== "" ?
+                        <Button onClick={() => addVaccineData()}>생성</Button>
+                        :
+                        null
+                    }
                 </div>
 
             </>

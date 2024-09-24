@@ -54,8 +54,8 @@ router.post('/', async (req: Request, res: Response) => {
             INSERT INTO
                 admin (email, nickname, password)
             VALUES
-                (?, ?, ?)`,
-            [checked_email, checked_nickname, hashedPassword]
+                (?, ?, ?)
+        `,[checked_email, checked_nickname, hashedPassword]
         );
 
         res.status(201).json({ message: 'Admin registered successfully' });
@@ -63,6 +63,79 @@ router.post('/', async (req: Request, res: Response) => {
         connection.release();
     } catch (error) {
         console.error('Error registering admin:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.post('/manage/add/country', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    if(req?.token?.admin === false){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"admin" : false });
+        return res.status(403).json({ message: 'No Authority', adminAddCountry: 1});
+    }
+
+    const { id, code, eng, ori } = req.body;
+
+    const isAttacked = isNotNumber([id]);
+    const checked_code = injectionChecker(code);
+    const checked_eng = injectionChecker(eng);
+    const checked_ori = injectionChecker(ori);
+
+    if(code !== checked_code || eng !== checked_eng || ori !== checked_ori || isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"code" : checked_code, "eng" : checked_eng, "ori" : checked_ori, "id" : injectionChecker(`${id}`)});
+    }
+
+    if(isAttacked){
+        return res.status(400).json({ message: 'Suspected to Attacking', adminAddCountry: 2 });
+    }
+
+    if ( id === undefined || id === null || (checked_code === undefined || checked_code === "" ) || (checked_eng === undefined || checked_eng === "") || (checked_ori === undefined || checked_ori === "")) {
+        return res.status(400).json({ message: 'Code, nickname and password and admin secret are required', adminAddCountry: 3 });
+    }
+
+    try {
+
+        const connection = await pool.getConnection();
+
+        const [results_existing] = await connection.query(`
+            SELECT
+                COUNT(*) AS count
+            FROM
+                country
+            WHERE
+                id = ?`,
+            [id]);
+
+        const [results_temp] = await connection.query(`
+            SELECT
+                COUNT(*) AS count
+            FROM
+                temp_country
+            WHERE
+                id = ?`,
+            [id]);
+
+        const result_1 = results_existing as { count: number }[];
+        const result_2 = results_temp as { count: number }[];
+
+        if (result_1[0].count > 0 || result_2[0].count > 0) {
+            return res.status(400).json({ message: 'Id is already in use', adminAddCountry: 4 });
+        }
+
+        await connection.query(`
+            INSERT INTO
+                temp_country (id, national_code, name_english, name_original)
+            VALUES
+                (?, ?, ?, ?)
+        `,[id,checked_code,checked_eng,checked_ori]);
+
+        res.status(201).json({ message: 'Temp country registered successfully' });
+
+        connection.release();
+    } catch (error) {
+        console.error('Error registering temp country /admin/manage/add/country:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
@@ -236,6 +309,10 @@ router.get('/hostile/:page', tokenExtractor, async (req: CustomRequest, res: Res
         addUpdateHostileList(clientIp as string, {"where" : checked_where, "keyword" : checked_keyword, "page": injectionChecker(`${page}`), "ban" : checked_ban, "whitelist": checked_whitelist});
     }
 
+    if(isAttacked){
+        return res.status(400).json({ message: 'Suspected to Attacking', adminHostile: 1 });
+    }
+
     const boolean_ban: boolean = checked_ban === "true";
     const boolean_whitelist: boolean = checked_whitelist === "true";
 
@@ -339,7 +416,7 @@ router.get('/manage', tokenExtractor, async (req: CustomRequest, res: Response) 
                 vaccine_name
         `);
 
-        res.status(200).json({"countries":countries, "vaccines": vaccine_names});
+        res.status(200).json({"existing_countries":countries, "vaccines": vaccine_names});
 
         connection.release();
     } catch (error) {
