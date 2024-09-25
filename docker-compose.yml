@@ -19,10 +19,12 @@ services:
       args:
         REACT_APP_MODE: "PROD"
         REACT_APP_API_URL: "http://34.88.151.132/api"
-    depends_on:
-      - backend
+    volumes:
+      - frontend_build:/usr/src/app/build
     networks:
       - app-network
+    depends_on:
+      - backend
 
   mysql:
     image: mysql:8.0
@@ -38,19 +40,17 @@ services:
 
 
   nginx:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: nginx:latest
     ports:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - frontend_build:/usr/share/nginx/html
     depends_on:
-      - backend
       - frontend
+      - backend
     networks:
       - app-network
-    command: /bin/sh -c "while [ ! -f /usr/share/nginx/html/index.html ]; do echo 'Waiting for frontend build...'; sleep 5; done && nginx -g 'daemon off;'"
 
 networks:
   app-network:
@@ -58,3 +58,4 @@ networks:
 
 volumes:
   db_data:
+  frontend_build:
