@@ -463,6 +463,111 @@ code {
 
 /*common Admin Hostile page end*/
 /*common Admin Manage page start*/
+.adminMangeTitle{
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+.adminManageCountryHeader{
+  display: flex;
+  align-content: center;
+}
+.adminManageCountryHeader div{
+  font-weight: bold;
+}
+.adminManageCountryHeader div:nth-child(1){
+  width: 5%;
+  text-align: center;
+}
+
+.adminManageCountryHeader div:nth-child(2){
+  width: 20%;
+}
+
+.adminManageCountryHeader div:nth-child(3){
+  width: 20%;
+}
+
+.adminManageCountryHeader div:nth-child(4){
+  width: 20%;
+}
+
+.adminManageCountry{
+  margin-top: 20px;
+}
+
+.adminManageCountry .amc_wrap{
+  display: flex;
+  align-content: center;
+}
+
+
+.adminManageCountry .amc_wrap:nth-child(1n){
+  background-color: #84b6b1;
+  margin-bottom: 10px;
+}
+
+.adminManageCountry .amc_wrap:nth-child(2n){
+  background-color: #282c34;
+}
+
+.adminManageCountry .amc_wrap:nth-child(2n) div{
+  background-color: #282c34;
+  color: white;
+}
+
+.adminManageCountry .amc_wrap div{
+  align-content: center;
+}
+
+
+.adminManageCountry .amc_wrap div:nth-child(1){
+  width: 5%;
+  text-align: center;
+}
+
+.adminManageCountry .amc_wrap div:nth-child(2){
+  width: 20%;
+}
+
+.adminManageCountry .amc_wrap div:nth-child(3){
+  width: 20%;
+}
+
+.adminManageCountry .amc_wrap div:nth-child(4){
+  width: 20%;
+}
+
+.adminManageCountry .amc_edit_wrap{
+  display: flex;
+  align-content: center;
+}
+
+.adminManageCountry .amc_edit_wrap:nth-child(1n){
+  margin-bottom: 10px;
+}
+
+.adminManageCountry .amc_edit_wrap div:nth-child(1){
+  width: 5%;
+  text-align: center;
+  align-content: center;
+}
+
+.adminManageCountry .amc_edit_wrap div:nth-child(2){
+  width: 20%;
+  align-content: center;
+}
+
+.adminManageCountry .amc_edit_wrap div:nth-child(3){
+  width: 20%;
+  align-content: center;
+}
+
+.adminManageCountry .amc_edit_wrap div:nth-child(4){
+  width: 20%;
+  align-content: center;
+}
 
 .manageTempVacHeader{
   display: flex;
@@ -525,7 +630,9 @@ code {
   display: flex;
   align-content: center;
 }
-
+.manageTempVacElem div{
+  align-content: center;
+}
 .manageTempVacElem div:nth-child(1){
   width: 5%;
   text-align: center;
@@ -586,6 +693,10 @@ code {
   text-align: center;
 }
 
+.manageTempVacElem div button{
+  margin: 0 auto;
+}
+
 .manageTempVacElem div * {
   margin-left: 0;
   display: block;
@@ -595,6 +706,78 @@ code {
   max-width: 100%;
 }
 
+.adminAddVaccine{
+  display: flex;
+  align-content: center;
+}
+
+.adminAddVaccine div{
+  display: block;
+  align-content: center;
+}
+
+.adminAddVaccine div:nth-child(1n){
+  width: 10%;
+}
+
+.adminAddVaccine div:nth-child(2){
+  width: 15%;
+}
+
+.adminAddVaccine div:nth-child(9){
+  width: 15%;
+}
+
+
+.tempVaccineAddHeader{
+  align-content: center;
+  display: flex;
+  margin-bottom: 10px;
+}
+.tempVaccineAddHeader span{
+  align-content: center;
+  display: block;
+  font-weight: bold;
+  font-size: 14px;
+  text-align: center;
+}
+
+.tempVaccineAddHeader span:nth-child(1n){
+  width: 10%;
+}
+
+.tempVaccineAddHeader span:nth-child(2){
+  width: 15%;
+}
+
+.tempVaccineAddHeader span:nth-child(9){
+  width: 15%;
+}
+
+.tempVaccineAddElem{
+  align-content: center;
+  display: flex;
+}
+.tempVaccineAddElem span{
+  align-content: center;
+  display: block;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.tempVaccineAddElem span:nth-child(1n){
+  width: 10%;
+  text-align: center;
+}
+.tempVaccineAddElem span:nth-child(2){
+  width: 15%;
+}
+
+.tempVaccineAddElem span:nth-child(9){
+  width: 15%;
+}
 /*common Admin Manage page end*/
 /*common board start*/
 

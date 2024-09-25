@@ -134,6 +134,7 @@ const Header = () => {
     const pagesAdmin = [
         { name: translations.main, path: `/admin/main` },
         { name: translations.hostile, path: `/admin/hostile` },
+        { name: translations.manage, path: `/admin/manage` },
         { name: translations.board, path: `/board` },
         { name: translations.about, path: `/about` }
     ];

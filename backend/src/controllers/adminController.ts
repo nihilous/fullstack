@@ -23,7 +23,7 @@ router.post('/', async (req: Request, res: Response) => {
         return res.status(400).json({ message: 'Email, nickname and password and admin secret are required', adminJoinRes: 1 });
     }
 
-    if( adminSecret !== process.env.SECRET ) {
+    if( adminSecret !== process.env.ADMIN_SECRET ) {
         return res.status(400).json({ message: 'not authorized to make admin account', adminJoinRes: 2 });
     }
 
@@ -679,7 +679,7 @@ router.put('/change/info/:id', tokenExtractor, async (req: CustomRequest, res: R
         addUpdateHostileList(clientIp as string, {"id" : user_id, "token" : token_id, "email" : checked_email, "nickname" : checked_nickname, "adminSecret " : adminSecret });
     }
 
-    if( adminSecret !== process.env.SECRET ) {
+    if( adminSecret !== process.env.ADMIN_SECRET ) {
         return res.status(400).json({ message: 'not authorized to modify admin account', changeInfo: 1 });
     }
 
@@ -765,7 +765,7 @@ router.put('/new/password', async (req: Request, res: Response) => {
         addUpdateHostileList(clientIp as string, {"email" : checked_email, "adminSecret " : adminSecret});
     }
 
-    if( adminSecret !== process.env.SECRET ) {
+    if( adminSecret !== process.env.ADMIN_SECRET ) {
         return res.status(400).json({ message: 'not authorized to modify admin password', changePass: 1 });
     }
 
@@ -940,7 +940,7 @@ router.put('/manage/update/vaccine', tokenExtractor, async (req: CustomRequest, 
         addUpdateHostileList(
             clientIp as string,
             {
-                "id" : injectionChecker(`${vaccine_id}}`),
+                "id" : injectionChecker(`${vaccine_id}`),
                 "code" : injectionChecker(`${vaccine_national_code}`),
                 "name" : checked_name,
                 "period" : injectionChecker(`${is_periodical}`),
@@ -1143,7 +1143,50 @@ router.delete('/manage/delete/country/:id', tokenExtractor, async (req: CustomRe
 
         connection.release();
     } catch (error) {
-        console.error('Error registering temp country /admin/manage/add/country:', error);
+        console.error('Error deleting temp country /admin/manage/delete/country:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.delete('/manage/delete/vaccine/:id', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    if(req?.token?.admin === false){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"admin" : false });
+        return res.status(403).json({ message: 'No Authority', adminDeleteCountry: 1});
+    }
+
+    const id = parseInt(req.params.id, 10);
+
+    const isAttacked = isNotNumber([id]);
+
+    if(isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"id" : injectionChecker(`${id}`)});
+        return res.status(400).json({ message: 'Suspected to Attacking', adminDeleteCountry: 2 });
+    }
+
+    try {
+
+        const connection = await pool.getConnection();
+
+        const [deleted_temp_vaccine]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+            DELETE
+            FROM 
+                temp_vaccine
+            WHERE
+                id = ?
+        `, [id]);
+
+        if(deleted_temp_vaccine.affectedRows === 1){
+            res.status(201).json({ message: 'Temp vaccine deleted successfully'});
+        }else{
+            return res.status(400).json({ message: 'No valid fields to delete', adminDeleteCountry: 3 });
+        }
+
+        connection.release();
+    } catch (error) {
+        console.error('Error deleting temp vaccine /admin/manage/delete/vaccine:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });

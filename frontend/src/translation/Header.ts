@@ -9,6 +9,7 @@ export const HeaderTranslations = {
         board: `Foorumi`,
         settings: `Asetukset`,
         about: `Tietoja`,
+        manage: `Hallinnoi`,
         jwt: `Kirjautumisen jatkaminen`,
     },
     SWE: {
@@ -21,6 +22,7 @@ export const HeaderTranslations = {
         board: `Forum`,
         settings: `Inställningar`,
         about: `Om`,
+        manage: `Hantera`,
         jwt: `Fortsätt inloggning`,
     },
     ENG: {
@@ -33,6 +35,7 @@ export const HeaderTranslations = {
         board: `BBS`,
         settings: `Settings`,
         about: `About`,
+        manage: `Manage`,
         jwt: `Renew Login`,
 
     },
@@ -46,6 +49,7 @@ export const HeaderTranslations = {
         board: `게시판`,
         settings: `설정`,
         about: `소개`,
+        manage: `관리`,
         jwt: `접속시간연장`,
     }
 };
