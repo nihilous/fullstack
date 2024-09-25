@@ -462,6 +462,140 @@ code {
 }
 
 /*common Admin Hostile page end*/
+/*common Admin Manage page start*/
+
+.manageTempVacHeader{
+  display: flex;
+  align-content: center;
+}
+
+.manageTempVacHeader div{
+  text-align: center;
+}
+
+.manageTempVacHeader div:nth-child(1){
+  width: 5%;
+}
+
+.manageTempVacHeader div:nth-child(2){
+  width: 5%;
+}
+
+.manageTempVacHeader div:nth-child(3){
+  width: 17%;
+}
+
+.manageTempVacHeader div:nth-child(4){
+  width: 5%;
+}
+
+.manageTempVacHeader div:nth-child(5){
+  width: 5%;
+}
+
+.manageTempVacHeader div:nth-child(6){
+  width: 7%;
+}
+
+.manageTempVacHeader div:nth-child(7){
+  width: 5%;
+}
+
+.manageTempVacHeader div:nth-child(8){
+  width: 7%;
+}
+
+.manageTempVacHeader div:nth-child(9){
+  width: 5%;
+}
+
+.manageTempVacHeader div:nth-child(10){
+  width: 20%;
+}
+
+.manageTempVacHeader div:nth-child(11){
+  width: 8%;
+}
+
+.manageTempVacHeader div:nth-child(12){
+  width: 8%;
+}
+
+.manageTempVacElem{
+  display: flex;
+  align-content: center;
+}
+
+.manageTempVacElem div:nth-child(1){
+  width: 5%;
+  text-align: center;
+}
+
+.manageTempVacElem div:nth-child(2){
+  width: 5%;
+  text-align: center;
+}
+
+.manageTempVacElem div:nth-child(3){
+  width: 17%;
+  text-align: center;
+}
+
+.manageTempVacElem div:nth-child(4){
+  width: 5%;
+  text-align: center;
+}
+
+.manageTempVacElem div:nth-child(5){
+  width: 5%;
+  text-align: center;
+}
+
+.manageTempVacElem div:nth-child(6){
+  width: 7%;
+  text-align: center;
+}
+
+.manageTempVacElem div:nth-child(7){
+  width: 5%;
+  text-align: center;
+}
+
+.manageTempVacElem div:nth-child(8){
+  width: 7%;
+  text-align: center;
+}
+
+.manageTempVacElem div:nth-child(9){
+  width: 5%;
+  text-align: center;
+}
+
+.manageTempVacElem div:nth-child(10){
+  width: 20%;
+  text-align: left;
+}
+
+.manageTempVacElem div:nth-child(11){
+  width: 8%;
+  text-align: center;
+}
+
+.manageTempVacElem div:nth-child(12){
+  width: 8%;
+  text-align: center;
+}
+
+.manageTempVacElem div * {
+  margin-left: 0;
+  display: block;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/*common Admin Manage page end*/
 /*common board start*/
 
 .post:nth-child(2){

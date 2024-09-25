@@ -519,14 +519,53 @@ router.get('/manage', tokenExtractor, async (req: CustomRequest, res: Response) 
                 vaccine_name
         `);
 
-        const [temporal_vaccine] = await connection.query(`
+        const [temporal_vaccine] = await connection.query<RowDataPacket[]>(`
             SELECT
-                *
+                tv.id,
+                tv.vaccine_national_code,
+                COALESCE(
+                    country.name_original,
+                    temp_country.name_original
+                )
+                AS country_name_original,
+                tv.vaccine_name,
+                tv.vaccine_is_periodical,
+                tv.vaccine_minimum_period_type,
+                tv.vaccine_minimum_recommend_date,
+                tv.vaccine_maximum_period_type,
+                tv.vaccine_maximum_recommend_date,
+                tv.vaccine_round,
+                tv.vaccine_description,
+                CASE
+                    WHEN vaccine_minimum_period_type = 'Y' THEN vaccine_minimum_recommend_date * 12
+                    WHEN vaccine_minimum_period_type = 'M' THEN vaccine_minimum_recommend_date
+                END AS vaccine_minimum_months
             FROM
                 temp_vaccine
+            AS
+                tv
+            LEFT JOIN
+                country
+            ON
+                tv.vaccine_national_code = country.id
+            LEFT JOIN
+                temp_country
+            ON
+                tv.vaccine_national_code = temp_country.id
             ORDER BY
-                vaccine_national_code ASC
+                tv.vaccine_national_code ASC,
+                vaccine_minimum_months ASC,
+                tv.vaccine_name ASC,
+                tv.vaccine_round ASC
         `);
+
+        for (let i = 0; i < temporal_vaccine.length; i++) {
+            temporal_vaccine[i].country_name_original = patternChecker(temporal_vaccine[i].country_name_original);
+            temporal_vaccine[i].vaccine_name = patternChecker(temporal_vaccine[i].vaccine_name);
+            temporal_vaccine[i].vaccine_minimum_period_type = patternChecker(temporal_vaccine[i].vaccine_minimum_period_type);
+            temporal_vaccine[i].vaccine_maximum_period_type = temporal_vaccine[i].vaccine_maximum_period_type !== null ? patternChecker(temporal_vaccine[i].vaccine_maximum_period_type) : temporal_vaccine[i].vaccine_maximum_period_type;
+            temporal_vaccine[i].vaccine_description = patternChecker(temporal_vaccine[i].vaccine_description);
+        }
 
         res.status(200).json({"existing_countries":existing_countries, "temporal_countries":temporal_countries, "existing_vaccines": vaccine_names, "temporal_vaccines": temporal_vaccine});
 
@@ -860,6 +899,109 @@ router.put('/manage/update/country', tokenExtractor, async (req: CustomRequest, 
         connection.release();
     } catch (error) {
         console.error('Error registering temp country /admin/manage/add/country:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.put('/manage/update/vaccine', tokenExtractor, async (req: CustomRequest, res: Response) => {
+
+    if(req?.token?.admin === false){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(clientIp as string, {"admin" : false });
+        return res.status(403).json({ message: 'No Authority', adminModifyVaccine: 1});
+    }
+
+    const {
+        vaccine_id,
+        vaccine_national_code,
+        vaccine_name,
+        vaccine_is_periodical,
+        vaccine_minimum_period_type,
+        vaccine_minimum_recommend_date,
+        vaccine_maximum_period_type,
+        vaccine_maximum_recommend_date,
+        vaccine_round,
+        vaccine_description
+    } = req.body;
+
+    const is_periodical = Boolean(vaccine_is_periodical);
+    const isAttacked = is_periodical ?
+        isNotNumber([vaccine_id, vaccine_national_code, vaccine_minimum_recommend_date, vaccine_maximum_recommend_date, vaccine_round])
+        :
+        isNotNumber([vaccine_id, vaccine_national_code, vaccine_minimum_recommend_date, vaccine_round]);
+
+    const checked_name = injectionChecker(vaccine_name);
+    const checked_min_type = injectionChecker(vaccine_minimum_period_type);
+    const checked_max_type = is_periodical ? injectionChecker(vaccine_maximum_period_type) : null;
+    const checked_desc = injectionChecker(vaccine_description);
+
+    if(vaccine_name !== checked_name || vaccine_minimum_period_type !== checked_min_type || vaccine_maximum_period_type !== checked_max_type || vaccine_description !== checked_desc || isAttacked){
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        addUpdateHostileList(
+            clientIp as string,
+            {
+                "id" : injectionChecker(`${vaccine_id}}`),
+                "code" : injectionChecker(`${vaccine_national_code}`),
+                "name" : checked_name,
+                "period" : injectionChecker(`${is_periodical}`),
+                "min_type" : checked_min_type,
+                "min" : injectionChecker(`${vaccine_minimum_recommend_date}`),
+                "max_type" : checked_max_type,
+                "max" : injectionChecker(`${vaccine_maximum_recommend_date}`),
+                "round" : injectionChecker(`${vaccine_round}`),
+                "desc" : checked_desc,
+            }
+        );
+    }
+
+    if(isAttacked){
+        return res.status(400).json({ message: 'Suspected to Attacking', adminModifyVaccine: 2 });
+    }
+
+    if ((vaccine_id === undefined || vaccine_id === null) ||(vaccine_national_code === undefined || vaccine_national_code === null) || (checked_name === undefined || checked_name === "" ) || (is_periodical === undefined) || (checked_min_type === undefined || checked_min_type === "") || (vaccine_minimum_recommend_date === undefined || vaccine_minimum_recommend_date === null) || (is_periodical && checked_max_type === undefined || is_periodical && checked_max_type === "") || (is_periodical && vaccine_maximum_recommend_date === undefined || is_periodical && vaccine_maximum_recommend_date === null) || (vaccine_round === undefined || vaccine_round === null) || (checked_desc === undefined || checked_desc === "")) {
+        return res.status(400).json({ message: 'id, national code, name, is period, min/max type & recommend date, round, desc required', adminModifyVaccine: 3 });
+    }
+
+    try {
+
+        const connection = await pool.getConnection();
+
+        const [updated_temp_vaccine]: [ResultSetHeader, FieldPacket[]] = await connection.query(`
+            UPDATE 
+                temp_vaccine
+            SET
+                vaccine_national_code = ?,
+                vaccine_name = ?,
+                vaccine_is_periodical = ?,
+                vaccine_minimum_period_type = ?,
+                vaccine_minimum_recommend_date = ?,
+                vaccine_maximum_period_type = ?,
+                vaccine_maximum_recommend_date = ?,
+                vaccine_round = ?,
+                vaccine_description = ?
+            WHERE
+                id =?
+        `,[
+            vaccine_national_code,
+            checked_name,
+            is_periodical,
+            checked_min_type,
+            vaccine_minimum_recommend_date,
+            checked_max_type,
+            vaccine_maximum_recommend_date,
+            vaccine_round,
+            checked_desc,
+            vaccine_id]);
+
+        if(updated_temp_vaccine.affectedRows === 1){
+            res.status(201).json({ message: 'Temp vaccine updated successfully'});
+        }else{
+            return res.status(400).json({ message: 'No valid fields to update', adminModifyVaccine: 4 });
+        }
+
+        connection.release();
+    } catch (error) {
+        console.error('Error registering temp country /admin/manage/update/vaccine:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });

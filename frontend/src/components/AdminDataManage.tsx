@@ -10,6 +10,18 @@ import {Button, Container, Form} from "react-bootstrap";
 import {setNoticePopUp} from "../redux/slice";
 import jwtChecker from "../util/jwtChecker";
 
+import Tooltip from '@mui/material/Tooltip';
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import PublicIcon from '@mui/icons-material/Public';
+import VaccinesIcon from '@mui/icons-material/Vaccines';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import NightlightRoundedIcon from '@mui/icons-material/NightlightRounded';
+import WbSunnyRoundedIcon from '@mui/icons-material/WbSunnyRounded';
+import AvTimerRoundedIcon from '@mui/icons-material/AvTimerRounded';
+import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
+import AutoFixHighRoundedIcon from '@mui/icons-material/AutoFixHighRounded';
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
+
 const AdminDataManage = () => {
 
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
@@ -45,6 +57,7 @@ const AdminDataManage = () => {
         vaccine_maximum_recommend_date: number | null;
         vaccine_round: number;
         vaccine_description: string;
+        country_name_original: string;
     }
 
     interface CountryVaccineDataResponse {
@@ -66,6 +79,18 @@ const AdminDataManage = () => {
     const [vaccineMaxPeriod, setVaccineMaxPeriod] = useState<number | null>(null);
     const [vaccineRound, setVaccineRound] = useState<number | null>(null);
     const [vaccineDescription, setVaccineDescription] = useState<string>(``);
+
+    const [editVaccine, setEditVaccine] = useState<boolean>(false);
+    const [editVaccineNum, setEditVaccineNum] = useState<number | null>(null);
+    const [editVaccineName, setEditVaccineName] = useState<string | null>(``);
+    const [editVaccineNationalCode, setEditVaccineNationalCode] = useState<number | null>(null);
+    const [editVaccinePeriodical, setEditVaccinePeriodical] = useState<number>(2);
+    const [editVaccineMinPeriodType, setEditVaccineMinPeriodType] = useState<string>(``);
+    const [editVaccineMinPeriod, setEditVaccineMinPeriod] = useState<number | null>(null);
+    const [editVaccineMaxPeriodType, setEditVaccineMaxPeriodType] = useState<string>(``);
+    const [editVaccineMaxPeriod, setEditVaccineMaxPeriod] = useState<number | null>(null);
+    const [editVaccineRound, setEditVaccineRound] = useState<number | null>(null);
+    const [editVaccineDescription, setEditVaccineDescription] = useState<string>(``);
 
     const [editNational, setEditNational] = useState<boolean>(false);
     const [editNationalNum, setEditNationalNum] = useState<number | null>(null);
@@ -437,6 +462,117 @@ const AdminDataManage = () => {
         }
     }
 
+    const editVaccineInfo = (id: number, nat_code: number, name: string, is_periodical: boolean, min_type: string, min_date: number, max_type: string, max_date: number | null, round: number, desc: string) => {
+        setEditVaccineNum(id);
+        setEditVaccineNationalCode(nat_code);
+        setEditVaccineName(name);
+        setEditVaccinePeriodical(is_periodical ? 1 : 0);
+        setEditVaccineMinPeriodType(min_type);
+        setEditVaccineMinPeriod(min_date);
+        setEditVaccineMaxPeriodType(max_type);
+        setEditVaccineMaxPeriod(max_date);
+        setEditVaccineRound(round);
+        setEditVaccineDescription(desc);
+        setEditVaccine(true);
+    }
+
+    const saveModifiedVaccine = async () => {
+        try {
+            const is_periodical = Boolean(vaccinePeriodical);
+
+            const params = is_periodical ?
+                {
+                    vaccine_id: editVaccineNum,
+                    vaccine_national_code: editVaccineNationalCode,
+                    vaccine_name: editVaccineName,
+                    vaccine_is_periodical: editVaccinePeriodical,
+                    vaccine_minimum_period_type: editVaccineMinPeriodType,
+                    vaccine_minimum_recommend_date: editVaccineMinPeriod,
+                    vaccine_maximum_period_type: editVaccineMaxPeriodType,
+                    vaccine_maximum_recommend_date: editVaccineMaxPeriod,
+                    vaccine_round: editVaccineRound,
+                    vaccine_description: editVaccineDescription,
+                }
+                :
+                {
+                    vaccine_id: editVaccineNum,
+                    vaccine_national_code: editVaccineNationalCode,
+                    vaccine_name: editVaccineName,
+                    vaccine_is_periodical: editVaccinePeriodical,
+                    vaccine_minimum_period_type: editVaccineMinPeriodType,
+                    vaccine_minimum_recommend_date: editVaccineMinPeriod,
+                    vaccine_maximum_period_type: null,
+                    vaccine_maximum_recommend_date: null,
+                    vaccine_round: editVaccineRound,
+                    vaccine_description: editVaccineDescription,
+                }
+
+            const response = await axios.put<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/update/vaccine`,params ,{
+                headers: { Authorization: `Bearer ${getToken()}` }
+            });
+
+            await mainDataFetch();
+
+            setEditVaccineNum(null);
+            setEditVaccineNationalCode(null);
+            setEditVaccineName("");
+            setEditVaccinePeriodical(2);
+            setEditVaccineMinPeriodType("");
+            setEditVaccineMinPeriod(null);
+            setEditVaccineMaxPeriodType("");
+            setEditVaccineMaxPeriod(null);
+            setEditVaccineRound(null);
+            setEditVaccineDescription("");
+            setEditVaccine(false);
+
+
+        } catch (error) {
+            const axiosError = error as AxiosError<{ adminModifyVaccine: number }>;
+            if (axiosError.response) {
+                const adminModifyVaccine = axiosError.response.data.adminModifyVaccine;
+                let message = ``;
+                switch (adminModifyVaccine) {
+                    case 1:
+                        message = popupTranslations.noAuthority;
+                        break;
+                    case 2:
+                        message = popupTranslations.injection;
+                        break;
+                    case 3:
+                        message = "param required"
+                        break;
+                    case 4:
+                        message = "no record to update"
+                        break;
+                    default:
+                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
+                        message = checkRes.message;
+                        break;
+                }
+
+                dispatch(setNoticePopUp({
+                    on: true,
+                    is_error: true,
+                    message: message
+                }));
+            }
+        }
+    }
+
+    const cancelModifiedVaccine = () => {
+        setEditVaccineNum(null);
+        setEditVaccineNationalCode(null);
+        setEditVaccineName("");
+        setEditVaccinePeriodical(2);
+        setEditVaccineMinPeriodType("");
+        setEditVaccineMinPeriod(null);
+        setEditVaccineMaxPeriodType("");
+        setEditVaccineMaxPeriod(null);
+        setEditVaccineRound(null);
+        setEditVaccineDescription("");
+        setEditVaccine(false);
+    }
+
     const countryVaccineInformation = (info: CountryVaccineDataResponse) => {
 
         return (
@@ -550,60 +686,361 @@ const AdminDataManage = () => {
                         ))}
                     </div>
                     <div style={{marginTop: "40px"}}>
+
+
+                        <div className={`manageTempVacHeader`} style={{display: "flex", alignContent: "center"}}>
+                            <div>
+                                <Tooltip title={`ID`}>
+                                    <FormatListNumberedIcon/>
+                                </Tooltip>
+                            </div>
+                            <div>
+                                <Tooltip title={`National Code`}>
+                                    <PublicIcon/>
+                                </Tooltip>
+                            </div>
+                            <div>
+                                <Tooltip title={`Vaccine Name`}>
+                                    <VaccinesIcon/>
+                                </Tooltip>
+                            </div>
+                            <div>
+                                <Tooltip title={`Is Periodical`}>
+                                    <CalendarMonthIcon/>
+                                </Tooltip>
+                            </div>
+                            <div>
+                                <Tooltip title={`Minimum Date Standard Month Or Year`}>
+                                    <NightlightRoundedIcon/>
+                                </Tooltip>
+                            </div>
+                            <div>
+                                <Tooltip title={`Minimum Recommend Date`}>
+                                    <CalendarMonthIcon/>
+                                </Tooltip>
+                            </div>
+
+                            <div>
+                                <Tooltip title={`Maximum Date Standard Month Or Year`}>
+                                    <WbSunnyRoundedIcon/>
+                                </Tooltip>
+                            </div>
+                            <div>
+                                <Tooltip title={`Maximum Recommend Date`}>
+                                    <CalendarMonthIcon/>
+                                </Tooltip>
+                            </div>
+
+                            <div>
+                                <Tooltip title={`Vaccine Round`}>
+                                    <AvTimerRoundedIcon/>
+                                </Tooltip>
+                            </div>
+                            <div>
+                                <Tooltip title={`Vaccine Description`}>
+                                    <DescriptionRoundedIcon/>
+                                </Tooltip>
+                            </div>
+                            <div>
+                                <Tooltip title={`Vaccine Info Modification`}>
+                                    <AutoFixHighRoundedIcon/>
+                                </Tooltip>
+                            </div>
+                            <div>
+                                <Tooltip title={`Vaccine Info Delete`}>
+                                    <DeleteForeverRoundedIcon/>
+                                </Tooltip>
+                            </div>
+                        </div>
+
+
                         {info.temporal_vaccines.map(vaccine => (
 
+                            vaccine.id === editVaccineNum && editVaccine ?
+                                <div key={vaccine.id} className={`manageTempVacElem`}>
+                                    <div>
+                                        <Tooltip title={`temporal vaccine id`}>
+                                            <span>{vaccine.id}</span>
+                                        </Tooltip>
 
-                            <div key={vaccine.id} style={{display: "flex", alignContent: "center"}}>
-                                <div>
-                                    {vaccine.id}
-                                </div>
-                                <div>
-                                    {vaccine.vaccine_national_code}
-                                </div>
-                                <div>
-                                    {vaccine.vaccine_name}
-                                </div>
-                                <div>
-                                    {vaccine.vaccine_is_periodical}
-                                </div>
-                                <div>
-                                    {vaccine.vaccine_minimum_period_type}
-                                </div>
-                                <div>
-                                    {vaccine.vaccine_minimum_recommend_date}
-                                </div>
-                                {
-                                    vaccine.vaccine_is_periodical ?
-                                        <>
-                                            <div>
-                                                {vaccine.vaccine_maximum_period_type}
-                                            </div>
-                                            <div>
-                                                {vaccine.vaccine_maximum_recommend_date}
-                                            </div>
-                                        </>
-                                        :
-                                        null
-                                }
+                                    </div>
+                                    <div>
+                                        <Tooltip title={`temporal vaccine national code`}>
+                                            <Form.Select
+                                                onChange={(e) => setEditVaccineNationalCode(e.target.value !== null ? parseInt(e.target.value, 10) : 0)}
+                                                value={editVaccineNum !== null ? editVaccineNum as number : ""}
+                                                size="sm"
+                                                className="footer_language"
+                                            >
+                                                <option value="">Select Vaccine National Code</option>
+                                                {info.existing_countries.map(country => (
+                                                    <option key={country.id}
+                                                            value={country.id}>{country.name_original}</option>
+                                                ))}
+                                                {info.temporal_countries.map(country => (
+                                                    <option key={country.id}
+                                                            value={country.id}>{country.name_original}</option>
+                                                ))}
 
-                                <div>
-                                    {vaccine.vaccine_round}
+                                            </Form.Select>
+                                        </Tooltip>
+                                    </div>
+                                    <div>
+                                        <Tooltip title={`temporal vaccine name`}>
+                                            <Form.Select
+                                                onChange={(e) => setEditVaccineName(e.target.value)}
+                                                value={editVaccineName !== "" ? editVaccineName as string : ""}
+                                                size="sm"
+                                                className="footer_language"
+                                            >
+                                                <option value="">Select Vaccine</option>
+                                                {info.existing_vaccines.map(vaccine => (
+                                                    <option key={vaccine.id}
+                                                            value={vaccine.vaccine_name}>{vaccine.vaccine_name}</option>
+                                                ))}
+                                            </Form.Select>
+                                        </Tooltip>
+                                    </div>
+                                    <div>
+                                        <Tooltip title={`temporal vaccine is periodical?`}>
+                                            <Form.Select
+                                                onChange={(e) => setEditVaccinePeriodical(parseInt(e.target.value))}
+                                                value={editVaccinePeriodical}
+                                                size="sm"
+                                                className="footer_language"
+                                            >
+                                                <option value={2}>Is Periodical</option>
+                                                <option value={1}>periodical</option>
+                                                <option value={0}>none periodical</option>
+                                            </Form.Select>
+                                        </Tooltip>
+                                    </div>
+                                    <div>
+                                        <Tooltip title={`temporal vaccine minimum period type (month or year)`}>
+                                            <Form.Select
+                                                onChange={(e) => setEditVaccineMinPeriodType(e.target.value)}
+                                                value={editVaccineMinPeriodType !== "" ? editVaccineMinPeriodType as string : ""}
+                                                size="sm"
+                                                className="footer_language"
+                                            >
+                                                <option value="">Select Minimum Period Type</option>
+                                                <option value="M">Month</option>
+                                                <option value="Y">Year</option>
+                                            </Form.Select>
+                                        </Tooltip>
+                                    </div>
+                                    <div>
+                                        <Tooltip title={`temporal vaccine minimum recommended date`}>
+                                            <Form.Select
+                                                onChange={(e) => setEditVaccineMinPeriod(parseInt(e.target.value, 10))}
+                                                value={editVaccineMinPeriod !== null ? editVaccineMinPeriod.toString() : ""}
+                                                size="sm"
+                                                className="footer_language"
+                                            >
+                                                <option value={0}>Select Minimum Period</option>
+                                                {
+                                                    editVaccineMinPeriodType && periodOptions(true, editVaccineMinPeriodType)
+                                                }
+
+                                            </Form.Select>
+                                        </Tooltip>
+                                    </div>
+                                    <div>
+                                        <Tooltip title={`temporal vaccine maximum period type (month or year)`}>
+                                            <Form.Select
+                                                onChange={(e) => editVaccinePeriodical === 1 ? setEditVaccineMaxPeriodType(e.target.value) : setEditVaccineMaxPeriodType("")}
+                                                value={  editVaccineMaxPeriodType !== "" ? editVaccineMaxPeriodType as string : ""}
+                                                size="sm"
+                                                className="footer_language"
+                                            >
+                                                {editVaccinePeriodical !== 1 ?
+                                                    <option value="">Select Maximum Period Type</option>
+                                                    :
+                                                    <>
+                                                        <option value="">Select Maximum Period Type</option>
+                                                        <option value="M">Month</option>
+                                                        <option value="Y">Year</option>
+                                                    </>
+
+                                                }
+                                            </Form.Select>
+                                        </Tooltip>
+                                    </div>
+                                    <div>
+                                        <Tooltip title={`temporal vaccine maximum recommended date`}>
+                                            <Form.Select
+                                                onChange={(e) => editVaccinePeriodical === 1 ? setEditVaccineMaxPeriod(parseInt(e.target.value, 10)) : setEditVaccineMaxPeriod(null)}
+                                                value={ editVaccineMaxPeriod !== null ? editVaccineMaxPeriod.toString() : "" }
+                                                size="sm"
+                                                className="footer_language"
+                                            >
+                                                {editVaccinePeriodical !== 1 ?
+                                                    <option value={0}>Select Maximum Period</option>
+                                                    :
+                                                    <>
+                                                        <option value={0}>Select Maximum Period</option>
+                                                        {
+                                                            editVaccineMaxPeriodType && periodOptions(true, editVaccineMaxPeriodType)
+                                                        }
+                                                    </>
+                                                }
+                                            </Form.Select>
+                                        </Tooltip>
+                                    </div>
+                                    <div>
+                                        <Tooltip title={`temporal vaccine round of dose`}>
+                                            <Form.Select
+                                                onChange={(e) => setEditVaccineRound(parseInt(e.target.value, 10))}
+                                                value={editVaccineRound !== null ? editVaccineRound.toString() : ""}
+                                                size="sm"
+                                                className="footer_language"
+                                            >
+                                                <option value="">Select Vaccine Round</option>
+                                                {
+                                                    periodOptions(false, null)
+                                                }
+
+                                            </Form.Select>
+                                        </Tooltip>
+                                    </div>
+                                    <div>
+                                        <Tooltip title={`temporal vaccine description`}>
+                                            <Form.Control
+                                                type="text"
+                                                placeholder={`description`}
+                                                value={editVaccineDescription}
+                                                onChange={(e) => setEditVaccineDescription(e.target.value)}
+                                            />
+                                        </Tooltip>
+                                    </div>
+
+                                    <div>
+                                        <Button onClick={() => saveModifiedVaccine()}>Save</Button>
+                                    </div>
+                                    <div>
+                                        <Button onClick={() => cancelModifiedVaccine()}>Cancel</Button>
+                                    </div>
                                 </div>
-                                <div>
-                                    {vaccine.vaccine_description}
+                                :
+                                <div key={vaccine.id} className={`manageTempVacElem`}
+                                     style={{display: "flex", alignContent: "center"}}>
+                                    <div>
+                                        {vaccine.id}
+                                    </div>
+                                    <div>
+                                        <Tooltip title={`${vaccine.country_name_original}`}>
+                                            <span>{vaccine.vaccine_national_code}</span>
+                                        </Tooltip>
+                                    </div>
+                                    <div>
+                                        <Tooltip title={`${vaccine.vaccine_name}`}>
+                                            <span>{vaccine.vaccine_name}</span>
+                                        </Tooltip>
+                                    </div>
+                                    <div>
+                                        <Tooltip
+                                            title={`${vaccine.vaccine_is_periodical ? "Vaccinate Between Minimum Period to Maximum Period" : "Vaccinate On Minimum Period"}`}>
+                                            <span>{vaccine.vaccine_is_periodical ? "Y" : "N"}</span>
+                                        </Tooltip>
+                                    </div>
+                                    <div>
+                                        <Tooltip
+                                            title={`${vaccine.vaccine_minimum_period_type === "M" ? "Month" : "Year"}`}>
+                                            <span>{vaccine.vaccine_minimum_period_type}</span>
+                                        </Tooltip>
+                                    </div>
+                                    <div>
+                                        <Tooltip title={`Minimum Recommended Date`}>
+                                        <span>
+                                            {
+                                                vaccine.vaccine_minimum_period_type === "M" ?
+                                                    vaccine.vaccine_minimum_recommend_date > 12 ?
+                                                        Math.trunc((vaccine.vaccine_minimum_recommend_date / 12)).toString() + "Y" + " " + (vaccine.vaccine_minimum_recommend_date % 12).toString()
+                                                        :
+                                                        vaccine.vaccine_minimum_recommend_date
+                                                    :
+                                                    vaccine.vaccine_minimum_recommend_date
+                                            }
+
+                                            {
+                                                vaccine.vaccine_minimum_period_type === "M" ?
+                                                    "M"
+                                                    :
+                                                    "Y"
+                                            }
+                                        </span>
+                                        </Tooltip>
+                                    </div>
+                                    <div>
+                                        <Tooltip
+                                            title={`${vaccine.vaccine_maximum_period_type === null ? "" : vaccine.vaccine_maximum_period_type === "M" ? "Month" : "Year"}`}>
+                                            <span>{vaccine.vaccine_maximum_period_type === null ? "" : vaccine.vaccine_maximum_period_type}</span>
+                                        </Tooltip>
+                                    </div>
+                                    <div>
+                                        <Tooltip title={`Maximum Recommended Date`}>
+                                        <span>
+                                            {
+                                                vaccine.vaccine_maximum_recommend_date === null ? "" : vaccine.vaccine_maximum_period_type === "M" ?
+                                                    vaccine.vaccine_maximum_recommend_date > 12 ?
+                                                        Math.trunc((vaccine.vaccine_maximum_recommend_date / 12)).toString() + "Y" + " " + (vaccine.vaccine_maximum_recommend_date % 12).toString()
+                                                        :
+                                                        vaccine.vaccine_maximum_recommend_date
+                                                    :
+                                                    vaccine.vaccine_maximum_recommend_date
+                                            }
+                                            {
+                                                vaccine.vaccine_maximum_period_type === "M" ?
+                                                    "M"
+                                                    :
+                                                    vaccine.vaccine_maximum_period_type === "Y" ?
+                                                        "Y"
+                                                        :
+                                                        ""
+                                            }
+                                        </span>
+                                        </Tooltip>
+
+                                    </div>
+                                    <div>
+                                        <Tooltip
+                                            title={`${vaccine.vaccine_round === 1 ? vaccine.vaccine_round + "st" : vaccine.vaccine_round === 2 ? vaccine.vaccine_round + "nd" : vaccine.vaccine_round === 3 ? vaccine.vaccine_round + "rd" : vaccine.vaccine_round + "th"}`}>
+                                            <span>{vaccine.vaccine_round}</span>
+                                        </Tooltip>
+                                    </div>
+                                    <div>
+                                        <Tooltip title={`${vaccine.vaccine_description}`}>
+                                            <span>{vaccine.vaccine_description}</span>
+                                        </Tooltip>
+                                    </div>
+
+                                    <div>
+                                        <Button onClick={() =>
+                                            editVaccineInfo(
+                                                vaccine.id,
+                                                vaccine.vaccine_national_code,
+                                                vaccine.vaccine_name,
+                                                vaccine.vaccine_is_periodical,
+                                                vaccine.vaccine_minimum_period_type,
+                                                vaccine.vaccine_minimum_recommend_date,
+                                                vaccine.vaccine_maximum_period_type !== null ? vaccine.vaccine_maximum_period_type as string : "",
+                                                vaccine.vaccine_maximum_recommend_date !== null ? vaccine.vaccine_maximum_recommend_date as number : null,
+                                                vaccine.vaccine_round,
+                                                vaccine.vaccine_description)}>
+                                            Edit
+                                        </Button>
+                                    </div>
+                                    <div>
+                                        <Button>Delete</Button>
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <Button>Edit</Button>
-                                </div>
-                                <div>
-                                    <Button>Delete</Button>
-                                </div>
-                            </div>
+
                         ))}
+
                     </div>
                     <div>
-                    <div style={{display: "flex", alignContent: "center", marginTop: "40px"}}>
+                        <div style={{display: "flex", alignContent: "center", marginTop: "40px"}}>
                             {addNational ?
                                 <>
                                     <div>
@@ -689,7 +1126,7 @@ const AdminDataManage = () => {
                     <div>
                         <Form.Select
                             onChange={(e) => setVaccinePeriodical(parseInt(e.target.value))}
-                            value={vaccinePeriodical ? "periodical" : "none periodical"}
+                            value={vaccinePeriodical}
                             size="sm"
                             className="footer_language"
                         >
