@@ -16,13 +16,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    ports:
-      - "3001:3001"
-    env_file:
-      - ./frontend/.env
-    volumes:
-      - ./frontend:/usr/src/app
-      - ./frontend:/usr/src/app/build
+      args:
+        REACT_APP_MODE: "PROD"
+        REACT_APP_API_URL: "http://34.88.151.132/api"
+    depends_on:
+      - backend
     networks:
       - app-network
 
@@ -40,17 +38,19 @@ services:
 
 
   nginx:
-    image: nginx:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./frontend/build:/usr/share/nginx/html
     depends_on:
       - backend
       - frontend
     networks:
       - app-network
+    command: /bin/sh -c "while [ ! -f /usr/share/nginx/html/index.html ]; do echo 'Waiting for frontend build...'; sleep 5; done && nginx -g 'daemon off;'"
 
 networks:
   app-network:
