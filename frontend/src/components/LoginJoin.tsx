@@ -106,7 +106,7 @@ const LoginJoin = () => {
                 console.error('Passwords do not match');
                 return;
             }
-            const response = await axios.post(`${apiUrl}/user/`, {
+            await axios.post(`${apiUrl}/user/`, {
                 email: joinEmail,
                 nickname: joinNickname,
                 password: joinPassword,

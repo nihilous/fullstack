@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios, { AxiosError } from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import { RootState } from '../store';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { NoticeTranslations } from '../translation/Notice';
 import { getToken, getDecodedToken } from "../util/jwtDecoder";
 import {Button, Container, Form} from "react-bootstrap";

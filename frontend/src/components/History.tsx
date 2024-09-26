@@ -428,7 +428,7 @@ const History = () => {
 
         try {
 
-            const response = await axios.put(`${apiUrl}/user/${getDecodedToken()?.userId}/${id}`, {
+            await axios.put(`${apiUrl}/user/${getDecodedToken()?.userId}/${id}`, {
                 name: name,
                 description: description,
                 gender: gender,

@@ -207,7 +207,7 @@ const AdminDataManage = () => {
             const params = {
                 ori_id: id, new_id: editNationalId, code :editNationalCode, eng: editNationalEng, ori: editNationalOri
             }
-            const response = await axios.put<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/update/country`,params ,{
+            await axios.put<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/update/country`,params ,{
                 headers: { Authorization: `Bearer ${getToken()}` }
             });
 
@@ -267,7 +267,7 @@ const AdminDataManage = () => {
             const params = {
                 id: addNationalId, code :addNationalCode, eng: addNationalEng, ori: addNationalOri
             }
-            const response = await axios.post<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/add/country`,params ,{
+            await axios.post<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/add/country`,params ,{
                 headers: { Authorization: `Bearer ${getToken()}` }
             });
 
@@ -317,7 +317,7 @@ const AdminDataManage = () => {
 
         try {
 
-            const response = await axios.delete<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/delete/country/${id}` ,{
+            await axios.delete<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/delete/country/${id}` ,{
                 headers: { Authorization: `Bearer ${getToken()}` }
             });
 
@@ -418,7 +418,7 @@ const AdminDataManage = () => {
                     vaccine_description: vaccineDescription,
                 }
 
-            const response = await axios.post<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/add/vaccine`,params ,{
+                await axios.post<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/add/vaccine`,params ,{
                 headers: { Authorization: `Bearer ${getToken()}` }
             });
 
@@ -510,7 +510,7 @@ const AdminDataManage = () => {
                     vaccine_description: editVaccineDescription,
                 }
 
-            const response = await axios.put<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/update/vaccine`,params ,{
+                await axios.put<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/update/vaccine`,params ,{
                 headers: { Authorization: `Bearer ${getToken()}` }
             });
 
@@ -566,7 +566,7 @@ const AdminDataManage = () => {
 
         try {
 
-            const response = await axios.delete<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/delete/vaccine/${id}` ,{
+            await axios.delete<CountryVaccineDataResponse>(`${apiUrl}/admin/manage/delete/vaccine/${id}` ,{
                 headers: { Authorization: `Bearer ${getToken()}` }
             });
 

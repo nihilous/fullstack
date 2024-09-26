@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { pool } from '../db';
 import { RowDataPacket } from 'mysql2';
 import {CustomRequest, tokenExtractor, addUpdateHostileList} from '../middleware/middleware';

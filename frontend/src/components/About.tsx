@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import { RootState } from '../store';
 import { AboutTranslations } from '../translation/About';
 import {Container} from 'react-bootstrap';

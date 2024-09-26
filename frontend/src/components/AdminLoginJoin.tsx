@@ -82,7 +82,7 @@ const AdminLoginJoin = () => {
                 console.error('Passwords do not match');
                 return;
             }
-            const response = await axios.post(`${apiUrl}/admin/`, {
+            await axios.post(`${apiUrl}/admin/`, {
                 email: joinEmail,
                 nickname: joinNickname,
                 password: joinPassword,
