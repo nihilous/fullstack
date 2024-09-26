@@ -19,6 +19,7 @@ services:
       args:
         REACT_APP_MODE: "PROD"
         REACT_APP_API_URL: "http://34.88.151.132/api"
+        NODE_ENV: "production"
     volumes:
       - frontend_build:/usr/src/app/build
     networks:
