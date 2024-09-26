@@ -15,17 +15,15 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        REACT_APP_MODE: "PROD"
-        REACT_APP_API_URL: "http://34.88.151.132/api"
-        NODE_ENV: "production"
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./frontend/.env
     volumes:
-      - frontend_build:/usr/src/app/build
+      - ./frontend:/usr/src/app
     networks:
       - app-network
-    depends_on:
-      - backend
 
   mysql:
     image: mysql:8.0
@@ -46,10 +44,9 @@ services:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - frontend_build:/usr/share/nginx/html
     depends_on:
-      - frontend
       - backend
+      - frontend
     networks:
       - app-network
 
@@ -59,4 +56,3 @@ networks:
 
 volumes:
   db_data:
-  frontend_build:
