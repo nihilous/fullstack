@@ -10,6 +10,8 @@ import { useNavigate} from "react-router-dom";
 import {setNoticePopUp} from "../redux/slice";
 import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
 import jwtChecker from "../util/jwtChecker";
+import UserDetailProperty from "../types/RegisterChildType"
+import ShowingChildInfo from "./RegisterChild/ShowingChildInfo"
 
 const RegisterChild = () => {
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
@@ -17,17 +19,6 @@ const RegisterChild = () => {
     const naviagte = useNavigate();
     const dispatch = useDispatch();
     const userId = getDecodedToken()?.userId;
-
-    interface UserDetailProperty {
-        id: number;
-        name: string | null;
-        birthdate: string | null;
-        gender: number | null;
-        nationality: number | null;
-        description: string | null;
-        nickname: string | null;
-        name_original: string | null;
-    }
 
     const [name, setName] = useState<string>(``);
     const [birthdate, setBirthdate] = useState<string>(``);
@@ -154,59 +145,7 @@ const RegisterChild = () => {
         }
     };
 
-    const showingChildInfo = (children: UserDetailProperty[] ) => {
-        return children.map((child) => {
 
-            const formatDate = (dateString: string) => {
-                const [year, month, day] = dateString.split('T')[0].split('-');
-                return { year, month, day };
-            };
-
-            const yyyy_mm_dd = formatDate(child.birthdate as string);
-            return (
-
-                <div key={child.id} className="child-info cr_info_elem">
-                    <div className={"mie_info_wrapper"}>
-                        <div className={"mie_info"}>
-                            <span>{`${translations.name}`}</span>
-                            <span>{`${child.name}`}</span>
-                        </div>
-                        <div className={"mie_info"}>
-                            <span>{`${translations.birthdate}`}</span>
-                            <span>{`${language === "FIN" ?
-                                yyyy_mm_dd.day + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.year
-                                :
-                                yyyy_mm_dd.year + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.day}`}</span>
-                        </div>
-                        <div className={"mie_info"}>
-                            <span>{`${translations.gender}`}</span>
-                            <span>{`${child.gender === 0 ? translations.boy : translations.girl}`}</span>
-
-                        </div>
-                        <div className={"mie_info"}>
-                            <span>{`${translations.nationality}`}</span>
-                            <span>{`${child.name_original}`}</span>
-
-                        </div>
-                        <div className={"mie_info"}>
-                            <span>{`${translations.description}`}</span>
-                            <span>{`${child.description}`}</span>
-                        </div>
-                    </div>
-                    <div className={"mie_button_wrapper"}>
-                        <Button href={`/history/${child.id}`} className="btn btn-primary mie_button">
-                            {`${translations.history}`}
-                        </Button>
-                        <Button href={`/notice/${child.id}`} className="btn btn-primary mie_button">
-                            {`${translations.schedule}`}
-                        </Button>
-                        <div className={"clear"}></div>
-                    </div>
-                </div>
-
-            );
-        });
-    };
 
     return (
         <Container className="center_ui">
@@ -284,7 +223,11 @@ const RegisterChild = () => {
 
             { child.length > 0 ?  (
                 <div className={"register_child_elem_wrapper"}>
-                    {showingChildInfo(child)}
+                    {<ShowingChildInfo
+                        language={language}
+                        translations={translations}
+                        children={child}
+                    />}
                 </div>
 
             ) : (

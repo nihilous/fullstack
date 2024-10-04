@@ -6,9 +6,11 @@ import { useNavigate } from 'react-router-dom';
 import { AdminMainTranslations } from '../translation/AdminMain';
 import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
 import { getToken, getDecodedToken } from "../util/jwtDecoder";
-import {Button, Container} from "react-bootstrap";
+import {Container} from "react-bootstrap";
 import {setNoticePopUp} from "../redux/slice";
 import jwtChecker from "../util/jwtChecker";
+import {JoinOnlyProperty, RegularProperty, AdminMainUserInformation} from "../types/AdminMainType"
+import MainUserElems from "./AdminMain/MainUserElems"
 
 const AdminMain = () => {
 
@@ -22,57 +24,21 @@ const AdminMain = () => {
     const translations = AdminMainTranslations[language];
     const popupTranslations = PopupMessageTranslations[language];
 
-    interface JoinOnlyProperty {
-        id: number;
-        email: string;
-        nickname: string;
-        is_active: number;
-        last_login: string;
-        created_at: string;
-        post_count: number;
-        reply_count: number;
-    }
-
-    interface RegularProperty {
-        id: number;
-        email: string;
-        nickname: string;
-        is_active: number;
-        last_login: string;
-        created_at: string;
-        post_count: number;
-        reply_count: number;
-        children: {
-            detail_id: number;
-            name: string;
-            description: string;
-            gender: number;
-            birthdate: string;
-            nationality: number;
-            name_original: string;
-        }[];
-    }
-
-    interface UserDataResponse {
-        joinonly: JoinOnlyProperty[];
-        regular: RegularProperty[];
-    }
-
-    const users = useRef<UserDataResponse | null>(null);
+    const users = useRef<AdminMainUserInformation | null>(null);
     const [visibleChildren, setVisibleChildren] = useState<{ [key: number]: boolean }>({});
 
     const [filter, setFilter] = useState<string>(``);
     const [filterNationality, setFilterNationality] = useState<number | null>(null);
     const [filterGender, setFilterGender] = useState<number | null>(null);
     const [filterActive, setFilterActive] = useState<number | null>(null);
-    const [filteredUser, setFilteredUser] = useState<UserDataResponse | null>(null);
+    const [filteredUser, setFilteredUser] = useState<AdminMainUserInformation | null>(null);
 
     useEffect(() => {
         const mainDataFetch = async () => {
 
             try {
 
-                const response = await axios.get<UserDataResponse>(`${apiUrl}/admin/`, {
+                const response = await axios.get<AdminMainUserInformation>(`${apiUrl}/admin/`, {
                     headers: { Authorization: `Bearer ${getToken()}` }
                 });
 
@@ -177,7 +143,7 @@ const AdminMain = () => {
                 .filter((value) => value !== null);
 
             setFilteredUser({
-                joinonly: filteredJoinOnly,
+                joinonly: filteredJoinOnly as JoinOnlyProperty[],
                 regular: filteredRegular as RegularProperty[],
             });
         }
@@ -204,165 +170,7 @@ const AdminMain = () => {
         setFilterActive(value !== '' ? parseInt(value) : null);
     };
 
-    const userInformation = (info: UserDataResponse) => {
 
-        const formatDate = (dateString: string, language: string) => {
-            if(dateString === null){
-                return translations.login_date_null;
-            }
-            const [year, month, day] = dateString.split('T')[0].split('-');
-            if (language === "FIN") {
-                return `${day} ${month} ${year}`;
-            }
-            return `${year} ${month} ${day}`;
-        };
-
-        return (
-            <>
-                <div className={"admin_main_category"}>
-                    {`${translations.regular} ${info.regular.length} ${translations.count_people}`}
-                </div>
-                <div>
-                    {info.regular.map(user => (
-
-
-                        <div key={user.id} className={"am_parent"}>
-                            <div className={"amp_info_wrap"}>
-                                <div className={"amp_info"}>
-                                    <div>
-                                        <span>{translations.user_id}</span>
-                                        <span>{user.id}</span>
-                                    </div>
-                                    <div>
-                                        <span>{translations.email}</span>
-                                        <span>{user.email}</span>
-                                    </div>
-                                    <div>
-                                        <span>{translations.nickname}</span>
-                                        <span>{user.nickname}</span>
-                                    </div>
-                                    <div>
-                                        <span>{translations.join_date}</span>
-                                        <span>{formatDate(user.created_at, language)}</span>
-                                    </div>
-                                    <div>
-                                        <span>{translations.last_login}</span>
-                                        <span>{formatDate(user.last_login, language)}</span>
-                                    </div>
-                                    <div>
-                                        <span>{translations.is_hibernate}</span>
-                                        <span>{user.is_active === 1 ? translations.active : translations.deactivated}</span>
-                                    </div>
-                                    <div>
-                                        <span>{translations.registered_children}</span>
-                                        <span>{`${user.children.length} ${translations.count_people}`}</span>
-                                    </div>
-                                    <div>
-                                        <span>{translations.post_wrote}</span>
-                                        <span>{user.post_count}</span>
-                                    </div>
-                                    <div>
-                                        <span>{translations.reply_wrote}</span>
-                                        <span>{user.reply_count}</span>
-                                    </div>
-                                </div>
-                                <div className={"amp_button"}>
-                                    <Button onClick={() => toggleChildrenVisibility(user.id)}>
-                                        {visibleChildren[user.id] ? translations.fold : translations.watch}
-                                    </Button>
-                                </div>
-
-                            </div>
-
-
-                            <div className={`${visibleChildren[user.id] ? "am_children_wrap" : null}`}>
-                                {visibleChildren[user.id] && user.children.map(child => {
-
-
-                                    return (
-                                        <div key={"child" + child.detail_id} className={"am_child"}>
-                                            <div>
-                                                <span>{translations.child_id}</span>
-                                                <span>{child.detail_id}</span>
-                                            </div>
-                                            <div>
-                                                <span>{translations.child_name}</span>
-                                                <span>{child.name}</span>
-                                            </div>
-                                            <div>
-                                                <span>{translations.child_birthdate}</span>
-                                                <span>{formatDate(child.birthdate, language)}</span>
-                                            </div>
-                                            <div>
-                                                <span>{translations.child_gender}</span>
-                                                <span>{`${child.gender === 0 ? translations.boy : translations.girl}`}</span>
-                                            </div>
-                                            <div>
-                                                <span>{translations.child_nationality}</span>
-                                                <span>{child.name_original}</span>
-                                            </div>
-                                            <div>
-                                                <span>{translations.child_description}</span>
-                                                <span>{child.description}</span>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-
-                        </div>
-                    ))}
-                </div>
-
-                <div className={"admin_main_category"}>
-                    {`${translations.join_only} ${info.joinonly.length} ${translations.count_people}`}
-                </div>
-                <div>
-                    {info.joinonly.map(user => (
-                        <div key={user.id} className={"am_parent"}>
-                            <div className={"amp_info_wrap"}>
-                                <div className={"amp_info join_only"}>
-                                    <div>
-                                        <span>{translations.user_id}</span>
-                                        <span>{user.id}</span>
-                                    </div>
-                                    <div>
-                                        <span>{translations.email}</span>
-                                        <span>{user.email}</span>
-                                    </div>
-                                    <div>
-                                        <span>{translations.nickname}</span>
-                                        <span>{user.nickname}</span>
-                                    </div>
-                                    <div>
-                                        <span>{translations.join_date}</span>
-                                        <span>{formatDate(user.created_at, language)}</span>
-                                    </div>
-                                    <div>
-                                        <span>{translations.last_login}</span>
-                                        <span>{formatDate(user.last_login, language)}</span>
-                                    </div>
-                                    <div>
-                                        <span>{translations.is_hibernate}</span>
-                                        <span>{user.is_active === 1 ? translations.active : translations.deactivated}</span>
-                                    </div>
-                                    <div>
-                                        <span>{translations.post_wrote}</span>
-                                        <span>{user.post_count}</span>
-                                    </div>
-                                    <div>
-                                        <span>{translations.reply_wrote}</span>
-                                        <span>{user.reply_count}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-            </>
-        );
-    };
 
     if (users === null) {
         return <></>
@@ -404,7 +212,13 @@ const AdminMain = () => {
 
                 </div>
             </Container>
-            {filteredUser && userInformation(filteredUser)}
+            {filteredUser && <MainUserElems
+                language={language}
+                translations={translations}
+                visibleChildren={visibleChildren}
+                toggleChildrenVisibility={toggleChildrenVisibility}
+                info={filteredUser}
+            />}
 
 
         </Container>

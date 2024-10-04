@@ -437,18 +437,6 @@ code {
   display: flex;
 }
 
-.hostile_button_wrap{
-  width: 30%;
-}
-
-.hostile_check_wrap{
-  width: 70%;
-}
-
-.hostile_input_buttons div button{
-  margin-top: 0 !important;
-}
-
 .hostile_check_wrap{
   display: flex;
 }

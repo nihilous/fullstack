@@ -25,6 +25,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import VaccinesIcon from '@mui/icons-material/Vaccines';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import jwtChecker from "../util/jwtChecker";
+import NoticePopUpOn from "./Header/NoticePopUpOn";
 
 
 const Header = () => {
@@ -109,21 +110,7 @@ const Header = () => {
         }
     }
 
-    const noticePopUpOn = () => {
-        const clearing = () => {
-            dispatch(setNoticePopUp({ on: false, is_error: null, message: '' }));
-        };
 
-        setTimeout(clearing, 3000);
-
-        return (
-            <div className="header_pop_up_wrap">
-                <div className={`${notice_popup.is_error ? 'header_pop_up hpu_error' : 'header_pop_up hpu_inst'}`}>
-                    {`${notice_popup.message}`}
-                </div>
-            </div>
-        );
-    };
 
     const pagesUser = [
         { name: translations.main, path: `/main` },
@@ -286,7 +273,10 @@ const Header = () => {
                 </Toolbar>
             </Container>
 
-            {notice_popup.on && noticePopUpOn()}
+            {notice_popup.on && <NoticePopUpOn
+                dispatch = {dispatch}
+                notice_popup = {notice_popup}
+            />}
         </AppBar>
     );
 };

@@ -1,15 +1,14 @@
 import React, { useState} from 'react';
-import axios, { AxiosError } from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import { RootState } from '../store';
 import { useNavigate } from 'react-router-dom';
 import { AccountTranslations } from '../translation/Account';
-import {getToken, getDecodedToken} from "../util/jwtDecoder";
-import {Button, Container, Form} from "react-bootstrap";
-import logout from "../util/logout";
+import {getDecodedToken} from "../util/jwtDecoder";
+import {Container, Form} from "react-bootstrap";
 import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
-import {setNoticePopUp} from "../redux/slice";
-import jwtChecker from "../util/jwtChecker";
+import ChangeEmailNickname from "./Account/ChangeEmailNickname"
+import ChangePassword from "./Account/ChangePassword"
+import InactivateAccount from "./Account/InactivateAccount"
 
 const Account = () => {
 
@@ -25,430 +24,11 @@ const Account = () => {
 
     const [accountService, setAccountService] = useState<string>("1");
 
-    const [changeInfoEmail, setChangeInfoEmail] = useState<string>(``);
-    const [changeInfoNickname, setChangeInfoNickname] = useState<string>(``);
-    const [changePassEmail, setChangePassEmail] = useState<string>(``);
-    const [changePassOldPass, setChangePassOldPass] = useState<string>(``);
-    const [changePassNewPass, setChangePassNewPass] = useState<string>(``);
     const [adminSecret, setAdminSecret] = useState<string>(``);
-    const [watchOldPass, setWatchOldPass] = useState<boolean>(false);
-    const [watchNewPass, setWatchNewPass] = useState<boolean>(false);
     const [watchAdminSecret, setWatchAdminSecret] = useState<boolean>(false);
-    const [approveDeactivation, setApproveDeactivation] = useState<boolean>(false);
 
-    const clearState = () => {
-        setChangeInfoEmail(``);
-        setChangeInfoNickname(``);
-        setChangePassEmail(``);
-        setChangePassOldPass(``);
-        setChangePassNewPass(``);
-        setAdminSecret('');
-        setApproveDeactivation(false);
-    }
-
-    const handleChangeEmailNickname = async (event: React.FormEvent) => {
-        event.preventDefault();
-        try {
-
-            const reqData = !isAdmin?
-                {
-                    email: changeInfoEmail,
-                    nickname : changeInfoNickname
-                }
-                :
-                {
-                    email: changeInfoEmail,
-                    nickname : changeInfoNickname,
-                    adminSecret: adminSecret
-                };
-
-            const response = await axios.put(`${apiUrl}/${isAdmin? "admin" : "user"}/change/info/${userId}`, reqData, {headers: { Authorization: `Bearer ${getToken()}` }});
-
-            if (response.status === 201) {
-
-                dispatch(setNoticePopUp({
-                    on: true,
-                    is_error: false,
-                    message: popupTranslations.AccountChangeInfoSuccess
-                }));
-
-                clearState();
-
-            }
-
-        } catch (error) {
-
-            const axiosError = error as AxiosError<{ changeInfo: number }>;
-            if (axiosError.response) {
-
-                const changeInfo = axiosError.response.data.changeInfo;
-                let message = ``;
-                switch (changeInfo) {
-                    case 1:
-                        message = popupTranslations.AdminSecretWrong;
-                        break;
-                    case 2:
-                        message = popupTranslations.noAuthority;
-                        break;
-                    case 3:
-                        message = popupTranslations.AccountNoField;
-                        break;
-                    case 4:
-                        message = popupTranslations.JoinExist;
-                        break;
-                    default:
-                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
-                        message = checkRes.message;
-                        break;
-                }
-
-                dispatch(setNoticePopUp({
-                    on: true,
-                    is_error: true,
-                    message: message
-                }));
-            }
-        }
-    };
-
-    const changeEmailNickname = () => {
-
-        return(
-            <div>
-                <div className={"ac_title"}>{translations.changeEmailNickname}</div>
-                <Form onSubmit={handleChangeEmailNickname}>
-                    <Form.Group controlId="changeEmail">
-                        <Form.Label className={"ac_label"}>{translations.email}</Form.Label>
-                        <Form.Control
-                            className={"ac_control"}
-                            type="email"
-                            placeholder={translations.email}
-                            value={changeInfoEmail}
-                            onChange={(e) => setChangeInfoEmail(e.target.value)}
-                        />
-                    </Form.Group>
-
-                    <Form.Group controlId="changeNickname" className="mt-3">
-                        <Form.Label className={"ac_label"}>{translations.nickname}</Form.Label>
-                        <Form.Control
-                            className={"ac_control"}
-                            type="text"
-                            placeholder={translations.nickname}
-                            value={changeInfoNickname}
-                            onChange={(e) => setChangeInfoNickname(e.target.value)}
-                        />
-                    </Form.Group>
-
-                    {
-                        isAdmin ?
-                            <Form.Group controlId="changePassAdminSecret" className="mt-3">
-                                <Form.Label className={"ac_label"}>{translations.admin_pass_key}</Form.Label>
-                                <div className={"account_cp_wrap"}>
-                                    <Form.Control
-                                        className={"ac_control"}
-                                        type={watchAdminSecret ? "text" : "password"}
-                                        placeholder={translations.admin_pass_key}
-                                        value={adminSecret}
-                                        onChange={(e) => setAdminSecret(e.target.value)}
-                                    />
-
-                                    <label>
-                                        <input
-                                            type="checkbox"
-                                            checked={watchAdminSecret}
-                                            onChange={(e) => setWatchAdminSecret(e.target.checked)}
-                                        />
-                                        {translations.watch_new_pass}
-                                    </label>
-                                </div>
-                            </Form.Group>
-                            :
-                            null
-
-                    }
-
-                    <Button variant="primary" type="submit" className="mt-3">
-                        {translations.change}
-                    </Button>
-
-                    <Button variant="secondary" className="mt-3 ms-2" onClick={() => clearState()}>
-                        {translations.cancel}
-                    </Button>
-                </Form>
-            </div>
-
-        )
-    };
-
-    const handleChangePassword = async (event: React.FormEvent) => {
-        event.preventDefault();
-        try {
-
-            const reqData = !isAdmin ?
-                {
-                    email:changePassEmail,
-                    old_password:changePassOldPass,
-                    new_password:changePassNewPass
-                }
-                :
-                {
-                    email:changePassEmail,
-                    old_password:changePassOldPass,
-                    new_password:changePassNewPass,
-                    adminSecret: adminSecret
-                };
-
-            const response = await axios.put(`${apiUrl}/${isAdmin? "admin" : "user"}/new/password`,reqData , {headers: { Authorization: `Bearer ${getToken()}` }});
-
-            if (response.status === 201) {
-
-                dispatch(setNoticePopUp({
-                    on: true,
-                    is_error: false,
-                    message: popupTranslations.AccountChangePassSuccess
-                }));
-
-                clearState();
-
-            }
-
-        } catch (error) {
-
-            const axiosError = error as AxiosError<{ changePass: number }>;
-            if (axiosError.response) {
-
-                const changePass = axiosError.response.data.changePass;
-                let message = ``;
-                switch (changePass) {
-                    case 1:
-                        message = popupTranslations.AdminSecretWrong;
-                        break;
-                    case 2:
-                        message = popupTranslations.AccountRequired;
-                        break;
-                    case 3:
-                        message = popupTranslations.AccountWrongEmail;
-                        break;
-                    case 4:
-                        message = popupTranslations.AccountWrongPass;
-                        break;
-                    default:
-                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
-                        message = checkRes.message;
-                        break;
-                }
-
-                dispatch(setNoticePopUp({
-                    on: true,
-                    is_error: true,
-                    message: message
-                }));
-            }
-        }
-    };
-
-    const changePassword = () => {
-
-        return(
-            <div>
-                <div className={"ac_title"}>{translations.changePassword}</div>
-
-                <Form onSubmit={handleChangePassword}>
-                    <Form.Group controlId="changePassEmail">
-                        <Form.Label className={"ac_label"}>{translations.email}</Form.Label>
-                        <Form.Control
-                            className={"ac_control"}
-                            type="email"
-                            placeholder={translations.email}
-                            value={changePassEmail}
-                            onChange={(e) => setChangePassEmail(e.target.value)}
-                        />
-                    </Form.Group>
-
-                    <Form.Group controlId="changePassOld" className="mt-3">
-                        <Form.Label className={"ac_label"}>{translations.old_password}</Form.Label>
-                        <div className={"account_cp_wrap"}>
-                            <Form.Control
-                                className={"ac_control"}
-                                type={watchOldPass ? "text" : "password"}
-                                placeholder={translations.old_password}
-                                value={changePassOldPass}
-                                onChange={(e) => setChangePassOldPass(e.target.value)}
-                            />
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    checked={watchOldPass}
-                                    onChange={(e) => setWatchOldPass(e.target.checked)}
-                                />
-                                {translations.watch_old_pass}
-                            </label>
-                        </div>
-
-                    </Form.Group>
-
-                    <Form.Group controlId="changePassNew" className="mt-3">
-                        <Form.Label className={"ac_label"}>{translations.new_password}</Form.Label>
-                        <div className={"account_cp_wrap"}>
-                            <Form.Control
-                                className={"ac_control"}
-                                type={watchNewPass ? "text" : "password"}
-                                placeholder={translations.new_password}
-                                value={changePassNewPass}
-                                onChange={(e) => setChangePassNewPass(e.target.value)}
-                            />
-
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    checked={watchNewPass}
-                                    onChange={(e) => setWatchNewPass(e.target.checked)}
-                                />
-                                {translations.watch_new_pass}
-                            </label>
-                        </div>
-                    </Form.Group>
-
-                    {
-                        isAdmin ?
-                            <Form.Group controlId="changePassAdminSecret" className="mt-3">
-                                <Form.Label className={"ac_label"}>{translations.admin_pass_key}</Form.Label>
-                                <div className={"account_cp_wrap"}>
-                                    <Form.Control
-                                        className={"ac_control"}
-                                        type={watchAdminSecret ? "text" : "password"}
-                                        placeholder={translations.admin_pass_key}
-                                        value={adminSecret}
-                                        onChange={(e) => setAdminSecret(e.target.value)}
-                                    />
-
-                                    <label>
-                                        <input
-                                            type="checkbox"
-                                            checked={watchAdminSecret}
-                                            onChange={(e) => setWatchAdminSecret(e.target.checked)}
-                                        />
-                                        {translations.watch_new_pass}
-                                    </label>
-                                </div>
-                            </Form.Group>
-                            :
-                            null
-
-                    }
-
-                    <Button variant="primary" type="submit" className="mt-3">
-                        {translations.change}
-                    </Button>
-                    <Button variant="secondary" className="mt-3 ms-2" onClick={() => clearState()}>
-                    {translations.cancel}
-                    </Button>
-                </Form>
-            </div>
-
-
-        )
-    };
-
-    const handleInactivateAccount = async (event: React.FormEvent) => {
-        event.preventDefault();
-        try {
-
-            const response = await axios.delete(`${apiUrl}/user/${userId}}`, {headers: { Authorization: `Bearer ${getToken()}` }});
-
-            if (response.status === 200) {
-
-                dispatch(setNoticePopUp({
-                    on: true,
-                    is_error: false,
-                    message: popupTranslations.UserDelete
-                }));
-
-                clearState();
-
-                setTimeout(() => {
-                    logout(navigate, dispatch, false)
-                }, 3000)
-
-
-            }
-
-        } catch (error) {
-
-            const axiosError = error as AxiosError<{ userDeleteRes: number }>;
-            if (axiosError.response) {
-
-                const userDeleteRes = axiosError.response.data.userDeleteRes;
-                let message = ``;
-                switch (userDeleteRes) {
-                    case 1:
-                        message = popupTranslations.injection;
-                        break;
-                    case 2:
-                        message = popupTranslations.noAuthority;
-                        break;
-                    default:
-                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
-                        message = checkRes.message;
-                        break;
-                }
-
-                dispatch(setNoticePopUp({
-                    on: true,
-                    is_error: true,
-                    message: message
-                }));
-            }
-        }
-    };
-
-    const inactivateAccount = () => {
-
-        return(
-            <div>
-                <div className={"ac_title"}>{translations.deactivate_account}</div>
-                <div className={"ac_inst"}>{translations.deactivateInstruction}</div>
-                <Form className={"ac_agree"} onSubmit={handleInactivateAccount}>
-                    <Form.Group controlId="approveDeactivation" className="mt-3">
-                        <Form.Check
-                            type="checkbox"
-                            label={translations.approve}
-                            checked={approveDeactivation}
-                            onChange={(e) => setApproveDeactivation(e.target.checked)}
-                        />
-                    </Form.Group>
-                    {approveDeactivation ?
-                        <Button variant="primary" type="submit" className="mt-3">
-                            {translations.deactivate}
-                        </Button>
-                        :
-                        null
-                    }
-                </Form>
-            </div>
-
-        )
-    };
-
-    const serviceTypes = (asTypes:string) => {
-
-        switch(asTypes) {
-            case "1":
-                return changeEmailNickname()
-
-            case "2":
-                return changePassword();
-
-            case "3":
-                return inactivateAccount();
-            default:
-                return null;
-
-        }
-    };
 
     const handleAccountServiceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        clearState();
         setAccountService(event.target.value);
     };
 
@@ -481,7 +61,37 @@ const Account = () => {
                 </Form>
             </div>
             <div>
-                {serviceTypes(accountService)}
+                {accountService === "1" && <ChangeEmailNickname
+                    dispatch={dispatch}
+                    isAdmin={isAdmin as boolean}
+                    translations={translations}
+                    popupTranslations={popupTranslations}
+                    adminSecret={adminSecret}
+                    setAdminSecret={setAdminSecret}
+                    watchAdminSecret={watchAdminSecret}
+                    setWatchAdminSecret={setWatchAdminSecret}
+                    apiUrl={apiUrl}
+                    userId={userId as number}
+                />}
+                {accountService === "2" && <ChangePassword
+                    dispatch={dispatch}
+                    isAdmin={isAdmin as boolean}
+                    translations={translations}
+                    popupTranslations={popupTranslations}
+                    adminSecret={adminSecret}
+                    setAdminSecret={setAdminSecret}
+                    watchAdminSecret={watchAdminSecret}
+                    setWatchAdminSecret={setWatchAdminSecret}
+                    apiUrl={apiUrl}
+                />}
+                {accountService === "3" && <InactivateAccount
+                    dispatch={dispatch}
+                    navigate={navigate}
+                    translations={translations}
+                    popupTranslations={popupTranslations}
+                    apiUrl={apiUrl}
+                    userId={userId as number}
+                />}
             </div>
 
 

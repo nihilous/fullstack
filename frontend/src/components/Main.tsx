@@ -9,6 +9,10 @@ import {Button, Container} from "react-bootstrap";
 import { setNoticePopUp} from "../redux/slice";
 import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
 import jwtChecker from "../util/jwtChecker";
+import {UserDetailResponse, UserDetailProperty} from "../types/MainType";
+import ChildInformation from "./Main/ChildInformation";
+
+
 
 const Main = () => {
 
@@ -21,34 +25,7 @@ const Main = () => {
     const translations = MainTranslations[language];
     const popupTranslations = PopupMessageTranslations[language];
 
-    interface UserDetailProperty {
-        id: number;
-        name: string | null;
-        description: string | null;
-        gender: number | null;
-        birthdate: string | null;
-        nationality: number | null;
-        nickname: string;
-        name_original: string;
-    }
 
-    interface UserDetailWithDetails {
-        user_detail: true;
-        record: { [key: string]: UserDetailProperty };
-    }
-
-    interface UserBasicProperty {
-        id: number;
-        email: string | null;
-        nickname: string;
-    }
-
-    interface UserDetailWithoutDetails {
-        user_detail: false;
-        record: { [key: string]: UserBasicProperty };
-    }
-
-    type UserDetailResponse = UserDetailWithDetails | UserDetailWithoutDetails;
 
     const [userDetail, setUserDetail] = useState<UserDetailResponse | null>(null);
     const [filter, setFilter] = useState<string>(``);
@@ -146,58 +123,6 @@ const Main = () => {
         setFilterGender(value !== '' ? parseInt(value) : null);
     };
 
-
-
-    const childInformation = (info: UserDetailProperty[]) => {
-        return info.map(child => {
-
-            const formatDate = (dateString: string) => {
-                const [year, month, day] = dateString.split('T')[0].split('-');
-                return { year, month, day };
-            };
-
-            const yyyy_mm_dd = formatDate(child.birthdate as string);
-            return (
-                <div key={child.id} className="child-info main_info_elem">
-                    <div className={"mie_info_wrapper"}>
-                        <div className={"mie_info"}>
-                            <span>{`${translations.child_name}`}</span>
-                            <span>{`${child.name}`}</span>
-                        </div>
-                        <div className={"mie_info"}>
-                            <span>{`${translations.child_birthdate}`}</span>
-                            <span>{`${language === "FIN" ?
-                                yyyy_mm_dd.day + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.year
-                                :
-                                yyyy_mm_dd.year + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.day}`}</span>
-                        </div>
-                        <div className={"mie_info"}>
-                            <span>{`${translations.child_gender}`}</span>
-                            <span>{`${child.gender === 0 ? translations.boy : translations.girl}`}</span>
-                        </div>
-                        <div className={"mie_info"}>
-                            <span>{`${translations.child_nationality}`}</span>
-                            <span>{`${child.name_original}`}</span>
-                        </div>
-                        <div className={"mie_info"}>
-                            <span>{`${translations.child_description}`}</span>
-                            <span>{`${child.description}`}</span>
-                        </div>
-                    </div>
-                    <div className={"mie_button_wrapper"}>
-                        <Button href={`/history/${child.id}`} className="btn btn-primary mie_button">
-                            {`${translations.history}`}
-                        </Button>
-                        <Button href={`/notice/${child.id}`} className="btn btn-primary mie_button">
-                            {`${translations.schedule}`}
-                        </Button>
-                        <div className={"clear"}></div>
-                    </div>
-                </div>
-            );
-        });
-    };
-
     if (userDetail === null) {
         return <></>
     }
@@ -236,7 +161,10 @@ const Main = () => {
             {
                 userDetail?.user_detail === true ?
                     <Container className={"main_info_elem_wrapper"}>
-                        {childInformation(filteredUser)}
+                        <ChildInformation
+                            language={language}
+                            translations={translations}
+                            info = {filteredUser}/>
                     </Container>
 
                     :

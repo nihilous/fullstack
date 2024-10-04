@@ -9,22 +9,13 @@ import {Button, Col, Container, Form, Row} from "react-bootstrap";
 import {setNoticePopUp} from "../redux/slice";
 import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
 import jwtChecker from "../util/jwtChecker";
+import HistoryProperty from "../types/HistoryType"
+import ShowingHistory from "./History/ShowingHistory";
+import DeleteInfoUI from "./History/DeleteHistoryUI";
+import UpdateChildUI from "./History/UpdateChildUI";
+import UpdateHistoryUI from "./History/UpdateHistoryUI";
 
 const History = () => {
-
-    interface HistoryProperty {
-        name: string,
-        birthdate: string,
-        gender: number,
-        nationality: number,
-        description: string,
-        histories :{
-            id: number
-            vaccine_name: string
-            vaccine_round: number
-            history_date: string
-        } []
-    }
 
     const apiUrl = useSelector((state: RootState) => state.app.apiUrl);
     const language = useSelector((state: RootState) => state.app.language);
@@ -50,7 +41,7 @@ const History = () => {
     const [description, setDescription] = useState<string>(``);
     const [updateChild, setUpdateChild] = useState<boolean>(false);
     const targetHistoryRef = useRef<number | null>(null);
-    const approveMessage = translations.agree_to_delete;
+
 
     userDetailIds?.map((child_id: number) => {
         if(child_id === user_detail_id && !isAuthorized){
@@ -129,264 +120,6 @@ const History = () => {
 
     };
 
-    const showingHistory = (histories: HistoryProperty) => {
-        return histories.histories.map((history) => {
-
-            const formatDate = (dateString: string) => {
-                const [year, month, day] = dateString.split('T')[0].split('-');
-                return { year, month, day };
-            };
-
-            const yyyy_mm_dd = formatDate(history.history_date as string);
-            return (
-
-                <Container key={history.id} className="child-info history_info_elem">
-                    <div>{`${translations.name}`}</div>
-                    <div className={"hie_vaccine_name"}>{`${history.vaccine_name}`}</div>
-
-                    <div>
-                        <div className={"hie_info"}>
-                            <span>
-                                {`${translations.date}`}
-                            </span>
-                            <span>
-                                {`${language === "FIN" ?
-                                yyyy_mm_dd.day + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.year
-                                :
-                                yyyy_mm_dd.year + " " + yyyy_mm_dd.month + " " + yyyy_mm_dd.day}`}
-                            </span>
-                        </div>
-                        <div className={"hie_info"}>
-                            <span>
-                                {`${translations.round}`}
-                            </span>
-                            <span>
-                                {`${history.vaccine_round}`}
-                            </span>
-                        </div>
-
-                        <div className={"hie_buttons"}>
-                            <span>
-                                <Button variant="warning" onClick={() => modifyChildRecord(history.id, "update", history.history_date.split('T')[0])}>{translations.update}</Button>
-                            </span>
-                            <span>
-                                <Button variant="danger" onClick={() => modifyChildRecord(history.id, "delete", null)}>{translations.delete}</Button>
-                            </span>
-                        </div>
-                    </div>
-                </Container>
-            );
-        });
-    };
-
-    const deleteChildRecord = async () => {
-
-        let message = ``;
-        if(deleteConfirm !== approveMessage){
-            message = "not matched";
-            dispatch(setNoticePopUp({
-                on: true,
-                is_error: true,
-                message: message
-            }));
-            setDeleteConfirm(``);
-            return
-        }
-
-        try {
-
-            const response = await axios.delete(`${apiUrl}/user/${userId}/${id}`, {
-                headers: { Authorization: `Bearer ${getToken()}` }
-            });
-
-            if(response?.data.affectedHistoryRow === 0){
-                message = popupTranslations.delete_success
-            }else{
-                message = `${popupTranslations.delete_child_record_success}${response?.data.affectedHistoryRow}`;
-            }
-
-            dispatch(setNoticePopUp({
-                on: true,
-                is_error: false,
-                message: message
-            }));
-
-            navigate('/main');
-
-
-        } catch (error) {
-            const axiosError = error as AxiosError<{ childDeleteRes: number }>;
-            if (axiosError.response) {
-                const ChildDeleteRes = axiosError.response.data.childDeleteRes;
-                switch (ChildDeleteRes) {
-                    case 1:
-                        message = popupTranslations.injection;
-                        break;
-                    case 2:
-                        message = popupTranslations.noAuthority;
-                        break;
-                    case 3:
-                        message = popupTranslations.delete_already;
-                        break;
-                    default:
-                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
-                        message = checkRes.message;
-                        break;
-                }
-
-                dispatch(setNoticePopUp({
-                    on: true,
-                    is_error: true,
-                    message: message
-                }));
-            }
-        }
-    };
-
-
-    const updateHistoryRecord = async () => {
-
-        let message = ``;
-        const target_history_id = targetHistoryRef.current;
-
-        try {
-
-            const response = await axios.put(`${apiUrl}/history/${userId}/${id}`,
-                {"id": target_history_id, "history_date": updateTargetDate},
-                {headers: { Authorization: `Bearer ${getToken()}` }
-            });
-
-            if(response?.data.affectedHistoryRow === 0){
-                message = popupTranslations.update_history_record_zero
-            }else{
-                message = popupTranslations.update_history_record_success;
-            }
-
-            dispatch(setNoticePopUp({
-                on: true,
-                is_error: false,
-                message: message
-            }));
-            await historyDataFetch();
-
-            setUpdateHistory(!updateHistory)
-
-        } catch (error) {
-            const axiosError = error as AxiosError<{ historyUpdateRes: number }>;
-            if (axiosError.response) {
-                const HistoryUpdateRes = axiosError.response.data.historyUpdateRes;
-                switch (HistoryUpdateRes) {
-                    case 1:
-                        message = popupTranslations.noAuthority;
-                        break;
-                    case 2:
-                        message = popupTranslations.injection;
-                        break;
-                    default:
-                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
-                        message = checkRes.message;
-                        break;
-                }
-
-                dispatch(setNoticePopUp({
-                    on: true,
-                    is_error: true,
-                    message: message
-                }));
-            }
-        }
-    };
-
-    const updateHistoryUI = () => {
-        return(
-            <div className={"popup_form"}>
-                <Container>
-                    <Form.Group controlId="registerChildBirthdate">
-                        <Form.Label>{`${translations.new_date}`}</Form.Label>
-                        <Form.Control
-                            type="date"
-                            placeholder={`${translations.new_date}`}
-                            value={updateTargetDate}
-                            onChange={(e) => setUpdateTargetDate(e.target.value)}
-                        />
-                    </Form.Group>
-
-                    <Button variant="primary" type="submit" className="mt-3" onClick={() => updateHistoryRecord()}>
-                        {`${translations.update}`}
-                    </Button>
-                    <Button variant="secondary" className="mt-3 ms-2" onClick={() => setUpdateHistory(!updateHistory)}>
-                        {`${translations.cancel}`}
-                    </Button>
-
-                </Container>
-            </div>
-        )
-    };
-
-    const deleteHistoryRecord = async () => {
-
-        let message = ``;
-        const target_history_id = targetHistoryRef.current;
-
-        if(deleteConfirm !== approveMessage){
-            message = "not matched";
-            dispatch(setNoticePopUp({
-                on: true,
-                is_error: true,
-                message: message
-            }));
-            setDeleteConfirm(``);
-            return
-        }
-
-        try {
-
-            const response = await axios.delete(`${apiUrl}/history/${userId}/${id}/${target_history_id}`,
-                {headers: { Authorization: `Bearer ${getToken()}` }
-                });
-
-            if(response?.data.affectedHistoryRow === 0){
-                message = popupTranslations.deleted_history_record_zero
-            }else{
-                message = popupTranslations.delete_history_record_success;
-            }
-
-            dispatch(setNoticePopUp({
-                on: true,
-                is_error: false,
-                message: message
-            }));
-            setDeleteConfirm(``);
-            await historyDataFetch();
-
-            setRemoveHistory(!removeHistory)
-
-        } catch (error) {
-            const axiosError = error as AxiosError<{ historyDeleteRes: number }>;
-            if (axiosError.response) {
-                const HistoryDeleteRes = axiosError.response.data.historyDeleteRes;
-                switch (HistoryDeleteRes) {
-                    case 1:
-                        message = popupTranslations.noAuthority;
-                        break;
-                    case 2:
-                        message = popupTranslations.injection;
-                        break;
-                    default:
-                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
-                        message = checkRes.message;
-                        break;
-                }
-
-                dispatch(setNoticePopUp({
-                    on: true,
-                    is_error: true,
-                    message: message
-                }));
-            }
-        }
-    };
-
     const closeDeleteUI = () => {
         if(removeHistory){
             setRemoveHistory(!removeHistory);
@@ -398,170 +131,6 @@ const History = () => {
         setDeleteConfirm(``);
     }
 
-    const deleteHistoryUI = () => {
-        return(
-            <div className={"popup_form"}>
-                <Container>
-                    <Form.Group controlId="DeleteApprove" className="mt-3">
-                        <Form.Label>{removeHistory? translations.delete_history_record : translations.delete_child_record}</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder={`${translations.type}${translations.agree_to_delete}`}
-                            value={deleteConfirm}
-                            onChange={(e) => setDeleteConfirm(e.target.value)}
-                        />
-                    </Form.Group>
-
-                    <Button variant="primary" type="submit" className="mt-3" onClick={() => removeHistory? deleteHistoryRecord() : deleteChildRecord()}>
-                        {`${translations.delete}`}
-                    </Button>
-                    <Button variant="secondary" className="mt-3 ms-2" onClick={() => closeDeleteUI()}>
-                        {`${translations.cancel}`}
-                    </Button>
-
-                </Container>
-            </div>
-        )
-    };
-
-    const updateChildRecord = async () => {
-
-        try {
-
-            await axios.put(`${apiUrl}/user/${getDecodedToken()?.userId}/${id}`, {
-                name: name,
-                description: description,
-                gender: gender,
-                birthdate: birthdate,
-                nationality: nationality,
-            }, {headers: { Authorization: `Bearer ${getToken()}` }});
-
-
-            dispatch(setNoticePopUp({
-                on: true,
-                is_error: false,
-                message: popupTranslations.update_child_record_success
-            }));
-
-            historyDataFetch();
-            closeDeleteUI();
-
-        } catch (error) {
-
-            const axiosError = error as AxiosError<{ childUpdateRes: number }>;
-            if (axiosError.response) {
-
-                const childUpdateRes = axiosError.response.data.childUpdateRes;
-                let message = ``;
-                switch (childUpdateRes) {
-                    case 1:
-                        message = popupTranslations.noAuthority;
-                        break;
-                    case 2:
-                        message = popupTranslations.injection;
-                        break;
-                    case 3:
-                        message = popupTranslations.AccountNoField;
-                        break;
-                    default:
-                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
-                        message = checkRes.message;
-                        break;
-                }
-
-                dispatch(setNoticePopUp({
-                    on: true,
-                    is_error: true,
-                    message: message
-                }));
-
-            }
-        }
-    };
-
-    const updateChildUI = () => {
-        return(
-            <div className={"popup_form"}>
-                <Container className="update_child">
-                    <Row className="justify-content-md-center">
-                        <Col md={6}>
-                                <div className={"update_child_inst"}>{translations.update_child_inst}</div>
-
-                                <Form.Group controlId="registerChildName">
-                                    <Form.Label>{translations.child_name}</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        placeholder={translations.child_name}
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                    />
-                                </Form.Group>
-
-                                <Form.Group controlId="registerChildBirthdate">
-                                    <Form.Label>{translations.birthdate}</Form.Label>
-                                    <Form.Control
-                                        type="date"
-                                        placeholder={translations.birthdate}
-                                        value={birthdate}
-                                        onChange={(e) => setBirthdate(e.target.value)}
-                                    />
-                                </Form.Group>
-
-                                <Form.Group controlId="registerChildGender">
-                                    <Form.Label>{translations.gender}</Form.Label>
-                                    <Form.Select
-                                        value={gender ?? ""}
-                                        onChange={(e) => setGender(e.target.value !== "" ? parseInt(e.target.value, 10) : null)}
-                                    >
-                                        <option value="">{translations.select_gender}</option>
-                                        <option value={0}>{translations.boy}</option>
-                                        <option value={1}>{translations.girl}</option>
-                                    </Form.Select>
-                                </Form.Group>
-
-                                <Form.Group controlId="registerChildNationality">
-                                    <Form.Label>{translations.nationality}</Form.Label>
-                                    <Form.Select
-                                        value={nationality ?? ""}
-                                        onChange={(e) => setNationality(e.target.value !== "" ? parseInt(e.target.value, 10) : null)}
-                                    >
-                                        <option value="">{translations.select_nationality}</option>
-                                        <option value={1}>{translations.finland}</option>
-                                        <option value={2}>{translations.korea}</option>
-                                        <option value={3}>{translations.usa}</option>
-                                    </Form.Select>
-                                </Form.Group>
-
-                            <Form.Group controlId="registerChildDescription">
-                                    <Form.Label>{translations.description}</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        placeholder={translations.description}
-                                        value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
-                                    />
-                                </Form.Group>
-                                <div className="his_delete">
-                                    <div>
-                                        <Button variant="primary" className="mt-3" onClick={() => updateChildRecord()}>
-                                            {translations.update}
-                                        </Button>
-                                    </div>
-                                    <div>
-                                        <Button variant="secondary" className="mt-3 ms-2" onClick={() => closeDeleteUI()}>
-                                            {translations.cancel}
-                                        </Button>
-                                    </div>
-                                </div>
-
-
-                        </Col>
-                    </Row>
-                </Container>
-            </div>
-        )
-    };
-
 
     return (
 
@@ -571,7 +140,12 @@ const History = () => {
             </div>
             {
                 vaccinationHistory?.histories ?
-                    vaccinationHistory?.histories && showingHistory(vaccinationHistory)
+                    vaccinationHistory?.histories && <ShowingHistory
+                    language={language}
+                    translations={translations}
+                    infoWithHistories = {vaccinationHistory}
+                    modifyChildRecord = {modifyChildRecord}
+                />
                     :
                     <div className={"main_top container"}>
                         <p className={"history_title"}>{translations.no_record}</p>
@@ -593,21 +167,70 @@ const History = () => {
 
             {
                 removeChild || removeHistory ?
-                    deleteHistoryUI()
+                    <DeleteInfoUI
+                        dispatch={dispatch}
+                        navigate={navigate}
+                        translations={translations}
+                        popupTranslations={popupTranslations}
+                        apiUrl={apiUrl}
+                        userId={userId as number}
+                        id = {id as string}
+                        deleteConfirm = {deleteConfirm}
+                        setDeleteConfirm = {setDeleteConfirm}
+                        closeDeleteUI = {closeDeleteUI}
+                        historyDataFetch ={historyDataFetch}
+                        removeHistory = {removeHistory}
+                        setRemoveHistory = {setRemoveHistory}
+                        targetHistoryRef = {targetHistoryRef}
+                    />
                     :
                     null
             }
 
             {
                 updateHistory ?
-                    updateHistoryUI()
+                    <UpdateHistoryUI
+                        dispatch={dispatch}
+                        translations={translations}
+                        popupTranslations={popupTranslations}
+                        apiUrl={apiUrl}
+                        userId={userId as number}
+                        id = {id as string}
+                        historyDataFetch ={historyDataFetch}
+                        targetHistoryRef = {targetHistoryRef}
+                        updateTargetDate = {updateTargetDate}
+                        setUpdateTargetDate = {setUpdateTargetDate}
+                        updateHistory = {updateHistory}
+                        setUpdateHistory = {setUpdateHistory}
+                    />
                     :
                     null
             }
 
             {
                 updateChild ?
-                    updateChildUI()
+                    <UpdateChildUI
+
+                        dispatch={dispatch}
+                        translations={translations}
+                        popupTranslations={popupTranslations}
+                        apiUrl={apiUrl}
+                        userId={userId as number}
+                        id = {id as string}
+                        closeDeleteUI = {closeDeleteUI}
+                        historyDataFetch ={historyDataFetch}
+
+                        name={name}
+                        setName={setName}
+                        birthdate={birthdate}
+                        setBirthdate={setBirthdate}
+                        gender={gender}
+                        setGender={setGender}
+                        nationality={nationality}
+                        setNationality={setNationality}
+                        description={description}
+                        setDescription={setDescription}
+                    />
                     :
                     null
             }

@@ -6,9 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import { AdminHostileTranslations } from '../translation/AdminHostile';
 import {PopupMessageTranslations} from "../translation/PopupMessageTranslations";
 import { getToken, getDecodedToken } from "../util/jwtDecoder";
-import {Button, Container, Form} from "react-bootstrap";
+import { Container, Form} from "react-bootstrap";
 import {setNoticePopUp} from "../redux/slice";
 import jwtChecker from "../util/jwtChecker";
+import GenerateNavi from "./Common/GenerateNavi";
+import HostileUserInformation from "../types/AdminHostileType"
+import HostileUserElems from "./AdminHostile/HostileUserElems"
 
 const AdminHostile = () => {
 
@@ -29,19 +32,7 @@ const AdminHostile = () => {
     const [whitelist, setWhitelist] = useState<boolean>(false);
     const [ban, setBan] = useState<boolean>(false);
 
-    interface HostileUserInformation {
-        id: number;
-        ip_address: string;
-        attack_count: number;
-        is_banned: boolean;
-        is_whitelist: boolean;
-        log: string;
-        created_at: string;
-        updated_at: string;
-    }
-
-    const informations = useRef<HostileUserInformation [] | null>(null);
-    const [filteredUser, setFilteredUser] = useState<HostileUserInformation [] | null>(null);
+    const [users, setUsers] = useState<HostileUserInformation [] | null>(null);
 
     const hostileUserDataFetch = useCallback(async (page:number) => {
 
@@ -67,8 +58,7 @@ const AdminHostile = () => {
                 setNaviNum(0);
             }
 
-            informations.current = response.data.data;
-            setFilteredUser(response.data.data);
+            setUsers(response.data.data);
 
         } catch (error) {
             const axiosError = error as AxiosError<{ adminHostileRes: number }>;
@@ -107,154 +97,7 @@ const AdminHostile = () => {
 
     }, [naviNum, hostileUserDataFetch]);
 
-    const formatDate = (dateString: string, language: string) => {
-
-        const [year, month, day] = dateString.includes("T") ? dateString.split('T')[0].split('-') : dateString.split(' ')[0].split('-');
-        if (language === "FIN") {
-            return `${day} ${month} ${year}`;
-        }
-        return `${year} ${month} ${day}`;
-
-    };
-
-    const generateNavi = (total: number, recent: number) => {
-        const buttons = [];
-        const itemsPerPage = 5;
-
-        const currentSet = Math.floor(recent / itemsPerPage);
-
-        const start = currentSet * itemsPerPage;
-        const end = Math.min(start + itemsPerPage, total);
-
-        for (let i = start; i < end; i++) {
-            buttons.push(
-                <span className={`nav_target ${i === naviNum ? "now_nav" : ""}`} key={i} onClick={() => setNaviNum(i)}>
-                    {i + 1}
-                </span>
-            );
-        }
-
-        return <div>{buttons}</div>;
-    };
-
-    const whiteOrBanUpdate = async (id:number, column:string) => {
-
-        try {
-
-            const response = await axios.put<HostileUserInformation []>(`${apiUrl}/admin/hostile/${column}`, {"id": id},{
-                headers: { Authorization: `Bearer ${getToken()}` }
-            });
-
-            if(response.status === 201) {
-                hostileUserDataFetch(naviNum);
-            }
-
-
-        } catch (error) {
-            const axiosError = error as AxiosError<{ adminUpdateRes: number }>;
-            if (axiosError.response) {
-                const AdminUpdateRes = axiosError.response.data.adminUpdateRes;
-                let message = ``;
-                switch (AdminUpdateRes) {
-                    case 1:
-                        message = popupTranslations.noAuthority
-                        break;
-                    case 2:
-                        message = popupTranslations.injection
-                        break;
-                    case 3:
-                        message = popupTranslations.AdminHostileZeroUpdate
-                        break;
-                    default:
-                        const checkRes = jwtChecker(error as AxiosError<{tokenExpired: boolean}>, popupTranslations);
-                        message = checkRes.message;
-                        break;
-                }
-
-                dispatch(setNoticePopUp({
-                    on: true,
-                    is_error: true,
-                    message: message
-                }));
-            }
-        }
-    };
-
-    const userInformation = (info: HostileUserInformation[]) => {
-
-        return info.map((data, userIndex) => {
-            const parsedLogs = JSON.parse(data.log);
-
-            return (
-                <div key={data.id} className={`hostile_elem`}>
-                    <div className={`info_div`}>
-                        <span>{translations.index}</span>
-                        <span>{data.id}</span>
-                    </div>
-                    <div className={`info_div`}>
-                        <span>{translations.ip_address}</span>
-                        <span>{data.ip_address}</span>
-                    </div>
-                    <div className={`info_div`}>
-                        <span>{translations.attack_count}</span>
-                        <span>{data.attack_count}</span>
-                    </div>
-                    <div className={`info_div`}>
-                        <span>{translations.is_banned}</span>
-                        <span>{data.is_banned ? "true" : "false"}</span>
-                    </div>
-                    <div className={`info_div`}>
-                        <span>{translations.is_whitelist}</span>
-                        <span>{data.is_whitelist ? "true" : "false"}</span>
-                    </div>
-                    <div className={`info_div`}>
-                        <span>{translations.updated_at}</span>
-                        <span>{formatDate(data.updated_at, language)}</span>
-                    </div>
-                    <div className={`info_div`}>
-                        <span>{translations.created_at}</span>
-                        <span>{formatDate(data.created_at, language)}</span>
-                    </div>
-                    <div className={`info_div`}>
-                        <span>
-                            <Button onClick={() => whiteOrBanUpdate(data.id, "ban")}>
-                                {data.is_banned ? translations.un_ban : translations.ban}
-                            </Button>
-                        </span>
-                        <span>
-                            <Button onClick={() => whiteOrBanUpdate(data.id, "whitelist")}>
-                                {data.is_whitelist ? translations.un_whitelist : translations.whitelist}
-                            </Button>
-                        </span>
-                    </div>
-                    <div>
-                        {parsedLogs.map((logEntry: string, logIndex: number) => {
-                            const parsedLogEntry = JSON.parse(logEntry);
-
-                            return (
-                                <div key={logIndex} className={`log_elem`}>
-                                    <div className={`log_div`}>
-                                        <span>{translations.key}</span>
-                                        <span>{translations.value}</span>
-                                    </div>
-                                    {Object.entries(parsedLogEntry).map(([key, value], entryIndex) => (
-                                        <div className={`log_div`} key={entryIndex}>
-                                            <span>{key}</span>
-                                            <span>{`${(value)}`}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            );
-        });
-    };
-
-    informations.current && userInformation(informations.current);
-
-    if (informations === null) {
+    if (users === null) {
         return <></>
     }
 
@@ -268,32 +111,24 @@ const AdminHostile = () => {
                 </div>
             </Container>
 
-            {informations.current && userInformation(informations.current)}
+            {users && <HostileUserElems
+                dispatch={dispatch}
+                language={language}
+                translations={translations}
+                popupTranslations={popupTranslations}
+                apiUrl={apiUrl}
+                info={users}
+                naviNum={naviNum}
+                hostileUserDataFetch={hostileUserDataFetch}
+            />}
 
 
-            <div className="board_navs">
-                <div className={"nav_prev"}>
-                    {totalNavi.current > 4 && naviNum > 4 ?
-                        <span onClick={() => setNaviNum(Math.max(naviNum - 1 - (naviNum % 5), 0))}>
-                            {"<"}
-                        </span>
-                        :
-                        null
-                    }
-                </div>
+            {<GenerateNavi
+                total={totalNavi.current}
+                naviNum={naviNum}
+                setNaviNum={setNaviNum}
+            />}
 
-                {generateNavi(totalNavi.current, naviNum)}
-                <div className={"nav_next"}>
-                    {totalNavi.current > 4 && naviNum < totalNavi.current - totalNavi.current % 5 ?
-                        <span
-                            onClick={() => setNaviNum(Math.min(naviNum + (5 - (naviNum % 5)), totalNavi.current - 1))}>
-                            {">"}
-                        </span>
-                        :
-                        null
-                    }
-                </div>
-            </div>
 
             <div className={"board_input_bar"}>
                 <div className={"board_input_search"}>
@@ -311,11 +146,6 @@ const AdminHostile = () => {
                     </div>
                 </div>
                 <div className={"hostile_input_buttons"}>
-                    <div className={"hostile_button_wrap"}>
-                        <Button variant="primary" type="submit" className="mt-3" onClick={() => hostileUserDataFetch(0)}>
-                            {translations.search}
-                        </Button>
-                    </div>
                     <div className={"hostile_check_wrap"}>
                         <span>
                             <Form.Check

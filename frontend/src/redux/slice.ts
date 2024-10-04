@@ -1,11 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
+import NoticePopUp from '../types/NoticePopUpType'
 
-interface NoticePopUp {
-    on:boolean,
-    is_error:boolean | null,
-    message: string,
-}
 
 interface AppState {
     apiUrl: string;
