@@ -1,0 +1,13 @@
+/.idea
+/node_modules
+.babelrc
+.dockerignore
+.env
+.eslintrc.ts
+.gitignore
+Dockerfile
+Dockerfile.dev
+README.md
+package.json
+package-lock.json
+tsconfig.json

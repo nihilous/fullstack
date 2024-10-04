@@ -3,9 +3,9 @@ import { configureStore } from '@reduxjs/toolkit';
 import appReducer from './redux/slice';
 
 const store = configureStore({
-    reducer: {
-        app: appReducer,
-    },
+  reducer: {
+    app: appReducer,
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;

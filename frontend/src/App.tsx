@@ -12,50 +12,47 @@ import RegisterChild from './components/RegisterChild';
 import History from './components/History';
 import Notice from './components/Notice';
 import Account from './components/Account';
-import AdminLoginJoin from "./components/AdminLoginJoin";
-import AdminMain from "./components/AdminMain";
-import AdminHostile from "./components/AdminHostile";
-import AdminDataManage from "./components/AdminDataManage";
-import Board from "./components/Board";
-import About from "./components/About";
+import AdminLoginJoin from './components/AdminLoginJoin';
+import AdminMain from './components/AdminMain';
+import AdminHostile from './components/AdminHostile';
+import AdminDataManage from './components/AdminDataManage';
+import Board from './components/Board';
+import About from './components/About';
 const App = () => {
+  const dispatch = useDispatch();
 
-    const dispatch = useDispatch();
+  useEffect(() => {
+    const token = Cookies.get('token');
+    const expirationTime = localStorage.getItem('jwtExpiration');
 
-    useEffect(() => {
-        const token = Cookies.get('token');
-        const expirationTime = localStorage.getItem('jwtExpiration');
+    if (token && expirationTime) {
+      const parsedExpirationTime = parseInt(expirationTime);
+      const preWarningTime = parsedExpirationTime - 10 * 60 * 1000;
+      startJwtTimers(dispatch, parsedExpirationTime, preWarningTime);
+    }
+  }, [dispatch]);
 
-        if (token && expirationTime) {
-            const parsedExpirationTime = parseInt(expirationTime);
-            const preWarningTime = parsedExpirationTime - 10 * 60 * 1000;
-            startJwtTimers(dispatch, parsedExpirationTime, preWarningTime);
-        }
-    }, [dispatch]);
-
-
-    return (
-
-        <Router>
-            <Header />
-            <Routes>
-                <Route path="/" element={<LoginJoin />} />
-                <Route path="/main" element={<Main />} />
-                <Route path="/register_child" element={<RegisterChild />} />
-                <Route path="/history/:id" element={<History />} />
-                <Route path="/notice/:id" element={<Notice />} />
-                <Route path="/account" element={<Account />} />
-                <Route path="/admin/login" element={<AdminLoginJoin />} />
-                <Route path="/admin/main" element={<AdminMain />} />
-                <Route path="/admin/hostile" element={<AdminHostile />} />
-                <Route path="/admin/manage" element={<AdminDataManage />} />
-                <Route path="/board" element={<Board />} />
-                <Route path="/board/:page" element={<Board />} />
-                <Route path="/about" element={<About />} />
-            </Routes>
-            <Footer />
-        </Router>
-    );
+  return (
+    <Router>
+      <Header />
+      <Routes>
+        <Route path="/" element={<LoginJoin />} />
+        <Route path="/main" element={<Main />} />
+        <Route path="/register_child" element={<RegisterChild />} />
+        <Route path="/history/:id" element={<History />} />
+        <Route path="/notice/:id" element={<Notice />} />
+        <Route path="/account" element={<Account />} />
+        <Route path="/admin/login" element={<AdminLoginJoin />} />
+        <Route path="/admin/main" element={<AdminMain />} />
+        <Route path="/admin/hostile" element={<AdminHostile />} />
+        <Route path="/admin/manage" element={<AdminDataManage />} />
+        <Route path="/board" element={<Board />} />
+        <Route path="/board/:page" element={<Board />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+      <Footer />
+    </Router>
+  );
 };
 
 export default App;

@@ -1,4 +1,3 @@
-import { act } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
@@ -20,11 +19,11 @@ describe('<LoginJoin />', () => {
 
   it('displays English UI elements', () => {
     render(
-        <Provider store={store}>
-          <Router>
-            <LoginJoin />
-          </Router>
-        </Provider>
+      <Provider store={store}>
+        <Router>
+          <LoginJoin />
+        </Router>
+      </Provider>,
     );
 
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -40,11 +39,11 @@ describe('<LoginJoin />', () => {
     });
 
     render(
-        <Provider store={store}>
-          <Router>
-            <LoginJoin />
-          </Router>
-        </Provider>
+      <Provider store={store}>
+        <Router>
+          <LoginJoin />
+        </Router>
+      </Provider>,
     );
 
     expect(screen.getByLabelText(/sähköposti/i)).toBeInTheDocument();
@@ -60,11 +59,11 @@ describe('<LoginJoin />', () => {
     });
 
     render(
-        <Provider store={store}>
-          <Router>
-            <LoginJoin />
-          </Router>
-        </Provider>
+      <Provider store={store}>
+        <Router>
+          <LoginJoin />
+        </Router>
+      </Provider>,
     );
 
     expect(screen.getByLabelText(/이메일/i)).toBeInTheDocument();
@@ -74,11 +73,11 @@ describe('<LoginJoin />', () => {
 
   it('switches between Login and Join forms', () => {
     render(
-        <Provider store={store}>
-          <Router>
-            <LoginJoin />
-          </Router>
-        </Provider>
+      <Provider store={store}>
+        <Router>
+          <LoginJoin />
+        </Router>
+      </Provider>,
     );
 
     const joinButton = screen.getByText(/join/i);

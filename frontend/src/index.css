@@ -29,7 +29,7 @@ code {
     monospace;
 }
 
-.clear{
+.clear {
   clear: both;
 }
 
@@ -39,29 +39,27 @@ code {
   box-sizing: border-box;
 }
 
-
 .footer_language {
   margin-left: 0.5rem;
 }
-
 
 /* pop up ui */
 .popup_form {
   z-index: 1000;
   position: fixed;
-  top:0;
-  left:0;
-  background-color: rgba(0.1,0.1,0.1,0.7);
+  top: 0;
+  left: 0;
+  background-color: rgba(0.1, 0.1, 0.1, 0.7);
   height: 100%;
   width: 100%;
   padding: 10px;
 }
 
-.popup_form div{
+.popup_form div {
   top: 40%;
 }
 
-.popup_form label{
+.popup_form label {
   font-weight: bold;
   font-size: 30px;
   color: white;
@@ -78,7 +76,7 @@ code {
   margin-bottom: 20px;
 }
 
-.mie_info_wrapper{
+.mie_info_wrapper {
   flex-grow: 6;
   display: flex;
   flex-direction: column;
@@ -95,70 +93,70 @@ code {
   max-height: 45px;
 }
 
-.main_greeting{
+.main_greeting {
   text-align: left;
   font-weight: bold;
   font-size: 40px;
 }
 
-.main_rc_btn{
+.main_rc_btn {
   text-align: center;
 }
 
-.main_rc_btn a{
+.main_rc_btn a {
   min-height: 54px;
   align-content: center;
 }
-.filter_wrap{
+.filter_wrap {
   display: flex;
   flex-direction: column;
   align-content: center;
 }
 
-.filter_wrap .select_wrap{
+.filter_wrap .select_wrap {
   display: flex;
   margin-top: 20px;
 }
 
-.filter_wrap .select_wrap select{
+.filter_wrap .select_wrap select {
   min-height: 28px;
   width: 45%;
   padding-left: 20px;
 }
 
-.filter_wrap .select_wrap select:nth-child(1){
+.filter_wrap .select_wrap select:nth-child(1) {
   margin-right: 5%;
 }
 
-.filter_wrap .select_wrap select:nth-child(2){
+.filter_wrap .select_wrap select:nth-child(2) {
   margin-left: 5%;
 }
 
-.filter_wrap .select_wrap_3{
+.filter_wrap .select_wrap_3 {
   display: flex;
   margin-top: 20px;
 }
 
-.filter_wrap .select_wrap_3 select{
+.filter_wrap .select_wrap_3 select {
   min-height: 28px;
   width: 32%;
   padding-left: 5px;
 }
 
-.filter_wrap .select_wrap_3 select:nth-child(1){
+.filter_wrap .select_wrap_3 select:nth-child(1) {
   margin-right: 2%;
 }
 
-.filter_wrap .select_wrap_3 select:nth-child(2){
+.filter_wrap .select_wrap_3 select:nth-child(2) {
   margin-right: 2%;
 }
 
-.filter_wrap .select_wrap_3 select:nth-child(3){
+.filter_wrap .select_wrap_3 select:nth-child(3) {
   margin-right: 0;
 }
 /*common main page end*/
 /*common register child page start*/
-.register_child_elem_wrapper{
+.register_child_elem_wrapper {
   margin-top: 40px;
 }
 .cr_info_elem {
@@ -175,7 +173,7 @@ code {
   margin-top: 40px;
 }
 
-.rc_text{
+.rc_text {
   font-weight: bold;
   font-size: 40px;
 }
@@ -195,7 +193,7 @@ code {
   margin: 0 auto;
 }
 
-.hie_vaccine_name{
+.hie_vaccine_name {
   font-weight: bold;
 }
 
@@ -208,51 +206,51 @@ code {
   display: flex;
 }
 
-.hie_info span{
+.hie_info span {
   width: 40%;
 }
 
-.hie_info span:nth-child(2){
+.hie_info span:nth-child(2) {
   width: 60%;
 }
 
-.hie_buttons{
+.hie_buttons {
   margin-top: 20px;
   display: flex;
 }
 
-.hie_buttons span{
+.hie_buttons span {
   width: 50%;
   text-align: center;
 }
 
-.hie_buttons span button{
+.hie_buttons span button {
   min-width: 120px;
 }
 
-.update_child_inst{
+.update_child_inst {
   color: white;
   font-size: 30px;
   font-weight: bold;
   margin-bottom: 10px;
 }
 
-.his_delete{
+.his_delete {
   display: flex;
   padding-left: 20px;
   padding-right: 20px;
 }
 
-.his_delete div{
+.his_delete div {
   width: 50%;
   text-align: center;
 }
 
-.his_delete div button{
+.his_delete div button {
   min-width: 120px;
 }
 
-.update_child{
+.update_child {
   transform: translate(0, -90%);
 }
 
@@ -278,59 +276,59 @@ code {
   align-content: center;
 }
 
-.nie_title{
+.nie_title {
   font-size: 1.2rem;
 }
 
-.after_birth{
+.after_birth {
   display: flex;
 }
 
-.schedule{
+.schedule {
   display: flex;
 }
 
 /*common Notice page end*/
 /*common Account page start*/
-.account_title{
+.account_title {
   font-weight: bold;
 }
-.account_category{
+.account_category {
   margin: 0 auto;
   margin-bottom: 40px;
 }
 
-.account_cp_wrap label{
+.account_cp_wrap label {
   font-weight: bold;
   align-content: center;
 }
 
-.account_cp_wrap label input{
+.account_cp_wrap label input {
   margin-right: 20px;
 }
 
-.ac_label{
+.ac_label {
   font-weight: bold;
 }
-.ac_title{
+.ac_title {
   font-weight: bold;
   margin-bottom: 20px;
 }
-.ac_inst{
+.ac_inst {
   font-size: 2rem;
 }
-.ac_agree label{
+.ac_agree label {
   font-weight: bold;
 }
 /*common Account page end*/
 /*common Admin Main page start*/
-.admin_main_category{
+.admin_main_category {
   font-weight: bold;
 }
-.admin_main_category:nth-child(4){
+.admin_main_category:nth-child(4) {
   margin-top: 40px;
 }
-.am_parent{
+.am_parent {
   position: relative;
   border: 1px solid #f2f4f5;
   border-radius: 5px;
@@ -339,50 +337,52 @@ code {
   margin: 0 auto;
   margin-bottom: 20px;
 }
-.amp_info_wrap{
+.amp_info_wrap {
   align-items: center;
 }
 
-.amp_info div span:nth-child(1){
+.amp_info div span:nth-child(1) {
   font-weight: bold;
 }
 
-.am_children_wrap{
- margin-top: 20px;
+.am_children_wrap {
+  margin-top: 20px;
 }
-.am_child{
+.am_child {
   border-radius: 5px;
   padding: 20px;
   margin: 0 auto;
   margin-bottom: 20px;
 }
-.am_child:nth-child(1n){
+.am_child:nth-child(1n) {
   background-color: #182122;
   color: white;
 }
-.am_child:nth-child(2n){
+.am_child:nth-child(2n) {
   background-color: #84b6b1;
 }
-.am_child:last-child{
+.am_child:last-child {
   margin-bottom: 0;
 }
-.am_child div{
+.am_child div {
   display: flex;
 }
-.am_child div span:nth-child(1){
+.am_child div span:nth-child(1) {
   width: 50%;
   font-weight: bold;
 }
-.am_child div span:nth-child(2){
+.am_child div span:nth-child(2) {
   width: 50%;
 }
-.amp_button button{
+.amp_button button {
   min-width: 160px;
 }
 /*common Admin Main page end*/
 /*common Admin Hostile page start*/
-.hostile_elem{
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+.hostile_elem {
+  box-shadow:
+    0 4px 8px 0 rgba(0, 0, 0, 0.2),
+    0 6px 20px 0 rgba(0, 0, 0, 0.19);
   margin-bottom: 20px;
   padding: 20px;
 }
@@ -392,296 +392,294 @@ code {
   align-content: center;
 }
 
-.info_div:nth-child(8){
+.info_div:nth-child(8) {
   margin-top: 20px;
 }
 
-.hostile_elem .info_div span:nth-child(1){
+.hostile_elem .info_div span:nth-child(1) {
   text-align: left;
 }
 
-.hostile_elem .info_div span:nth-child(2){
+.hostile_elem .info_div span:nth-child(2) {
   text-align: left;
 }
 
-.log_elem{
+.log_elem {
   padding: 20px;
   margin-top: 20px;
 }
 
-.log_elem:nth-child(1n){
+.log_elem:nth-child(1n) {
   background-color: #b2b6b1;
 }
 
-.log_elem:nth-child(2n){
+.log_elem:nth-child(2n) {
   background-color: #182122;
 }
 
-.log_elem:nth-child(2n) *{
+.log_elem:nth-child(2n) * {
   color: white;
 }
 
-.log_div{
+.log_div {
   display: flex;
   align-content: center;
 }
 
-.log_div span:nth-child(1){
+.log_div span:nth-child(1) {
   text-align: left;
 }
-.log_div span:nth-child(2){
+.log_div span:nth-child(2) {
   text-align: left;
 }
 
-.hostile_input_buttons{
+.hostile_input_buttons {
   display: flex;
 }
 
-.hostile_check_wrap{
+.hostile_check_wrap {
   display: flex;
 }
 
-.hostile_check_wrap span{
+.hostile_check_wrap span {
   align-content: center;
 }
 
-.hostile_check_wrap span:nth-child(1){
+.hostile_check_wrap span:nth-child(1) {
   margin-right: 20px;
 }
 
 /*common Admin Hostile page end*/
 /*common Admin Manage page start*/
-.adminMangeTitle{
+.adminMangeTitle {
   font-weight: bold;
   font-size: 20px;
   margin-top: 30px;
   margin-bottom: 10px;
 }
-.adminManageCountryHeader{
+.adminManageCountryHeader {
   display: flex;
   align-content: center;
 }
-.adminManageCountryHeader div{
+.adminManageCountryHeader div {
   font-weight: bold;
 }
-.adminManageCountryHeader div:nth-child(1){
+.adminManageCountryHeader div:nth-child(1) {
   width: 5%;
   text-align: center;
 }
 
-.adminManageCountryHeader div:nth-child(2){
+.adminManageCountryHeader div:nth-child(2) {
   width: 20%;
 }
 
-.adminManageCountryHeader div:nth-child(3){
+.adminManageCountryHeader div:nth-child(3) {
   width: 20%;
 }
 
-.adminManageCountryHeader div:nth-child(4){
+.adminManageCountryHeader div:nth-child(4) {
   width: 20%;
 }
 
-.adminManageCountry{
+.adminManageCountry {
   margin-top: 20px;
 }
 
-.adminManageCountry .amc_wrap{
+.adminManageCountry .amc_wrap {
   display: flex;
   align-content: center;
 }
 
-
-.adminManageCountry .amc_wrap:nth-child(1n){
+.adminManageCountry .amc_wrap:nth-child(1n) {
   background-color: #84b6b1;
   margin-bottom: 10px;
 }
 
-.adminManageCountry .amc_wrap:nth-child(2n){
+.adminManageCountry .amc_wrap:nth-child(2n) {
   background-color: #282c34;
 }
 
-.adminManageCountry .amc_wrap:nth-child(2n) div{
+.adminManageCountry .amc_wrap:nth-child(2n) div {
   background-color: #282c34;
   color: white;
 }
 
-.adminManageCountry .amc_wrap div{
+.adminManageCountry .amc_wrap div {
   align-content: center;
 }
 
-
-.adminManageCountry .amc_wrap div:nth-child(1){
+.adminManageCountry .amc_wrap div:nth-child(1) {
   width: 5%;
   text-align: center;
 }
 
-.adminManageCountry .amc_wrap div:nth-child(2){
+.adminManageCountry .amc_wrap div:nth-child(2) {
   width: 20%;
 }
 
-.adminManageCountry .amc_wrap div:nth-child(3){
+.adminManageCountry .amc_wrap div:nth-child(3) {
   width: 20%;
 }
 
-.adminManageCountry .amc_wrap div:nth-child(4){
+.adminManageCountry .amc_wrap div:nth-child(4) {
   width: 20%;
 }
 
-.adminManageCountry .amc_edit_wrap{
+.adminManageCountry .amc_edit_wrap {
   display: flex;
   align-content: center;
 }
 
-.adminManageCountry .amc_edit_wrap:nth-child(1n){
+.adminManageCountry .amc_edit_wrap:nth-child(1n) {
   margin-bottom: 10px;
 }
 
-.adminManageCountry .amc_edit_wrap div:nth-child(1){
+.adminManageCountry .amc_edit_wrap div:nth-child(1) {
   width: 5%;
   text-align: center;
   align-content: center;
 }
 
-.adminManageCountry .amc_edit_wrap div:nth-child(2){
+.adminManageCountry .amc_edit_wrap div:nth-child(2) {
   width: 20%;
   align-content: center;
 }
 
-.adminManageCountry .amc_edit_wrap div:nth-child(3){
+.adminManageCountry .amc_edit_wrap div:nth-child(3) {
   width: 20%;
   align-content: center;
 }
 
-.adminManageCountry .amc_edit_wrap div:nth-child(4){
+.adminManageCountry .amc_edit_wrap div:nth-child(4) {
   width: 20%;
   align-content: center;
 }
 
-.manageTempVacHeader{
+.manageTempVacHeader {
   display: flex;
   align-content: center;
 }
 
-.manageTempVacHeader div{
+.manageTempVacHeader div {
   text-align: center;
 }
 
-.manageTempVacHeader div:nth-child(1){
+.manageTempVacHeader div:nth-child(1) {
   width: 5%;
 }
 
-.manageTempVacHeader div:nth-child(2){
+.manageTempVacHeader div:nth-child(2) {
   width: 5%;
 }
 
-.manageTempVacHeader div:nth-child(3){
+.manageTempVacHeader div:nth-child(3) {
   width: 17%;
 }
 
-.manageTempVacHeader div:nth-child(4){
+.manageTempVacHeader div:nth-child(4) {
   width: 5%;
 }
 
-.manageTempVacHeader div:nth-child(5){
+.manageTempVacHeader div:nth-child(5) {
   width: 5%;
 }
 
-.manageTempVacHeader div:nth-child(6){
+.manageTempVacHeader div:nth-child(6) {
   width: 7%;
 }
 
-.manageTempVacHeader div:nth-child(7){
+.manageTempVacHeader div:nth-child(7) {
   width: 5%;
 }
 
-.manageTempVacHeader div:nth-child(8){
+.manageTempVacHeader div:nth-child(8) {
   width: 7%;
 }
 
-.manageTempVacHeader div:nth-child(9){
+.manageTempVacHeader div:nth-child(9) {
   width: 5%;
 }
 
-.manageTempVacHeader div:nth-child(10){
+.manageTempVacHeader div:nth-child(10) {
   width: 20%;
 }
 
-.manageTempVacHeader div:nth-child(11){
+.manageTempVacHeader div:nth-child(11) {
   width: 8%;
 }
 
-.manageTempVacHeader div:nth-child(12){
+.manageTempVacHeader div:nth-child(12) {
   width: 8%;
 }
 
-.manageTempVacElem{
+.manageTempVacElem {
   display: flex;
   align-content: center;
 }
-.manageTempVacElem div{
+.manageTempVacElem div {
   align-content: center;
 }
-.manageTempVacElem div:nth-child(1){
+.manageTempVacElem div:nth-child(1) {
   width: 5%;
   text-align: center;
 }
 
-.manageTempVacElem div:nth-child(2){
+.manageTempVacElem div:nth-child(2) {
   width: 5%;
   text-align: center;
 }
 
-.manageTempVacElem div:nth-child(3){
+.manageTempVacElem div:nth-child(3) {
   width: 17%;
   text-align: center;
 }
 
-.manageTempVacElem div:nth-child(4){
+.manageTempVacElem div:nth-child(4) {
   width: 5%;
   text-align: center;
 }
 
-.manageTempVacElem div:nth-child(5){
+.manageTempVacElem div:nth-child(5) {
   width: 5%;
   text-align: center;
 }
 
-.manageTempVacElem div:nth-child(6){
+.manageTempVacElem div:nth-child(6) {
   width: 7%;
   text-align: center;
 }
 
-.manageTempVacElem div:nth-child(7){
+.manageTempVacElem div:nth-child(7) {
   width: 5%;
   text-align: center;
 }
 
-.manageTempVacElem div:nth-child(8){
+.manageTempVacElem div:nth-child(8) {
   width: 7%;
   text-align: center;
 }
 
-.manageTempVacElem div:nth-child(9){
+.manageTempVacElem div:nth-child(9) {
   width: 5%;
   text-align: center;
 }
 
-.manageTempVacElem div:nth-child(10){
+.manageTempVacElem div:nth-child(10) {
   width: 20%;
   text-align: left;
 }
 
-.manageTempVacElem div:nth-child(11){
+.manageTempVacElem div:nth-child(11) {
   width: 8%;
   text-align: center;
 }
 
-.manageTempVacElem div:nth-child(12){
+.manageTempVacElem div:nth-child(12) {
   width: 8%;
   text-align: center;
 }
 
-.manageTempVacElem div button{
+.manageTempVacElem div button {
   margin: 0 auto;
 }
 
@@ -694,35 +692,34 @@ code {
   max-width: 100%;
 }
 
-.adminAddVaccine{
+.adminAddVaccine {
   display: flex;
   align-content: center;
 }
 
-.adminAddVaccine div{
+.adminAddVaccine div {
   display: block;
   align-content: center;
 }
 
-.adminAddVaccine div:nth-child(1n){
+.adminAddVaccine div:nth-child(1n) {
   width: 10%;
 }
 
-.adminAddVaccine div:nth-child(2){
+.adminAddVaccine div:nth-child(2) {
   width: 15%;
 }
 
-.adminAddVaccine div:nth-child(9){
+.adminAddVaccine div:nth-child(9) {
   width: 15%;
 }
 
-
-.tempVaccineAddHeader{
+.tempVaccineAddHeader {
   align-content: center;
   display: flex;
   margin-bottom: 10px;
 }
-.tempVaccineAddHeader span{
+.tempVaccineAddHeader span {
   align-content: center;
   display: block;
   font-weight: bold;
@@ -730,23 +727,23 @@ code {
   text-align: center;
 }
 
-.tempVaccineAddHeader span:nth-child(1n){
+.tempVaccineAddHeader span:nth-child(1n) {
   width: 10%;
 }
 
-.tempVaccineAddHeader span:nth-child(2){
+.tempVaccineAddHeader span:nth-child(2) {
   width: 15%;
 }
 
-.tempVaccineAddHeader span:nth-child(9){
+.tempVaccineAddHeader span:nth-child(9) {
   width: 15%;
 }
 
-.tempVaccineAddElem{
+.tempVaccineAddElem {
   align-content: center;
   display: flex;
 }
-.tempVaccineAddElem span{
+.tempVaccineAddElem span {
   align-content: center;
   display: block;
   overflow-x: hidden;
@@ -755,24 +752,24 @@ code {
   max-width: 100%;
 }
 
-.tempVaccineAddElem span:nth-child(1n){
+.tempVaccineAddElem span:nth-child(1n) {
   width: 10%;
   text-align: center;
 }
-.tempVaccineAddElem span:nth-child(2){
+.tempVaccineAddElem span:nth-child(2) {
   width: 15%;
 }
 
-.tempVaccineAddElem span:nth-child(9){
+.tempVaccineAddElem span:nth-child(9) {
   width: 15%;
 }
 /*common Admin Manage page end*/
 /*common board start*/
 
-.post:nth-child(2){
+.post:nth-child(2) {
   min-height: 490px;
 }
-.post div{
+.post div {
   display: flex;
   margin-bottom: 10px;
   align-items: center;
@@ -780,109 +777,107 @@ code {
   padding-bottom: 5px;
 }
 
-.post div:nth-child(1n){
+.post div:nth-child(1n) {
   background-color: darkgray;
 }
 
-.post div:nth-child(2n){
+.post div:nth-child(2n) {
   background-color: grey;
 }
-.post div span{
+.post div span {
   font-size: 20px;
 }
-.post .post_header span{
+.post .post_header span {
   font-weight: bold;
 }
-.post .post_header span:nth-child(1){
+.post .post_header span:nth-child(1) {
   width: 15%;
   text-align: center;
 }
 
-.post .post_header span:nth-child(2){
+.post .post_header span:nth-child(2) {
   width: 65%;
   padding-left: 5%;
   text-align: center;
 }
 
-.post .post_header span:nth-child(3){
+.post .post_header span:nth-child(3) {
   width: 20%;
   text-align: center;
 }
 
-
-.post .post_elem span:nth-child(1){
+.post .post_elem span:nth-child(1) {
   width: 15%;
   text-align: center;
   overflow-x: hidden;
   text-overflow: ellipsis;
 }
 
-.post .post_elem span:nth-child(2){
+.post .post_elem span:nth-child(2) {
   width: 65%;
   padding-left: 5%;
   text-align: left;
 }
 
-.post .post_elem span:nth-child(3){
+.post .post_elem span:nth-child(3) {
   width: 20%;
   text-align: center;
 }
 
-.post_viewing span{
+.post_viewing span {
   font-weight: bold;
 }
 
-.now_nav{
+.now_nav {
   font-weight: bold;
   color: black;
 }
-.board_navs{
+.board_navs {
   padding-top: 20px;
   display: flex;
   width: 100%;
 }
 
-.board_navs div:nth-child(2){
+.board_navs div:nth-child(2) {
   width: 90%;
   display: flex;
   padding-left: 5%;
   padding-right: 5%;
 }
 
-
-.nav_target{
+.nav_target {
   width: 18%;
   margin-left: 1%;
   margin-right: 1%;
   text-align: center;
 }
-.nav_next{
+.nav_next {
   width: 5%;
   text-align: right;
 }
-.nav_prev{
+.nav_prev {
   width: 5%;
   margin-right: 10px;
 }
 
-.board_input_bar{
+.board_input_bar {
   margin-top: 30px;
   align-content: center;
 }
 
-.board_input_bar .board_input_search{
+.board_input_bar .board_input_search {
   display: flex;
 }
 
-.board_input_bar .board_input_buttons{
+.board_input_bar .board_input_buttons {
   display: flex;
 }
 
-.board_input_bar .board_input_search div:nth-child(2){
+.board_input_bar .board_input_search div:nth-child(2) {
   padding-left: 10%;
 }
 
-.board_input_search input{
+.board_input_search input {
   padding-left: 20px;
   padding-top: 6px;
   padding-bottom: 6px;
@@ -890,168 +885,166 @@ code {
   border-radius: 6px;
 }
 
-.board_input_buttons div{
+.board_input_buttons div {
   width: 50%;
 }
 
-.board_input_buttons div button{
+.board_input_buttons div button {
   margin-top: 0 !important;
 }
 
-.write_post{
+.write_post {
   transform: translate(0, -40%);
 }
 
-.post_wrap{
+.post_wrap {
   border: 1px solid black;
   border-radius: 10px;
   margin-bottom: 30px;
   padding: 20px;
 }
 
-.pm_top{
+.pm_top {
   display: flex;
   padding: 10px;
   margin-bottom: 20px;
   border-radius: 10px;
   background-color: grey;
-
 }
 
-.pm_top .pmt_writer{
+.pm_top .pmt_writer {
   width: 15%;
 }
-.pm_top .pmt_title{
+.pm_top .pmt_title {
   width: 65%;
   padding-left: 5%;
   align-content: center;
 }
-.pm_top .pmt_time{
+.pm_top .pmt_time {
   width: 20%;
 }
 
-
-.pm_top .pmt_writer div:nth-child(2){
+.pm_top .pmt_writer div:nth-child(2) {
   text-align: center;
   overflow-x: hidden;
   text-overflow: ellipsis;
 }
-.pm_top .pmt_title div:nth-child(2){
+.pm_top .pmt_title div:nth-child(2) {
   text-align: left;
 }
-.pm_top .pmt_time div:nth-child(2){
+.pm_top .pmt_time div:nth-child(2) {
   text-align: center;
 }
 
-.pm_top div div:nth-child(1){
+.pm_top div div:nth-child(1) {
   text-align: center;
   margin-bottom: 10px;
   font-weight: bold;
 }
 
-.pm_mid{
+.pm_mid {
   padding: 20px;
   margin-bottom: 20px;
 }
 
-.pm_bot{
+.pm_bot {
   display: flex;
   padding: 20px;
 }
 
-.pm_bot div{
+.pm_bot div {
   width: 50%;
 }
 
-.pm_bot div:nth-child(1){
+.pm_bot div:nth-child(1) {
   text-align: left;
 }
 
-.pm_bot div:nth-child(2){
+.pm_bot div:nth-child(2) {
   text-align: right;
 }
 
-.reply_elem{
+.reply_elem {
   padding: 20px;
   margin-bottom: 10px;
   border-radius: 10px;
 }
 
-.reply_elem .rep_info{
+.reply_elem .rep_info {
   display: flex;
   margin-bottom: 20px;
 }
 
-.reply_elem .rep_interaction{
+.reply_elem .rep_interaction {
   display: flex;
 }
 
-.reply_elem .rep_interaction div{
+.reply_elem .rep_interaction div {
   width: 50%;
 }
 
-.reply_elem .rep_interaction div:nth-child(1){
+.reply_elem .rep_interaction div:nth-child(1) {
   text-align: left;
 }
 
-.reply_elem .rep_interaction div:nth-child(2){
+.reply_elem .rep_interaction div:nth-child(2) {
   text-align: right;
 }
 
-.reply_elem:nth-child(1n){
+.reply_elem:nth-child(1n) {
   background-color: darkgray;
 }
 
-.reply_elem:nth-child(2n){
+.reply_elem:nth-child(2n) {
   background-color: grey;
 }
 
-.reply_elem:last-child{
+.reply_elem:last-child {
   margin-bottom: 0;
 }
 
-.rep_writer{
+.rep_writer {
   width: 15%;
 }
 
-.rep_text{
+.rep_text {
   width: 55%;
 }
 
-.rep_date_delete{
+.rep_date_delete {
   width: 30%;
 }
 
-.rep_date_delete div{
+.rep_date_delete div {
   text-align: right;
 }
 
-.new_reply{
+.new_reply {
   margin-top: 20px;
 }
 
-.new_reply div:nth-child(2){
+.new_reply div:nth-child(2) {
   padding-right: 20px;
   text-align: right;
 }
 
 /*common board page end*/
 /*common header start*/
-.header_nav{
+.header_nav {
   position: fixed;
   width: 100%;
   z-index: 1;
 }
 
-.header_pop_up_wrap{
+.header_pop_up_wrap {
   z-index: 2000;
   position: fixed;
   width: 100%;
   height: 100%;
   padding: 40px;
-  background-color: rgba(0.1,0.1,0.1,0.3);
+  background-color: rgba(0.1, 0.1, 0.1, 0.3);
 }
-.header_pop_up{
+.header_pop_up {
   position: relative;
   top: 50%;
   left: 50%;
@@ -1062,29 +1055,27 @@ code {
   text-align: left;
   font-weight: bold;
 }
-.hpu_error{
+.hpu_error {
   border: 1px solid red;
   color: red;
 }
-.hpu_inst{
+.hpu_inst {
   border: 1px solid green;
   color: green;
 }
 /*common header end*/
 /*common footer start*/
-.footer{
+.footer {
   bottom: 20px;
 }
 
-.footer label{
+.footer label {
   font-weight: bold;
   font-size: 22px;
 }
 /*common footer end*/
 
-
 @media screen and (min-width: 1200px) {
-
   /*pc main page start*/
   .main_top {
     display: flex;
@@ -1102,10 +1093,9 @@ code {
     text-align: right;
   }
 
-  .mt_elem input{
+  .mt_elem input {
     padding-left: 20px;
   }
-
 
   .main_info_elem {
     width: 50%;
@@ -1121,12 +1111,11 @@ code {
     display: flex;
   }
 
-  .mie_info span{
+  .mie_info span {
     width: 35%;
   }
 
-
-  .mie_info span:nth-child(2){
+  .mie_info span:nth-child(2) {
     width: 65%;
   }
 
@@ -1160,7 +1149,7 @@ code {
     font-size: 30px;
   }
 
-  .hie_vaccine_name{
+  .hie_vaccine_name {
     font-size: 1.6rem;
     min-height: 80px;
   }
@@ -1179,12 +1168,12 @@ code {
     min-height: 550px;
   }
 
-  .nie_vaccine_name{
+  .nie_vaccine_name {
     min-height: 90px;
     align-content: flex-start;
   }
 
-  .notice_reg_btn{
+  .notice_reg_btn {
     position: absolute;
     bottom: 20px;
     left: 50%;
@@ -1194,182 +1183,180 @@ code {
     text-align: center;
   }
 
-  .notice_reg_btn button{
+  .notice_reg_btn button {
     width: 80%;
     height: 48px;
   }
   /*pc notice page end*/
   /*pc Account page start*/
-  .account_title{
+  .account_title {
     font-size: 3rem;
   }
 
-  .account_category{
+  .account_category {
     display: table;
   }
 
-  .account_category select{
+  .account_category select {
     width: 250px;
   }
-  .account_cp_wrap{
+  .account_cp_wrap {
     display: flex;
   }
-  .ac_control{
+  .ac_control {
     max-width: 400px;
   }
-  .account_cp_wrap label{
+  .account_cp_wrap label {
     margin-left: 40px;
   }
   /*pc Account page end*/
   /*pc Admin Main page start*/
-  .admin_main_category{
+  .admin_main_category {
     font-size: 3rem;
   }
-  .amp_info_wrap{
+  .amp_info_wrap {
     display: flex;
   }
-  .amp_info{
+  .amp_info {
     width: 50%;
   }
-  .join_only{
+  .join_only {
     width: 100%;
   }
-  .amp_info div{
+  .amp_info div {
     display: flex;
   }
-  .amp_info div span:nth-child(1){
+  .amp_info div span:nth-child(1) {
     width: 50%;
   }
-  .amp_info div span:nth-child(2){
+  .amp_info div span:nth-child(2) {
     width: 50%;
   }
-  .join_only div span:nth-child(1){
+  .join_only div span:nth-child(1) {
     width: 25%;
   }
-  .join_only div span:nth-child(2){
+  .join_only div span:nth-child(2) {
     width: 75%;
   }
-  .amp_button{
+  .amp_button {
     width: 50%;
     text-align: center;
   }
   /*pc Admin Main page end*/
   /*pc Admin Hostile page start*/
-  .hostile_elem .info_div span:nth-child(1){
+  .hostile_elem .info_div span:nth-child(1) {
     width: 30%;
   }
 
-  .hostile_elem .info_div span:nth-child(2){
+  .hostile_elem .info_div span:nth-child(2) {
     width: 70%;
   }
 
-  .log_div span:nth-child(1){
+  .log_div span:nth-child(1) {
     width: 30%;
   }
-  .log_div span:nth-child(2){
+  .log_div span:nth-child(2) {
     width: 70%;
   }
 
-  .hostile_input_buttons{
+  .hostile_input_buttons {
     width: 30%;
   }
   /*pc Admin Hostile page end*/
   /*pc board start*/
-  .post div span{
+  .post div span {
     font-size: 20px;
   }
 
-  .post .post_header span:nth-child(1){
+  .post .post_header span:nth-child(1) {
     width: 15%;
     text-align: center;
   }
 
-  .post .post_header span:nth-child(2){
+  .post .post_header span:nth-child(2) {
     width: 65%;
     padding-left: 5%;
     text-align: center;
   }
 
-  .post .post_header span:nth-child(3){
+  .post .post_header span:nth-child(3) {
     width: 20%;
     text-align: center;
   }
 
-
-  .post .post_elem span:nth-child(1){
+  .post .post_elem span:nth-child(1) {
     width: 15%;
     text-align: center;
   }
 
-  .post .post_elem span:nth-child(2){
+  .post .post_elem span:nth-child(2) {
     width: 65%;
     padding-left: 5%;
     text-align: left;
   }
 
-  .post .post_elem span:nth-child(3){
+  .post .post_elem span:nth-child(3) {
     width: 20%;
     text-align: center;
   }
 
-  .post_viewing span{
+  .post_viewing span {
     font-weight: bold;
   }
 
-  .board_input_bar{
+  .board_input_bar {
     display: flex;
   }
 
-  .board_input_bar .board_input_search{
+  .board_input_bar .board_input_search {
     width: 70%;
   }
 
-  .board_input_bar .board_input_buttons{
+  .board_input_bar .board_input_buttons {
     width: 30%;
   }
 
-  .board_input_bar .board_input_search div:nth-child(1){
+  .board_input_bar .board_input_search div:nth-child(1) {
     width: 20%;
   }
 
-  .board_input_bar .board_input_search div:nth-child(2){
+  .board_input_bar .board_input_search div:nth-child(2) {
     width: 80%;
     padding-left: 10%;
   }
 
-  .board_input_buttons div{
+  .board_input_buttons div {
     padding-left: 20%;
   }
 
-  .board_input_buttons div:nth-child(1){
+  .board_input_buttons div:nth-child(1) {
     text-align: right;
   }
 
-  .board_input_buttons div:nth-child(2){
+  .board_input_buttons div:nth-child(2) {
     text-align: right;
   }
 
-  .pm_top .pmt_writer{
+  .pm_top .pmt_writer {
     width: 15%;
   }
-  .pm_top .pmt_title{
+  .pm_top .pmt_title {
     width: 65%;
     padding-left: 5%;
   }
-  .pm_top .pmt_time{
+  .pm_top .pmt_time {
     width: 20%;
   }
   /*pc board page end*/
   /*pc header start*/
-  .header_pop_up{
+  .header_pop_up {
     width: 50%;
     font-size: 40px;
   }
   /*pc header end*/
 }
 
-
-@media screen and (min-width: 575px) and (max-width: 1199px){
+@media screen and (min-width: 575px) and (max-width: 1199px) {
   /*tablet main page start*/
   .main_top {
     margin-bottom: 40px;
@@ -1396,17 +1383,16 @@ code {
     text-align: right;
   }
 
-  .mt_elem input{
+  .mt_elem input {
     padding-left: 20px;
   }
-
 
   .main_info_elem {
     width: 80%;
     display: flex;
   }
 
-  .mie_info_wrapper{
+  .mie_info_wrapper {
     max-width: 60%;
   }
 
@@ -1419,7 +1405,7 @@ code {
     display: flex;
   }
 
-  .mie_info span{
+  .mie_info span {
     width: 50%;
   }
 
@@ -1449,7 +1435,7 @@ code {
     font-size: 26px;
   }
 
-  .hie_vaccine_name{
+  .hie_vaccine_name {
     font-size: 1.4rem;
     min-height: 70px;
   }
@@ -1481,172 +1467,166 @@ code {
   }
   /*tablet notice page end*/
   /*tablet Account page start*/
-  .account_title{
+  .account_title {
     font-size: 2.6rem;
   }
 
-  .account_category{
+  .account_category {
     display: table;
   }
 
-  .account_category select{
+  .account_category select {
     width: 250px;
   }
-  .account_cp_wrap{
+  .account_cp_wrap {
     display: flex;
   }
-  .ac_control{
+  .ac_control {
     max-width: 260px;
   }
-  .account_cp_wrap label{
+  .account_cp_wrap label {
     margin-left: 40px;
   }
   /*tablet Account page end*/
   /*tablet Admin Main page start*/
-  .admin_main_category{
+  .admin_main_category {
     font-size: 2.6rem;
   }
-  .amp_info_wrap{
+  .amp_info_wrap {
     display: flex;
   }
-  .amp_info{
+  .amp_info {
     width: 50%;
   }
-  .join_only{
+  .join_only {
     width: 100%;
   }
-  .amp_info div{
+  .amp_info div {
     display: flex;
   }
-  .amp_info div span:nth-child(1){
+  .amp_info div span:nth-child(1) {
     width: 50%;
   }
-  .amp_info div span:nth-child(2){
+  .amp_info div span:nth-child(2) {
     width: 50%;
   }
 
-  .join_only div span:nth-child(1){
+  .join_only div span:nth-child(1) {
     width: 25%;
   }
-  .join_only div span:nth-child(2){
+  .join_only div span:nth-child(2) {
     width: 75%;
   }
-  .amp_button{
+  .amp_button {
     width: 50%;
     text-align: center;
   }
   /*tablet Admin Main page end*/
   /*tablet Admin Hostile page start*/
-  .hostile_elem .info_div span:nth-child(1){
+  .hostile_elem .info_div span:nth-child(1) {
     width: 40%;
   }
 
-  .hostile_elem .info_div span:nth-child(2){
+  .hostile_elem .info_div span:nth-child(2) {
     width: 60%;
   }
-  .log_div span:nth-child(1){
+  .log_div span:nth-child(1) {
     width: 40%;
   }
-  .log_div span:nth-child(2){
+  .log_div span:nth-child(2) {
     width: 60%;
   }
-  .hostile_input_buttons{
+  .hostile_input_buttons {
     margin-top: 20px;
   }
   /*tablet Admin Hostile page end*/
   /*tablet board start*/
-  .post div span{
+  .post div span {
     font-size: 20px;
   }
 
-  .post .post_header span:nth-child(1){
+  .post .post_header span:nth-child(1) {
     width: 15%;
     text-align: center;
   }
 
-  .post .post_header span:nth-child(2){
+  .post .post_header span:nth-child(2) {
     width: 65%;
     padding-left: 5%;
     text-align: center;
   }
 
-  .post .post_header span:nth-child(3){
+  .post .post_header span:nth-child(3) {
     width: 20%;
     text-align: center;
   }
 
-
-  .post .post_elem span:nth-child(1){
+  .post .post_elem span:nth-child(1) {
     width: 15%;
     text-align: center;
   }
 
-  .post .post_elem span:nth-child(2){
+  .post .post_elem span:nth-child(2) {
     width: 65%;
     padding-left: 5%;
     text-align: left;
   }
 
-  .post .post_elem span:nth-child(3){
+  .post .post_elem span:nth-child(3) {
     width: 20%;
     text-align: center;
   }
 
-  .post_viewing span{
+  .post_viewing span {
     font-weight: bold;
   }
 
-
-  .board_input_bar .board_input_search{
+  .board_input_bar .board_input_search {
     width: 100%;
   }
 
-  .board_input_bar .board_input_buttons{
+  .board_input_bar .board_input_buttons {
     margin-top: 20px;
     width: 100%;
   }
 
-  .board_input_bar .board_input_search div:nth-child(1){
+  .board_input_bar .board_input_search div:nth-child(1) {
     width: 20%;
   }
 
-  .board_input_bar .board_input_search div:nth-child(2){
+  .board_input_bar .board_input_search div:nth-child(2) {
     width: 80%;
     padding-left: 10%;
   }
 
-
-
-  .board_input_buttons div:nth-child(1){
+  .board_input_buttons div:nth-child(1) {
     text-align: left;
   }
 
-  .board_input_buttons div:nth-child(2){
+  .board_input_buttons div:nth-child(2) {
     text-align: right;
   }
 
-
-  .pm_top .pmt_writer{
+  .pm_top .pmt_writer {
     width: 15%;
   }
-  .pm_top .pmt_title{
+  .pm_top .pmt_title {
     width: 65%;
     padding-left: 5%;
   }
-  .pm_top .pmt_time{
+  .pm_top .pmt_time {
     width: 20%;
   }
   /*tablet board page end*/
   /*tablet header start*/
-  .header_pop_up{
+  .header_pop_up {
     width: 80%;
     font-size: 32px;
   }
   /*tablet header end*/
-
 }
 
-@media screen and (max-width: 574px){
+@media screen and (max-width: 574px) {
   /*mobile main page start*/
   .main_top {
     margin-bottom: 40px;
@@ -1661,16 +1641,15 @@ code {
     margin-top: 20px;
   }
 
-  .mt_elem input{
+  .mt_elem input {
     padding-left: 20px;
   }
-
 
   .main_info_elem {
     width: 100%;
   }
 
-  .mie_info_wrapper{
+  .mie_info_wrapper {
     margin-bottom: 20px;
   }
 
@@ -1683,15 +1662,15 @@ code {
     display: flex;
   }
 
-  .mie_info span{
+  .mie_info span {
     width: 35%;
   }
 
-  .mie_info span:nth-child(1){
+  .mie_info span:nth-child(1) {
     width: 35%;
   }
 
-  .mie_info span:nth-child(2){
+  .mie_info span:nth-child(2) {
     width: 65%;
   }
 
@@ -1716,7 +1695,7 @@ code {
     font-size: 20px;
   }
 
-  .hie_vaccine_name{
+  .hie_vaccine_name {
     font-size: 1rem;
     min-height: 50px;
   }
@@ -1734,15 +1713,14 @@ code {
   }
 
   .nie_infos {
-
   }
 
-  .nie_vaccine_name{
+  .nie_vaccine_name {
     align-content: flex-start;
     font-weight: bold;
   }
 
-  .notice_reg_btn{
+  .notice_reg_btn {
     position: absolute;
     bottom: 20px;
     left: 50%;
@@ -1759,168 +1737,165 @@ code {
   }
   /*mobile notice page end*/
   /*mobile Account page start*/
-  .account_title{
+  .account_title {
     font-size: 2rem;
   }
-  .account_category select{
+  .account_category select {
     width: 250px;
   }
-  .ac_control{
+  .ac_control {
     max-width: 400px;
   }
-  .account_cp_wrap label{
+  .account_cp_wrap label {
     margin-top: 20px;
     margin-left: 20px;
   }
   /*mobile Account page end*/
   /*mobile Admin Main page start*/
-  .admin_main_category{
+  .admin_main_category {
     font-size: 2rem;
   }
-  .amp_info_wrap{
+  .amp_info_wrap {
     align-items: center;
   }
-  .amp_info{
+  .amp_info {
     width: 100%;
   }
-  .join_only{
+  .join_only {
     width: 100%;
   }
-  .amp_info div{
+  .amp_info div {
     display: flex;
   }
-  .amp_info div span:nth-child(1){
+  .amp_info div span:nth-child(1) {
     width: 50%;
   }
-  .amp_info div span:nth-child(2){
+  .amp_info div span:nth-child(2) {
     width: 50%;
   }
-  .join_only div span:nth-child(1){
+  .join_only div span:nth-child(1) {
     width: 50%;
   }
-  .join_only div span:nth-child(2){
+  .join_only div span:nth-child(2) {
     width: 50%;
   }
-  .amp_button{
+  .amp_button {
     margin-top: 20px;
     text-align: center;
   }
   /*mobile Admin Main page end*/
   /*mobile Admin Hostile page start*/
-  .hostile_elem .info_div span:nth-child(1){
+  .hostile_elem .info_div span:nth-child(1) {
     width: 50%;
   }
 
-  .hostile_elem .info_div span:nth-child(2){
+  .hostile_elem .info_div span:nth-child(2) {
     width: 50%;
   }
-  .log_div span:nth-child(1){
+  .log_div span:nth-child(1) {
     width: 50%;
   }
-  .log_div span:nth-child(2){
+  .log_div span:nth-child(2) {
     width: 50%;
   }
-  .hostile_input_buttons{
+  .hostile_input_buttons {
     margin-top: 20px;
   }
   /*mobile Admin Hostile page end*/
   /*mobile board start*/
-  .post div span{
+  .post div span {
     font-size: 20px;
   }
 
-  .post .post_header span:nth-child(1){
+  .post .post_header span:nth-child(1) {
     width: 15%;
     text-align: center;
     font-size: 16px;
   }
 
-  .post .post_header span:nth-child(2){
+  .post .post_header span:nth-child(2) {
     width: 65%;
     padding-left: 5%;
     text-align: center;
     font-size: 16px;
   }
 
-  .post .post_header span:nth-child(3){
+  .post .post_header span:nth-child(3) {
     width: 20%;
     text-align: center;
     font-size: 16px;
   }
 
-  .post .post_elem span{
+  .post .post_elem span {
     font-size: 14px;
   }
-  .post .post_elem span:nth-child(1){
+  .post .post_elem span:nth-child(1) {
     width: 20%;
     text-align: center;
   }
 
-  .post .post_elem span:nth-child(2){
+  .post .post_elem span:nth-child(2) {
     width: 55%;
     padding-left: 5%;
     text-align: left;
   }
 
-  .post .post_elem span:nth-child(3){
+  .post .post_elem span:nth-child(3) {
     width: 25%;
     text-align: center;
   }
 
-  .post_viewing span{
+  .post_viewing span {
     font-weight: bold;
   }
 
-  .board_input_bar .board_input_search{
+  .board_input_bar .board_input_search {
     width: 100%;
     display: flex;
   }
 
-  .board_input_bar .board_input_buttons{
+  .board_input_bar .board_input_buttons {
     margin-top: 20px;
     width: 100%;
     display: flex;
   }
 
-  .board_input_bar .board_input_search div:nth-child(1){
+  .board_input_bar .board_input_search div:nth-child(1) {
     width: 35%;
   }
 
-  .board_input_bar .board_input_search div:nth-child(2){
+  .board_input_bar .board_input_search div:nth-child(2) {
     width: 65%;
     padding-left: 10%;
   }
 
-  .board_input_bar .board_input_search div:nth-child(2) input{
+  .board_input_bar .board_input_search div:nth-child(2) input {
     max-width: 100%;
   }
 
-
-  .board_input_buttons div:nth-child(1){
+  .board_input_buttons div:nth-child(1) {
     text-align: left;
   }
 
-  .board_input_buttons div:nth-child(2){
+  .board_input_buttons div:nth-child(2) {
     text-align: right;
   }
 
-
-  .pm_top .pmt_writer{
+  .pm_top .pmt_writer {
     width: 15%;
   }
-  .pm_top .pmt_title{
+  .pm_top .pmt_title {
     width: 55%;
     padding-left: 5%;
   }
-  .pm_top .pmt_time{
+  .pm_top .pmt_time {
     width: 30%;
   }
   /*mobile board page end*/
   /*mobile header start*/
-  .header_pop_up{
+  .header_pop_up {
     width: 90%;
     font-size: 30px;
   }
   /*mobile header end*/
-
 }
