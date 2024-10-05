@@ -2,33 +2,33 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class Vaccine {
-    @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column()
+  @Column()
     vaccine_national_code!: number;
 
-    @Column()
+  @Column()
     vaccine_name!: string;
 
-    @Column()
+  @Column()
     vaccine_is_periodical!: boolean;
 
-    @Column()
+  @Column()
     vaccine_minimum_period_type!: string;
 
-    @Column()
+  @Column()
     vaccine_minimum_recommend_date!: number;
 
-    @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'varchar', nullable: true })
     vaccine_maximum_period_type!: string | null;
 
-    @Column({ type: 'tinyint', nullable: true })
+  @Column({ type: 'tinyint', nullable: true })
     vaccine_maximum_recommend_date!: number | null;
 
-    @Column()
+  @Column()
     vaccine_round!: number;
 
-    @Column({ nullable: true })
+  @Column({ nullable: true })
     vaccine_description!: string;
 }

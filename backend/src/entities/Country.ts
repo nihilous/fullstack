@@ -2,15 +2,15 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class Country {
-    @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column()
+  @Column()
     national_code!: string;
 
-    @Column()
+  @Column()
     name_original!: string;
 
-    @Column()
+  @Column()
     name_english!: string;
 }

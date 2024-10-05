@@ -7,13 +7,13 @@ dotenv.config();
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
-    throw new Error('DATABASE_URL environment variable is not set');
+  throw new Error('DATABASE_URL environment variable is not set');
 }
 
 export const AppDataSource = new DataSource({
-    type: 'mysql',
-    url: databaseUrl,
-    entities: [],
-    migrations: ['src/migrations/*.ts'],
-    synchronize: false,
+  type: 'mysql',
+  url: databaseUrl,
+  entities: [],
+  migrations: ['src/migrations/*.ts'],
+  synchronize: false,
 });

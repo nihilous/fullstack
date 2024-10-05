@@ -1,0 +1,11 @@
+.idea
+node_modules
+.dockerignore
+.env
+.eslintrc.cjs
+.gitignore
+.prettierrc
+Dockerfile
+package.json
+package-lock.json
+tsconfig.json
