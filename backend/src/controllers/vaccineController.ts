@@ -11,7 +11,10 @@ const router = Router();
 router.get('/:vaccine_national_code', async (req: Request, res: Response) => {
   const { vaccine_national_code } = req.params;
 
-  const is_attacked = isNotNumber([vaccine_national_code]);
+  const vnc_to_number = Number(vaccine_national_code)
+  const is_not_parsable = Number.isNaN(vnc_to_number);
+
+  const is_attacked = is_not_parsable ? is_not_parsable : isNotNumber([vnc_to_number]);
 
   if (is_attacked) {
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
