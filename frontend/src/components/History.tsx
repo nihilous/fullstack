@@ -107,7 +107,8 @@ const History = () => {
     }
 
     historyDataFetch();
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
 
   const modifyChildRecord = async (
     id: number,

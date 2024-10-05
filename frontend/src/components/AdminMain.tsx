@@ -89,7 +89,8 @@ const AdminMain = () => {
     } else {
       mainDataFetch();
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
 
   useEffect(() => {}, [users]);
 
